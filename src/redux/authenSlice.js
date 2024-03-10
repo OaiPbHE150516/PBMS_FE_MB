@@ -12,22 +12,20 @@ const authenSlice = createSlice({
     account: null,
   },
   reducers: {
-    setAccount: (state, action) => {
-      state.account = action.payload;
-    },
+    // setAccount: (state, action) => {
+    //   console.log("setAccount");
+    //   state.account = action.payload;
+    // },
   },
   extraReducers: (builder) => {
     builder
       .addCase(signin.fulfilled, (state, action) => {
-        console.log("fulfilled");
         state.account = action.payload;
       })
       .addCase(signin.rejected, (state, action) => {
-        console.log("rejected");
         state.account = null;
       })
       .addCase(signin.pending, (state, action) => {
-        console.log("pending");
         state.account = null;
       });
   },

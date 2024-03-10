@@ -14,6 +14,7 @@ import store from "./src/store/store";
 import HomeScreen from "./src/screens/HomeScreen";
 import WelcomeScreen from "./src/screens/WelcomeScreen";
 import TestScreen from "./src/screens/TestScreen";
+import TransactionScreen from "./src/screens/transaction/TransactionScreen";
 
 function SettingsScreen({ navigation }) {
   const insets = useSafeAreaInsets();
@@ -66,6 +67,9 @@ export default function App() {
                   case "Welcome":
                     iconName = focused ? "person" : "person-outline";
                     break;
+                  case "Transaction":
+                    iconName = focused ? "cash" : "cash-outline";
+                    break;
                 }
                 return <Ionicons name={iconName} size={size} color={color} />;
               },
@@ -75,6 +79,7 @@ export default function App() {
             })}
           >
             <Tab.Screen name="Home" component={HomeScreen} />
+            <Tab.Screen name="Transaction" component={TransactionScreen} />
             <Tab.Screen name="Welcome" component={WelcomeScreen} />
             <Tab.Screen name="Settings" component={SettingsScreen} />
             <Tab.Screen name="TestScreen" component={TestScreen} />

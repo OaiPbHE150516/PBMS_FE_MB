@@ -1,10 +1,11 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import thunk from 'redux-thunk';
 import authenSlice from '../redux/authenSlice';
+import walletSlice from '../redux/walletSlice';
 
 const rootReducers = combineReducers({
-  // Add reducers here
   authen: authenSlice.reducer,
+  wallet: walletSlice.reducer
 });
 
 

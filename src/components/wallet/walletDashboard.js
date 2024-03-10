@@ -6,32 +6,31 @@ import {
   Button,
   Alert,
   Image,
-  FlatList,
+  FlatList
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import pbms from "../../api/pbms";
+import { API } from "../../constants/api.constant";
 
 const WalletDashboard = () => {
+  const account = useSelector((state) => state.authen.account);
   const [eachWallet, setEachWallet] = useState({});
-
+  const fetchData = async (accountID) => {
+    try {
+      const eachWallet = await pbms.get(
+        API.WALLET.GET_EACH_WALLET_BALANCE + accountID
+      );
+      setEachWallet(eachWallet.data);
+    } catch (error) {
+      console.error("Error fetching wallet data:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const eachWallet = await pbms.get(
-          "/api/wallet/get/total-amount-each-wallet/" + "117911566377016615313"
-        );
-        setEachWallet(eachWallet.data);
-      } catch (error) {
-        console.error("Error fetching wallet data:", error);
-        Alert.alert(
-          "Error",
-          "Failed to fetch wallet data. Please try again later."
-        );
-      }
-    };
-    fetchData();
-  }, []);
+    if (account !== null) {
+      fetchData(account.accountID);
+    }
+  }, [account]);
 
   return eachWallet ? (
     <View style={styles.viewStyle}>
@@ -52,7 +51,8 @@ const WalletDashboard = () => {
 };
 const styles = StyleSheet.create({
   viewStyle: {
-    borderBlockColor: "black",
+    borderBlockColor: "dimgray",
+    flex: 1,
     borderWidth: 1,
     justifyContent: "space-between",
     alignItems: "center",
@@ -60,6 +60,8 @@ const styles = StyleSheet.create({
     marginTop: 0,
     borderRadius: 5,
     marginVertical: 5,
+    borderColor: "darkgrey",
+    borderRadius: 5
   },
   walletItem: {
     flexDirection: "row",
@@ -67,18 +69,19 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: "lightgrey",
+    width: "100%"
   },
 
   name: {
-    fontSize: 18,
+    fontSize: 15
   },
 
   balance: {
-    fontSize: 18,
+    fontSize: 15,
     fontWeight: "bold",
     color: "seagreen",
-    marginLeft: 20,
-  },
+    marginLeft: 20
+  }
 });
 
 export default WalletDashboard;

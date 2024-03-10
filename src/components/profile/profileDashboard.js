@@ -1,23 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Button, Alert, Image } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import useProfile from "../../hooks/useProfile";
+import { getTotalBalance } from "../../redux/walletSlice";
 
 const ProfileDashboard = () => {
-  const [getProfile, totalBalance, profile, errorMessage] = useProfile();
+
+  const account = useSelector((state) => state.authen.account);
+  const totalBalance = useSelector((state) => state.wallet.totalBalance);
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (account !== null) {
+      dispatch(getTotalBalance(account.accountID));
+    }
+  }, [account, dispatch]);
 
   return (
     <View style={styles.viewStyle}>
       <Image
         source={{
-          uri: profile.pictureURL
-            ? profile.pictureURL
+          uri: account?.pictureURL
+            ? account?.pictureURL
             : "https://reactjs.org/logo-og.png",
         }}
         style={styles.avatar}
       />
       <View style={styles.viewInfor}>
-        <Text style={styles.accountName}>{profile.accountName}</Text>
-        <Text style={styles.emailAddress}>{profile.emailAddress}</Text>
+        <Text style={styles.accountName}>{account?.accountName}</Text>
+        <Text style={styles.emailAddress}>{account?.emailAddress}</Text>
       </View>
       <Text style={styles.totalMoney}>{totalBalance}</Text>
     </View>
@@ -33,8 +44,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginTop: 0,
     height: 55,
-    borderRadius: 5,
     marginVertical: 5,
+    borderColor: '#ccc',
+    borderRadius: 5,
   },
   viewInfor: {
     flexDirection: "column",

@@ -9,11 +9,10 @@ import {
   FlatList
 } from "react-native";
 
-const TransactionList = ({ props }) => {
+const TransactionItem = ({ props }) => {
   return (
     <View style={styles.viewStyle}>
       <View style={styles.transItem}>
-        {/* <Text>{props.transactionDateStr}</Text> */}
         <View style={styles.viewTime}>
           <Text style={styles.textTimeStr}>{props.timeStr}</Text>
           <Text style={styles.textDateShortStr}>{props.dateShortStr}</Text>
@@ -65,18 +64,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginTop: 0,
     height: 55,
-    margin: 5,
+    margin: 2,
     width: "100%",
-    borderBottomWidth: 1,
-    borderBottomColor: "darkgrey",
-    borderLeftWidth: 1,
-    borderLeftColor: "darkgrey",
+    // borderBottomWidth: 1,
+    // borderBottomColor: "darkgrey",
+    // borderLeftWidth: 1,
+    // borderLeftColor: "darkgrey",
     // add shadow to the bottom of the item
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.2,
     shadowRadius: 5,
-    elevation: 5,
+    elevation: 1,
     backgroundColor: "aliceblue",
 
   },
@@ -148,4 +147,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default TransactionList;
+export default TransactionItem;

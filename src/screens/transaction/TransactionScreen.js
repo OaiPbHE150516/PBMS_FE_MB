@@ -1,36 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Button, Alert, FlatList } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import { getTotalBalance } from "../../redux/walletSlice";
-import pbms from "../../api/pbms";
-import { API } from "../../constants/api.constant";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 
-import TransactionList from "../../components/transaction/transactionList";
+import TransactionComponent from "../../components/transaction/transactionComponent";
 
 const TransactionScreen = () => {
   const account = useSelector((state) => state.authen.account);
   const totalBalance = useSelector((state) => state.wallet.totalBalance);
-  const [transactions, setTransactions] = useState([]);
 
-  const fetchTransactionData = async (accountID) => {
-    try {
-      const transactions = await pbms.get(
-        API.TRANSACTION.GET_TRANSACTION + accountID + "/" + "1" + "/" + "50"
-      );
-      setTransactions(transactions.data.resultDTO);
-      //console.log("transactions: ", transactions.data);
-    } catch (error) {
-      console.error("Error fetching transaction data:", error);
-    }
-  };
+  function DetailsScreen() {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Details!</Text>
+      </View>
+    );
+  }
+  function DetailsScreen2() {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Details!</Text>
+      </View>
+    );
+  }
 
-  const dispatch = useDispatch();
-  useEffect(() => {
-    if (account !== null) {
-      //   dispatch(getTotalBalance(account.accountID));
-      fetchTransactionData(account.accountID);
-    }
-  }, [account, dispatch]);
+  const Tab = createMaterialTopTabNavigator();
 
   return (
     <View style={styles.parentView}>
@@ -38,30 +32,48 @@ const TransactionScreen = () => {
         <Text style={styles.labelTotalBalance}>Số dư:</Text>
         <Text style={styles.textTotalBalance}>{totalBalance}</Text>
       </View>
-      <FlatList
-        scrollEnabled={true}
-        showsVerticalScrollIndicator={true}
-        data={transactions}
-        keyExtractor={(item) => item.transactionID}
-        renderItem={({ item }) => {
-          return (
-            <View style={styles.listStyle}>
-              <TransactionList props={item} />
-            </View>
-          );
+      <Tab.Navigator
+        style={styles.viewL}
+        screenOptions={{
+          tabBarScrollEnabled: true,
+          tabBarStyle: {
+            alignSelf: "flex-end",
+            flexDirection: "row"
+          },
+          tabBarItemStyle: {
+            width: "auto",
+            alignItems: "center",
+            justifyContent: "center",
+            alignSelf: "center",
+            alignContent: "center",
+            flexDirection: "row"
+          },
+          tabBarLabelStyle: {
+            fontSize: 15,
+            fontFamily: "Inconsolata_500Medium",
+            color: "darkgray",
+            textTransform: "capitalize",
+          },
         }}
-      />
+        initialRouteName="Home1"
+      >
+        {/* <Tab.Screen name="Profile2" component={DetailsScreen2} /> */}
+        <Tab.Screen name="Profile3" component={DetailsScreen2} />
+        <Tab.Screen name="Profile4" component={DetailsScreen2} />
+        <Tab.Screen name="Home1" component={DetailsScreen} />
+        <Tab.Screen name="Profile5" component={DetailsScreen2} />
+        {/* <Tab.Screen name="Profile6" component={DetailsScreen2} /> */}
+        <Tab.Screen name="Profile7" component={TransactionComponent} />
+        {/* <Tab.Screen name="Profile8" component={DetailsScreen2} /> */}
+      </Tab.Navigator>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  listStyle: {
-    flexDirection: "row"
-  },
-  parentView: {
+  viewL: {
+    minHeight: "90%",
     margin: 10,
-    justifyContent: "space-between"
   },
   viewTotalBalance: {
     margin: 10,

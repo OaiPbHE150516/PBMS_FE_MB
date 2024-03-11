@@ -11,6 +11,18 @@ import {
 import { Provider } from "react-redux";
 import store from "./src/store/store";
 
+import {
+  useFonts,
+  Inconsolata_200ExtraLight,
+  Inconsolata_300Light,
+  Inconsolata_400Regular,
+  Inconsolata_500Medium,
+  Inconsolata_600SemiBold,
+  Inconsolata_700Bold,
+  Inconsolata_800ExtraBold,
+  Inconsolata_900Black
+} from "@expo-google-fonts/inconsolata";
+
 import HomeScreen from "./src/screens/HomeScreen";
 import WelcomeScreen from "./src/screens/WelcomeScreen";
 import TestScreen from "./src/screens/TestScreen";
@@ -48,6 +60,16 @@ function DetailsScreen() {
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    Inconsolata_200ExtraLight,
+    Inconsolata_300Light,
+    Inconsolata_400Regular,
+    Inconsolata_500Medium,
+    Inconsolata_600SemiBold,
+    Inconsolata_700Bold,
+    Inconsolata_800ExtraBold,
+    Inconsolata_900Black
+  });
   return (
     <Provider store={store}>
       <SafeAreaProvider>

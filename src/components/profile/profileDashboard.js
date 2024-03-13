@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
   },
   accountName: {
     fontSize: 20,
+    includeFontPadding: false,
   },
   avatar: {
     left: 2,

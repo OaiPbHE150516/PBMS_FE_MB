@@ -15,7 +15,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.oaipb.pbmsfemb"
     },
     "android": {
       "adaptiveIcon": {
@@ -33,7 +34,13 @@
         {
           "iosUrlScheme": "com.oaipb.pbmsfemb"
         }
-      ]
-    ]
+      ],
+      "expo-font"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "70363a42-bf09-48c9-8953-90cb72bd4fbd"
+      }
+    }
   }
 }

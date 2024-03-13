@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   textHeader: {
     fontSize: 18,
     fontStyle: "italic",
-    fontFamily: " Arial, sans-serif"
+    fontFamily: "Inconsolata_400Regular"
   },
   viewStyle: {
     borderBlockColor: "dimgray",

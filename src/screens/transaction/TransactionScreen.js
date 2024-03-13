@@ -1,30 +1,65 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Button, Alert, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Button,
+  Alert,
+  FlatList,
+  Dimensions
+} from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 
 import TransactionComponent from "../../components/transaction/transactionComponent";
+import datetimeLibrary from "../../library/datetimeLibrary";
+
+import { setDatenow } from "../../redux/datedisplaySlice";
+import { VAR } from "../../constants/var.constant";
 
 const TransactionScreen = () => {
   const account = useSelector((state) => state.authen.account);
   const totalBalance = useSelector((state) => state.wallet.totalBalance);
+  // const datenow = useSelector((state) => state.datedisplay.datenow);
 
-  function DetailsScreen() {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Details!</Text>
-      </View>
-    );
-  }
-  function DetailsScreen2() {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Details!</Text>
-      </View>
-    );
+  const dataForCompoents = [
+    {
+      name: VAR.THIS_WEEK_VI,
+      component: TransactionComponent,
+      time: datetimeLibrary.getTimeWeekBefore(0)[2]
+    },
+    {
+      name: VAR.LAST_WEEK_VI,
+      component: TransactionComponent,
+      time: datetimeLibrary.getTimeWeekBefore(1)[2]
+    },
+  ];
+
+  for (let i = 2; i < 20; i++) {
+    dataForCompoents.push({
+      name: datetimeLibrary.getTimeWeekBefore(i)[3],
+      component: TransactionComponent,
+      time: datetimeLibrary.getTimeWeekBefore(i)[2]
+    });
   }
 
   const Tab = createMaterialTopTabNavigator();
+
+  const dispatch = useDispatch();
+  const fetchData = () => {
+    dispatch(setDatenow(datetimeLibrary.getTimeThisWeek()[2].toString()));
+  };
+
+  useEffect(() => {
+    if (account !== null) {
+      fetchData();
+    }
+  }, [account, dispatch]);
+
+  const handleTabPress = (a) => {
+    console.log("Tab pressed:", a);
+    dispatch(setDatenow(a));
+  };
 
   return (
     <View style={styles.parentView}>
@@ -52,28 +87,61 @@ const TransactionScreen = () => {
             fontSize: 15,
             fontFamily: "Inconsolata_500Medium",
             color: "darkgray",
-            textTransform: "capitalize",
+            textTransform: "none",
+            letterSpacing: 0
           },
+          tabBarIndicatorStyle: {
+            backgroundColor: "tomato"
+          },
+          swipeEnabled: true,
+          lazy: true,
+          lazyPreloadDistance: 0,
         }}
-        initialRouteName="Home1"
+        // initialRouteName={VAR.THIS_WEEK_EN}
       >
-        {/* <Tab.Screen name="Profile2" component={DetailsScreen2} /> */}
-        <Tab.Screen name="Profile3" component={DetailsScreen2} />
-        <Tab.Screen name="Profile4" component={DetailsScreen2} />
-        <Tab.Screen name="Home1" component={DetailsScreen} />
-        <Tab.Screen name="Profile5" component={DetailsScreen2} />
-        {/* <Tab.Screen name="Profile6" component={DetailsScreen2} /> */}
-        <Tab.Screen name="Profile7" component={TransactionComponent} />
-        {/* <Tab.Screen name="Profile8" component={DetailsScreen2} /> */}
+        {dataForCompoents.map((item, index) => {
+          return (
+            <Tab.Screen
+              navigationKey={item.name}
+              key={index}
+              name={item.name}
+              component={item.component}
+              options={{
+                tabBarLabel: item.name
+
+                // lazyPlaceholder: "Loading...",
+                // swipeEnabled: true
+              }}
+              listeners={{
+                focus: (e) => {
+                  console.log("focus", e.target);
+                  handleTabPress(item.time);
+                },
+                tabLongPress: (e) => {
+                  console.log("long press: ", e.target);
+                }
+              }}
+            />
+          );
+        }, [])}
       </Tab.Navigator>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  parentView: {
+    // minHeight: "95%",
+    // margin: 10,
+    flex: 1
+    // borderWidth: 5,
+    // borderColor: "black",
+  },
   viewL: {
-    minHeight: "90%",
+    // minHeight: Dimensions.get("window").height - 200,
+    // minHeight: "95%",
     margin: 10,
+    flex: 1
   },
   viewTotalBalance: {
     margin: 10,
@@ -92,7 +160,75 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "right"
+    // fontFamily: "Inconsolata_900Black"
   }
 });
 
 export default TransactionScreen;
+
+// put this to the Tab.Navigator
+// sceneContainerStyle={{ backgroundColor: "white" }}
+// tabBar={({ state, descriptors, navigation }) => {
+//   return (
+//     <View
+//       style={{
+//         flexDirection: "row",
+//         justifyContent: "space-around",
+//         alignItems: "center",
+//         backgroundColor: "white",
+//         borderBottomWidth: 1,
+//         borderBottomColor: "lightgray"
+//       }}
+//     >
+//       {state.routes.map((route, index) => {
+//         const { options } = descriptors[route.key];
+//         const label =
+//           options.tabBarLabel !== undefined
+//             ? options.tabBarLabel
+//             : options.title !== undefined
+//             ? options.title
+//             : route.name;
+
+//         const isFocused = state.index === index;
+
+//         const onPress = () => {
+//           const event = navigation.emit({
+//             type: "tabPress",
+//             target: route.key,
+//             canPreventDefault: true
+//           });
+
+//           if (!isFocused && !event.defaultPrevented) {
+//             navigation.navigate(route.name);
+//           }
+//         };
+
+//         const onLongPress = () => {
+//           navigation.emit({
+//             type: "tabLongPress",
+//             target: route.key
+//           });
+//         };
+
+//         return (
+//           <View
+//             style={{
+//               flex: 1,
+//               justifyContent: "center",
+//               alignItems: "center",
+//               borderBottomWidth: 3,
+//               borderBottomColor: isFocused ? "tomato" : "white"
+//             }}
+//             key={index}
+//           >
+//             <Button
+//               title={label}
+//               onPress={onPress}
+//               onLongPress={onLongPress}
+//             />
+//           </View>
+//         );
+//       })}
+//     </View>
+//   );
+// }}

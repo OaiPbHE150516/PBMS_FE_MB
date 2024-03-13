@@ -17,6 +17,10 @@ export const API = {
     GET_TRANSACTION: `${Base_URL}/api/transaction/get/`,
     GET_TRANSACTION_BY_WALLET: `${Base_URL}/api/transaction/get/wallet/`,
     GET_TRANSACTION_BY_ACCOUNT: `${Base_URL}/api/transaction/get/account/`,
-    GET_RECENTLY_TRANSACTION: `${Base_URL}/api/transaction/get/recently/`
+    GET_RECENTLY_TRANSACTION: `${Base_URL}/api/transaction/get/recently/`,
+    GET_TRANSACTION_BY_WEEK: `${Base_URL}/api/transaction/get/weekbyweek/custom/`,
+  },
+  CATEGORY: {
+    GET_CATEGORIES: `${Base_URL}/api/category/get/`
   }
 };

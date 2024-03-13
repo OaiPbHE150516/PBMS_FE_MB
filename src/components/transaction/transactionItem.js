@@ -73,14 +73,14 @@ const styles = StyleSheet.create({
     // add shadow to the bottom of the item
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 1,
     shadowRadius: 5,
-    elevation: 1,
+    elevation: 3,
     backgroundColor: "aliceblue",
 
   },
   viewBalance: {
-    width: "30%",
+    width: "29%",
     flexDirection: "column",
     justifyContent: "center",
     paddingRight: 2

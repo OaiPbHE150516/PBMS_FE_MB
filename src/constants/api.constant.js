@@ -21,6 +21,6 @@ export const API = {
     GET_TRANSACTION_BY_WEEK: `${Base_URL}/api/transaction/get/weekbyweek/custom/`,
   },
   CATEGORY: {
-    GET_CATEGORIES: `${Base_URL}/api/category/get/`
+    GET_CATEGORIES: `${Base_URL}/api/category/get/typebytype/`
   }
 };

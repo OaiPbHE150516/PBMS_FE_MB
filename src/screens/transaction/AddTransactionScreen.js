@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -18,38 +18,80 @@ import {
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import Icon from "react-native-vector-icons/FontAwesome6";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { ScrollView } from "react-native-gesture-handler";
+import { Calendar, CalendarList, LocaleConfig } from "react-native-calendars";
+
 // import { SelectList } from "react-native-dropdown-select-list";
 import { getCategories } from "../../redux/categorySlice";
+import TabCategoryInModalComponent from "../../components/category/tabCategoryInModalComponent";
+import { setModalCategoryVisible } from "../../redux/categorySlice";
+import ModalCategoryComponent from "../../components/category/modalCategoryComponent";
+
+import { setModalAddTransactionVisible } from "../../redux/modalSlice";
+import { ModalCalendarComponent } from "../../components/calendar/modalCalendarComponent";
+// import { Calendar } from "react-native-calendars";
+
+// const panResponder = useRef(
+//   PanResponder.create({
+//     onStartShouldSetPanResponder: (evt, gestureState) => true,
+//     onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
+//     onPanResponderRelease: (e, gestureState) => {
+//       if (gestureState.dy > 50) {
+//         console.log("sdas!");
+//         // setMCategoryVisible(!mCategoryVisible);
+//       }
+//     }
+//   })
+// ).current;
 
 const AddTransactionScreen = () => {
-  const [modalVisible, setModalVisible] = useState(false);
+  // const [mCategoryVisible, setMCategoryVisible] = useState(false);
+  // same with mTimeVisible, mWalletVisible
+  // const [modalVisible, setModalVisible] = useState(false);
+
+  const [mCalendarVisible, setMCalendarVisible] = useState(false);
+  const [mWalletVisible, setMWalletVisible] = useState(false);
   const [isPulledDown, setIsPulledDown] = useState(false);
   const [isShowDetail, setIsShowDetail] = useState(false);
+  const modalAddTransactionVisible = useSelector(
+    (state) => state.modal.modalAddTransactionVisible
+  );
   const account = useSelector((state) => state.authen.account);
-  const categories = useSelector((state) => state.category.categories);
+  // const categories = useSelector((state) => state.category.categories);
+  const categoryToAddTransaction = useSelector(
+    (state) => state.category.categoryToAddTransaction
+  );
+  const modalCategoryVisible = useSelector(
+    (state) => state.category.modalCategoryVisible
+  );
 
   const dispatch = useDispatch();
   // use effect to fetch categories
   useEffect(() => {
-    dispatch(getCategories(account.accountID));
+    // dispatch(getCategories(account?.accountID));
+    // dispatch(setModalAddTransactionVisible(false));
   }, [account, dispatch]);
 
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: (evt, gestureState) => true,
-      onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
-      onPanResponderRelease: (e, gestureState) => {
-        if (gestureState.dy > 50) {
-          console.log("sdas!");
-          setModalVisible(!modalVisible);
-        }
-      }
-    })
-  ).current;
+  function ButtonHideModel() {
+    return (
+      <Pressable
+        style={styles.buttonCloseModal}
+        onPress={() => {
+          dispatch(setModalCategoryVisible(!modalCategoryVisible));
+          setMCalendarVisible(false);
+          dispatch(setModalAddTransactionVisible(false));
+        }}
+      >
+        <Text style={styles.textButtonCloseModal}>Hide Modal</Text>
+      </Pressable>
+    );
+  }
 
-  categories?.forEach((element) => {
-    console.log("element: ", element.nameVN);
-  });
+  // console.log(
+  //   "categoryToAddTransaction: ",
+  //   categoryToAddTransaction?.categoryID
+  // );
 
   return (
     <View style={styles.viewStyle}>
@@ -74,9 +116,14 @@ const AddTransactionScreen = () => {
         <View style={styles.viewSelectCategory}>
           <Pressable
             style={[styles.pressSelectCategory]}
-            onPress={() => setModalVisible(true)}
+            onPress={() => {
+              dispatch(setModalCategoryVisible(true));
+              dispatch(setModalAddTransactionVisible(true));
+            }}
           >
-            <Text style={styles.textSelectCategory}>Chọn hạng mục</Text>
+            <Text style={styles.textSelectCategory}>
+              {categoryToAddTransaction?.nameVN || "Chọn hạng mục"}
+            </Text>
           </Pressable>
           <Icon
             name="angle-right"
@@ -93,7 +140,11 @@ const AddTransactionScreen = () => {
         <View style={styles.viewSelectCategory}>
           <Pressable
             style={[styles.pressSelectCategory]}
-            onPress={() => setModalVisible(true)}
+            onPress={() => {
+              dispatch(setModalCategoryVisible(false));
+              setMCalendarVisible(true);
+              dispatch(setModalAddTransactionVisible(true));
+            }}
           >
             <Text style={styles.textSelectCategory}>Chọn thời gian</Text>
           </Pressable>
@@ -107,12 +158,12 @@ const AddTransactionScreen = () => {
       </View>
       <View style={styles.viewAmount}>
         <View style={styles.viewAmountIcon}>
-          <Icon name="layer-group" size={30} color="darkgrey" />
+          <Icon name="wallet" size={30} color="darkgrey" />
         </View>
         <View style={styles.viewSelectCategory}>
           <Pressable
             style={[styles.pressSelectCategory]}
-            onPress={() => setModalVisible(true)}
+            onPress={() => setMWalletVisible(true)}
           >
             <Text style={styles.textSelectCategory}>Chọn ví</Text>
           </Pressable>
@@ -134,6 +185,15 @@ const AddTransactionScreen = () => {
         <Text>AddTransactionScreen</Text>
         <Text>AddTransactionScreen</Text>
         <Text>AddTransactionScreen</Text>
+        <Text>AddTransactionScreen</Text>
+        <Text>AddTransactionScreen</Text>
+        <Text>AddTransactionScreen</Text>
+        <Text>AddTransactionScreen</Text>
+        <Text>AddTransactionScreen</Text>
+        <Text>AddTransactionScreen</Text>
+        <Text>AddTransactionScreen</Text>
+        <Text>AddTransactionScreen</Text>
+        <Text>AddTransactionScreen</Text>
       </View>
       <View>
         <Button
@@ -141,34 +201,56 @@ const AddTransactionScreen = () => {
           onPress={() => setIsShowDetail(isShowDetail ? false : true)}
         />
       </View>
-      <View style={styles.centeredView}>
+      {/* Modal Compnent Here */}
+      <View>
         <Modal
           animationType="slide"
           transparent={true}
-          visible={modalVisible}
+          visible={modalAddTransactionVisible}
           onRequestClose={() => {
             Alert.alert("Modal has been closed.");
-            setModalVisible(!modalVisible);
           }}
         >
           <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalText}>Hello World!</Text>
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}
-              >
-                <Text style={styles.textStyle}>Hide Modal</Text>
-              </Pressable>
-            </View>
+            {modalCategoryVisible && (
+              <View style={styles.viewInsideModal}>
+                <ModalCategoryComponent />
+              </View>
+            )}
+            {mCalendarVisible && (
+              <View style={styles.viewInsideModal}>
+                <View style={styles.viewCalendarInModal}>
+                    <ModalCalendarComponent />
+                </View>
+              </View>
+            )}
+            <ButtonHideModel />
           </View>
         </Modal>
       </View>
+      {/* End Modal Compnent Here */}
     </View>
   );
 };
 // paste to view  {...panResponder.panHandlers}
 const styles = StyleSheet.create({
+  viewInsideModal: {
+    flex: 1,
+    // backgroundColor: "rgba(0, 0, 0, 0.1)",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    // width: "100%",
+    // height: "100%"
+  },
+  viewCalendarInModal: {
+    // borderWidth: 1,
+    // borderColor: "gray",
+    width: Dimensions.get("window").width * 0.95,
+    height: "75%",
+    backgroundColor: "white",
+    // top: 25,
+  },
   viewTopHeader: {
     width: "100%",
     borderBottomColor: "darkgrey",
@@ -227,31 +309,31 @@ const styles = StyleSheet.create({
   },
   centeredView: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 22
+    // // justifyContent: "flex-start",
+    alignItems: "center"
+    // flexDirection: "column",
+    // borderColor: "red",
+    // borderWidth: 5
   },
-  modalView: {
-    margin: 20,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-    height: "80%",
-    width: "100%"
-  },
-  button: {
+  buttonCloseModal: {
     borderRadius: 20,
     padding: 10,
-    elevation: 2
+    elevation: 2,
+    backgroundColor: "darkgray",
+    padding: 10,
+    alignSelf: "center",
+    bottom: 50,
+    position: "absolute",
+    flexDirection: "column",
+    alignContent: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "50%",
+    height: "5%"
+  },
+  textButtonCloseModal: {
+    fontFamily: "Inconsolata_500Medium",
+    fontSize: 20
   },
   pressSelectCategory: {
     // backgroundColor: "#F194FF",
@@ -285,5 +367,47 @@ const styles = StyleSheet.create({
     textAlign: "center"
   }
 });
+LocaleConfig.locales["vi"] = {
+  monthNames: [
+    "Tháng 1",
+    "Tháng 2",
+    "Tháng 3",
+    "Tháng 4",
+    "Tháng 5",
+    "Tháng 6",
+    "Tháng 7",
+    "Tháng 8",
+    "Tháng 9",
+    "Tháng 10",
+    "Tháng 11",
+    "Tháng 12"
+  ],
+  monthNamesShort: [
+    "Th.1",
+    "Th.2",
+    "Th.3",
+    "Th.4",
+    "Th.5",
+    "Th.6",
+    "Th.7",
+    "Th.8",
+    "Th.9",
+    "Th.10",
+    "Th.11",
+    "Th.12"
+  ],
+  dayNames: [
+    "Chủ nhật",
+    "Thứ hai",
+    "Thứ ba",
+    "Thứ tư",
+    "Thứ năm",
+    "Thứ sáu",
+    "Thứ bảy"
+  ],
+  dayNamesShort: ["CN", "T2", "T3", "T4", "T5", "T6", "T7"],
+  today: "Hôm nay"
+};
+LocaleConfig.defaultLocale = "vi";
 
 export default AddTransactionScreen;

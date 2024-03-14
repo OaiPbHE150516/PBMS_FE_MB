@@ -11,6 +11,7 @@ import {
 } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
 import store from "./src/store/store";
+import 'react-native-gesture-handler';
 
 import {
   useFonts,
@@ -44,6 +45,7 @@ import WelcomeScreen from "./src/screens/WelcomeScreen";
 import TestScreen from "./src/screens/TestScreen";
 import TransactionScreen from "./src/screens/transaction/TransactionScreen";
 import AddTransactionScreen from "./src/screens/transaction/AddTransactionScreen";
+import { LinearGradient } from 'expo-linear-gradient';
 
 function SettingsScreen({ navigation }) {
   const insets = useSafeAreaInsets();

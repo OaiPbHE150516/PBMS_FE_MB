@@ -9,10 +9,26 @@ export const getCategories = createAsyncThunk(
   }
 );
 
+export const setCategoryToAddTransaction = createAsyncThunk(
+  "setCategoryToAddTransaction",
+  async (category) => {
+    return category;
+  }
+);
+
+export const setModalCategoryVisible = createAsyncThunk(
+  "setModalCategoryVisible",
+  async (modalCategoryVisible) => {
+    return modalCategoryVisible;
+  }
+);
+
 const categorySlice = createSlice({
   name: "category",
   initialState: {
-    categories: null
+    categories: null,
+    categoryToAddTransaction: null,
+    modalCategoryVisible: false
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -26,6 +42,23 @@ const categorySlice = createSlice({
       })
       .addCase(getCategories.pending, (state, action) => {
         state.categories = null;
+      })
+      .addCase(setCategoryToAddTransaction.fulfilled, (state, action) => {
+        state.categoryToAddTransaction = action.payload;
+      })
+      .addCase(setCategoryToAddTransaction.rejected, (state, action) => {
+        state.categoryToAddTransaction = null;
+        console.error("setCategoryToAddTransaction.rejected");
+      })
+      .addCase(setCategoryToAddTransaction.pending, (state, action) => {
+        state.categoryToAddTransaction = null;
+      })
+      .addCase(setModalCategoryVisible.fulfilled, (state, action) => {
+        state.modalCategoryVisible = action.payload;
+      })
+      .addCase(setModalCategoryVisible.rejected, (state, action) => {
+        state.modalCategoryVisible = false;
+        console.error("setModalCategoryVisible.rejected");
       });
   }
 });

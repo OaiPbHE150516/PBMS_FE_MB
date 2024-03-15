@@ -16,14 +16,18 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.oaipb.pbmsfemb"
+      "bundleIdentifier": "com.oaipb.pbmsfemb",
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.oaipb.pbmsfemb"
+      "package": "com.oaipb.pbmsfemb",
+      "runtimeVersion": "1.0.0"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -41,6 +45,9 @@
       "eas": {
         "projectId": "70363a42-bf09-48c9-8953-90cb72bd4fbd"
       }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/70363a42-bf09-48c9-8953-90cb72bd4fbd"
     }
   }
 }

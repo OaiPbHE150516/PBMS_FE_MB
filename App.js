@@ -42,10 +42,8 @@ import {
 
 import HomeScreen from "./src/screens/HomeScreen";
 import WelcomeScreen from "./src/screens/WelcomeScreen";
-import TestScreen from "./src/screens/TestScreen";
 import TransactionScreen from "./src/screens/transaction/TransactionScreen";
 import AddTransactionScreen from "./src/screens/transaction/AddTransactionScreen";
-import { LinearGradient } from 'expo-linear-gradient';
 
 function SettingsScreen({ navigation }) {
   const insets = useSafeAreaInsets();
@@ -68,13 +66,13 @@ function SettingsScreen({ navigation }) {
   );
 }
 
-function DetailsScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Details!</Text>
-    </View>
-  );
-}
+// function DetailsScreen() {
+//   return (
+//     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+//       <Text>Details!</Text>
+//     </View>
+//   );
+// }
 
 const Tab = createBottomTabNavigator();
 

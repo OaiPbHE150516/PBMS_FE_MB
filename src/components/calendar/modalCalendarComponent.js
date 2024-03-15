@@ -20,15 +20,60 @@ import { useSelector, useDispatch } from "react-redux";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 
 import { Calendar, CalendarList, LocaleConfig } from "react-native-calendars";
-import ScrollPicker from "react-native-wheel-scrollview-picker";
 import DynamicallySelectedPicker from "react-native-dynamically-selected-picker";
-import { LinearGradient } from "expo-linear-gradient";
+
+const hourInDay = [
+  {
+    value: 0,
+    label: "00",
+    itemColor: "black"
+  }
+];
+
+const minuteInHour = [
+  {
+    value: 0,
+    label: "00",
+    itemColor: "black"
+  }
+];
+
+function pushDataForHourInDay() {
+  console.log("pushDataForhourInDay");
+  for (let i = 1; i < 24; i++) {
+    let hour = i < 10 ? "0" + i : i;
+    hourInDay.push({
+      value: hour,
+      label: hour + "",
+      itemColor: "black"
+    });
+  }
+}
+
+function pushDataForMinuteInHour() {
+  for (let i = 0; i < 60; i += 5) {
+    if (i === 0) {
+      continue;
+    }
+    console.log("i", i);
+    let minute = i < 10 ? "0" + i : i;
+    minuteInHour.push({
+      value: minute,
+      label: minute + "",
+      itemColor: "black"
+    });
+  }
+}
 
 export function ModalCalendarComponent() {
-  //   const [selected, setSelected] = useState("");
-
-  const [selectedItemIndex, setSelectedItemIndex] = useState(0);
+  const [selectedHour, setSelectedHour] = useState(0);
+  const [selectedMinute, setSelectedMinute] = useState(0);
   const initialSelectedIndex = 1;
+
+  useEffect(() => {
+    pushDataForHourInDay();
+    pushDataForMinuteInHour();
+  }, []);
 
   return (
     <View style={styles.viewParent}>
@@ -62,74 +107,94 @@ export function ModalCalendarComponent() {
           scrollEnabled={true}
         />
       </View>
+      <View style={styles.viewTimePresent}>
+        <Text style={styles.textTimePresent}>
+          Chọn giờ: {selectedHour} : {selectedMinute}
+        </Text>
+      </View>
       <View style={styles.viewScrollTime}>
-        {/* <ScrollPicker
-          dataSource={["1", "2", "3", "4", "5", "6"]}
-          selectedIndex={1}
-          renderItem={(data, index) => {
-            return <Text>{data}</Text>;
-          }}
-          onValueChange={(data, selectedIndex) => {
-            console.log(data + " : " + selectedIndex);
-          }}
-          wrapperHeight={300}
-          wrapperBackground="#FFFFFF"
-          itemHeight={60}
-          highlightColor="#d8d8d8"
-          highlightBorderWidth={2}
-        /> */}
-        <DynamicallySelectedPicker
-          items={[
-            {
-              value: 1,
-              label: "Item 1"
-            },
-            {
-              value: 2,
-              label: "Item 2"
-            },
-            {
-              value: 3,
-              label: "Item 3"
-            },
-            {
-              value: 4,
-              label: "Item 4",
-              // itemColor: "blue"
-            },
-            {
-              value: 5,
-              label: "Item 5"
-            }
-          ]}
-          onScroll={({ index }) => setSelectedItemIndex(index)}
-          onMomentumScrollBegin={({ index }) => setSelectedItemIndex(index)}
-          onMomentumScrollEnd={({ index }) => setSelectedItemIndex(index)}
-          onScrollBeginDrag={({ index }) => setSelectedItemIndex(index)}
-          onScrollEndDrag={({ index }) => setSelectedItemIndex(index)}
-          initialSelectedIndex={initialSelectedIndex}
-          height={150}
-          width={100}
-          fontFamily="Inconsolata_500Medium"
-          selectedItemBorderColor="darkgray"
-          scrollEnabled={true}
-          transparentItemRows={1}
-        />
-        <View style={styles.selectedItemWrapper}>
-          <Text>Selected item index {selectedItemIndex}</Text>
+        {/* <View style={styles.viewScrollHour}>
+          <DynamicallySelectedPicker
+            items={hourInDay}
+            onScroll={({ index }) => setSelectedHour(index)}
+            onMomentumScrollBegin={({ index }) => setSelectedHour(index)}
+            onMomentumScrollEnd={({ index }) => setSelectedHour(index)}
+            onScrollBeginDrag={({ index }) => setSelectedHour(index)}
+            onScrollEndDrag={({ index }) => setSelectedHour(index)}
+            initialSelectedIndex={initialSelectedIndex}
+            height={150}
+            width={100}
+            fontFamily="OpenSans_500Medium"
+            selectedItemBorderColor="darkgray"
+            scrollEnabled={true}
+            transparentItemRows={1}
+          />
         </View>
+        <View style={styles.viewScrollMinute}>
+          <DynamicallySelectedPicker
+            items={minuteInHour}
+            onScroll={({ index }) => setSelectedMinute(index)}
+            onMomentumScrollBegin={({ index }) => setSelectedMinute(index)}
+            onMomentumScrollEnd={({ index }) => setSelectedMinute(index)}
+            onScrollBeginDrag={({ index }) => setSelectedMinute(index)}
+            onScrollEndDrag={({ index }) => setSelectedMinute(index)}
+            initialSelectedIndex={minuteInHour[0]}
+            height={150}
+            width={100}
+            fontFamily="OpenSans_500Medium"
+            selectedItemBorderColor="darkgray"
+            scrollEnabled={true}
+            transparentItemRows={1}
+          />
+        </View> */}
+      </View>
+      <View style={styles.selectedItemWrapper}>
+        <Text>Selected item index {selectedHour}</Text>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  viewScrollTime: {
-    flex: 1,
-    // backgroundColor: "green",
+  viewTimePresent: {
+    backgroundColor: "white",
     borderWidth: 1,
     borderColor: "darkgray",
-    // height: "80%",
+    borderRadius: 5,
+    marginHorizontal: 5,
+    marginVertical: 10
+  },
+  textTimePresent: {
+    textAlign: "center",
+    fontSize: 30,
+    fontFamily: "Inconsolata_500Medium",
+    color: "black"
+  },
+  viewScrollHour: {
+    // backgroundColor: "green",
+    // borderWidth: 1,
+    // borderColor: "red",
+    borderRadius: 5,
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 5
+  },
+  viewScrollMinute: {
+    // backgroundColor: "green",
+    // borderWidth: 1,
+    // borderColor: "red",
+    borderRadius: 5,
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 5
+  },
+  viewScrollTime: {
+    // flex: 1,
+    // backgroundColor: "yellow",
+    borderWidth: 1,
+    borderColor: "blue",
+    flexDirection: "row",
+    justifyContent: "center"
   },
   viewParent: {
     flex: 1

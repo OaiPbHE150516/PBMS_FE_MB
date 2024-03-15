@@ -17,10 +17,27 @@ import datetimeLibrary from "../../library/datetimeLibrary";
 import { setDatenow } from "../../redux/datedisplaySlice";
 import { VAR } from "../../constants/var.constant";
 
+// function pushDataForCompoents() {
+//   for (let i = 2; i < 20; i++) {
+//     dataForCompoents.push({
+//       name: datetimeLibrary.getTimeWeekBefore(i)[3],
+//       component: TransactionComponent,
+//       time: datetimeLibrary.getTimeWeekBefore(i)[2]
+//     });
+//   }
+// }
+
 const TransactionScreen = () => {
   const account = useSelector((state) => state.authen.account);
   const totalBalance = useSelector((state) => state.wallet.totalBalance);
   // const datenow = useSelector((state) => state.datedisplay.datenow);
+
+  const Tab = createMaterialTopTabNavigator();
+
+  const dispatch = useDispatch();
+  const fetchData = () => {
+    dispatch(setDatenow(datetimeLibrary.getTimeThisWeek()[2].toString()));
+  };
 
   const dataForCompoents = [
     {
@@ -32,7 +49,7 @@ const TransactionScreen = () => {
       name: VAR.LAST_WEEK_VI,
       component: TransactionComponent,
       time: datetimeLibrary.getTimeWeekBefore(1)[2]
-    },
+    }
   ];
 
   for (let i = 2; i < 20; i++) {
@@ -43,18 +60,11 @@ const TransactionScreen = () => {
     });
   }
 
-  const Tab = createMaterialTopTabNavigator();
-
-  const dispatch = useDispatch();
-  const fetchData = () => {
-    dispatch(setDatenow(datetimeLibrary.getTimeThisWeek()[2].toString()));
-  };
-
   useEffect(() => {
     if (account !== null) {
       fetchData();
     }
-  }, [account, dispatch]);
+  }, [account]);
 
   const handleTabPress = (a) => {
     console.log("Tab pressed:", a);
@@ -95,7 +105,7 @@ const TransactionScreen = () => {
           },
           swipeEnabled: true,
           lazy: true,
-          lazyPreloadDistance: 0,
+          lazyPreloadDistance: 0
         }}
         // initialRouteName={VAR.THIS_WEEK_EN}
       >

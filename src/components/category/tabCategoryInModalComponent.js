@@ -41,7 +41,7 @@ const CategoryItem = ({ category, depth = 0 }) => {
           styles.touchableCateItem,
           {
             marginLeft: 20 * depth,
-            width: Dimensions.get("window").width * 0.8 - 20 * depth
+            width: Dimensions.get("window").width * 0.75 - 20 * depth
           }
         ]}
         onPress={handleTouchCateItem(category)}
@@ -120,10 +120,11 @@ const styles = StyleSheet.create({
   },
   viewStyle: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignItems: "flex-start",
-    alignContent: "center",
+    alignContent: "flex-start",
     marginVertical: 10,
+    flexDirection: "column",
     // borderWidth: 1,
     // borderColor: "blue",
     width: "100%"

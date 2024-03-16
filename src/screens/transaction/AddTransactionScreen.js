@@ -20,15 +20,17 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import Icon from "react-native-vector-icons/FontAwesome6";
 
+import datetimeLibrary from "../../library/datetimeLibrary";
+
 import { setModalCategoryVisible } from "../../redux/categorySlice";
 import ModalCategoryComponent from "../../components/category/modalCategoryComponent";
 
 import { setModalAddTransactionVisible } from "../../redux/modalSlice";
 import { ModalCalendarComponent } from "../../components/calendar/mocalCalendarComponent";
-
+import { setAddTransactionTime } from "../../redux/transactionSlice";
 
 const AddTransactionScreen = () => {
-  // const [mCategoryVisible, setMCategoryVisible] = useState(false);
+  const [mCategoryVisible, setMCategoryVisible] = useState(false);
   // same with mTimeVisible, mWalletVisible
   // const [modalVisible, setModalVisible] = useState(false);
 
@@ -44,8 +46,8 @@ const AddTransactionScreen = () => {
   const categoryToAddTransaction = useSelector(
     (state) => state.category.categoryToAddTransaction
   );
-  const modalCategoryVisible = useSelector(
-    (state) => state.category.modalCategoryVisible
+  const addTransactionTime = useSelector(
+    (state) => state.transaction.addTransactionTime
   );
 
   const dispatch = useDispatch();
@@ -53,27 +55,19 @@ const AddTransactionScreen = () => {
   useEffect(() => {
     // dispatch(getCategories(account?.accountID));
     // dispatch(setModalAddTransactionVisible(false));
+    console.log("useEffect: AddTransactionScreen");
   }, [account, dispatch]);
 
-  function ButtonHideModel() {
-    return (
-      <Pressable
-        style={styles.buttonCloseModal}
-        onPress={() => {
-          dispatch(setModalCategoryVisible(!modalCategoryVisible));
-          setMCalendarVisible(false);
-          dispatch(setModalAddTransactionVisible(false));
-        }}
-      >
-        <Text style={styles.textButtonCloseModal}>Hide Modal</Text>
-      </Pressable>
-    );
-  }
+  const handleDataFromCalendar = (data) => {
+    // setTransTimeData(data);
+    setMCalendarVisible(data.isCalendarVisible);
+    dispatch(setModalAddTransactionVisible(false));
+  };
 
-  // console.log(
-  //   "categoryToAddTransaction: ",
-  //   categoryToAddTransaction?.categoryID
-  // );
+  const handleDataFromCategory = (data) => {
+    setMCategoryVisible(data.isCategoryVisible);
+    dispatch(setModalAddTransactionVisible(false));
+  };
 
   return (
     <View style={styles.viewStyle}>
@@ -99,7 +93,8 @@ const AddTransactionScreen = () => {
           <Pressable
             style={[styles.pressSelectCategory]}
             onPress={() => {
-              dispatch(setModalCategoryVisible(true));
+              setMCategoryVisible(true);
+              setMCalendarVisible(false);
               dispatch(setModalAddTransactionVisible(true));
             }}
           >
@@ -123,12 +118,20 @@ const AddTransactionScreen = () => {
           <Pressable
             style={[styles.pressSelectCategory]}
             onPress={() => {
-              dispatch(setModalCategoryVisible(false));
+              setMCategoryVisible(false);
               setMCalendarVisible(true);
               dispatch(setModalAddTransactionVisible(true));
             }}
           >
-            <Text style={styles.textSelectCategory}>Chọn thời gian</Text>
+            <Text style={styles.textSelectCategory}>
+              {addTransactionTime
+                ? addTransactionTime.hour +
+                  ":" +
+                  addTransactionTime.minute +
+                  ", " +
+                  addTransactionTime.date
+                : datetimeLibrary.getCurrentTime().datetimestr}
+            </Text>
           </Pressable>
           <Icon
             name="angle-right"
@@ -194,19 +197,25 @@ const AddTransactionScreen = () => {
           }}
         >
           <View style={styles.centeredView}>
-            {modalCategoryVisible && (
+            {mCategoryVisible && (
               <View style={styles.viewInsideModal}>
-                <ModalCategoryComponent />
+                <View style={styles.viewCategoryInModal}>
+                  <ModalCategoryComponent
+                    onDataFromChild={handleDataFromCategory}
+                  />
+                </View>
+                {/* <ButtonHideModel /> */}
               </View>
             )}
             {mCalendarVisible && (
               <View style={styles.viewInsideModal}>
                 <View style={styles.viewCalendarInModal}>
-                    <ModalCalendarComponent />
+                  <ModalCalendarComponent
+                    onDataFromChild={handleDataFromCalendar}
+                  />
                 </View>
               </View>
             )}
-            <ButtonHideModel />
           </View>
         </Modal>
       </View>
@@ -216,22 +225,40 @@ const AddTransactionScreen = () => {
 };
 // paste to view  {...panResponder.panHandlers}
 const styles = StyleSheet.create({
+  viewCategoryInModal: {
+    // borderWidth: 1,
+    // borderColor: "gray",
+    // backgroundColor: "green",
+    // flex: 1,
+    height: "80%",
+    width: "100%"
+  },
   viewInsideModal: {
-    flex: 1,
+    // flex: 1,
     // backgroundColor: "rgba(0, 0, 0, 0.1)",
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    // width: "100%",
-    // height: "100%"
+    alignContent: "center",
+    width: "95%",
+    // flex: 1,
+    height: "95%"
   },
   viewCalendarInModal: {
-    // borderWidth: 1,
-    // borderColor: "gray",
-    width: Dimensions.get("window").width * 0.95,
-    height: "75%",
+    borderWidth: 1,
+    borderColor: "darkgray",
+    width: "95%",
+    height: "35%",
     backgroundColor: "white",
-    // top: 25,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
   },
   viewTopHeader: {
     width: "100%",
@@ -290,9 +317,11 @@ const styles = StyleSheet.create({
     // borderBottomWidth: 1
   },
   centeredView: {
-    flex: 1,
-    // // justifyContent: "flex-start",
-    alignItems: "center"
+    // flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "100%"
     // flexDirection: "column",
     // borderColor: "red",
     // borderWidth: 5
@@ -334,7 +363,7 @@ const styles = StyleSheet.create({
     textAlign: "left",
     // borderWidth: 1,
     // borderColor: "darkgrey",
-    fontSize: 28,
+    fontSize: 25,
     fontFamily: "Inconsolata_400Regular",
     marginVertical: 5,
     marginHorizontal: 10,

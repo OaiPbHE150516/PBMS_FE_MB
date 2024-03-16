@@ -22,6 +22,13 @@ export const setTransactionWeekByDayOnDisplay = createAsyncThunk(
   }
 );
 
+export const setAddTransactionTime = createAsyncThunk(
+  "setAddTransactionTime",
+  async (data) => {
+    return data;
+  }
+);
+
 // export const addToListTransaction = createAsyncThunk(
 //   "addToListTransaction",
 //   async (data) => {
@@ -35,7 +42,8 @@ const transactionSlice = createSlice({
   initialState: {
     transactionWeekByDayOnDisplay: null,
     transactionWeekByDay: null,
-    listTransaction: [{week: null, data: null}]
+    listTransaction: [{ week: null, data: null }],
+    addTransactionTime: null
   },
   reducers: {
     // fetchTransactionData: (state, action) => {
@@ -68,6 +76,13 @@ const transactionSlice = createSlice({
       })
       .addCase(setTransactionWeekByDayOnDisplay.pending, (state, action) => {
         state.transactionWeekByDayOnDisplay = null;
+      })
+      .addCase(setAddTransactionTime.fulfilled, (state, action) => {
+        state.addTransactionTime = action.payload;
+      })
+      .addCase(setAddTransactionTime.rejected, (state, action) => {
+        state.addTransactionTime = null;
+        console.error("setAddTransactionTime.rejected");
       });
   }
 });

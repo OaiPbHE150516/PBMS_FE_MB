@@ -1,4 +1,4 @@
-package com.oaipb.pbmsfemb
+package com.oaipb.pbms_fe_mb
 
 import android.os.Build
 import android.os.Bundle

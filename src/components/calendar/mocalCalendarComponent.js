@@ -1,26 +1,10 @@
 import React, { useState, useEffect, useRef, Component } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  Button,
-  Alert,
-  FlatList,
-  Dimensions,
-  TextInput,
-  Platform,
-  ImageBackground,
-  TouchableOpacity,
-  Modal,
-  Pressable,
-  TouchableWithoutFeedback,
-  PanResponder
-} from "react-native";
-import { useSelector, useDispatch } from "react-redux";
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-
+    View,
+    Text,
+    StyleSheet,
+  } from "react-native";
 import { Calendar, CalendarList, LocaleConfig } from "react-native-calendars";
-import DynamicallySelectedPicker from "react-native-dynamically-selected-picker";
 
 const hourInDay = [
   {
@@ -114,39 +98,39 @@ export function ModalCalendarComponent() {
       </View>
       <View style={styles.viewScrollTime}>
         {/* <View style={styles.viewScrollHour}>
-          <DynamicallySelectedPicker
-            items={hourInDay}
-            onScroll={({ index }) => setSelectedHour(index)}
-            onMomentumScrollBegin={({ index }) => setSelectedHour(index)}
-            onMomentumScrollEnd={({ index }) => setSelectedHour(index)}
-            onScrollBeginDrag={({ index }) => setSelectedHour(index)}
-            onScrollEndDrag={({ index }) => setSelectedHour(index)}
-            initialSelectedIndex={initialSelectedIndex}
-            height={150}
-            width={100}
-            fontFamily="OpenSans_500Medium"
-            selectedItemBorderColor="darkgray"
-            scrollEnabled={true}
-            transparentItemRows={1}
-          />
-        </View>
-        <View style={styles.viewScrollMinute}>
-          <DynamicallySelectedPicker
-            items={minuteInHour}
-            onScroll={({ index }) => setSelectedMinute(index)}
-            onMomentumScrollBegin={({ index }) => setSelectedMinute(index)}
-            onMomentumScrollEnd={({ index }) => setSelectedMinute(index)}
-            onScrollBeginDrag={({ index }) => setSelectedMinute(index)}
-            onScrollEndDrag={({ index }) => setSelectedMinute(index)}
-            initialSelectedIndex={minuteInHour[0]}
-            height={150}
-            width={100}
-            fontFamily="OpenSans_500Medium"
-            selectedItemBorderColor="darkgray"
-            scrollEnabled={true}
-            transparentItemRows={1}
-          />
-        </View> */}
+            <DynamicallySelectedPicker
+              items={hourInDay}
+              onScroll={({ index }) => setSelectedHour(index)}
+              onMomentumScrollBegin={({ index }) => setSelectedHour(index)}
+              onMomentumScrollEnd={({ index }) => setSelectedHour(index)}
+              onScrollBeginDrag={({ index }) => setSelectedHour(index)}
+              onScrollEndDrag={({ index }) => setSelectedHour(index)}
+              initialSelectedIndex={initialSelectedIndex}
+              height={150}
+              width={100}
+              fontFamily="OpenSans_500Medium"
+              selectedItemBorderColor="darkgray"
+              scrollEnabled={true}
+              transparentItemRows={1}
+            />
+          </View>
+          <View style={styles.viewScrollMinute}>
+            <DynamicallySelectedPicker
+              items={minuteInHour}
+              onScroll={({ index }) => setSelectedMinute(index)}
+              onMomentumScrollBegin={({ index }) => setSelectedMinute(index)}
+              onMomentumScrollEnd={({ index }) => setSelectedMinute(index)}
+              onScrollBeginDrag={({ index }) => setSelectedMinute(index)}
+              onScrollEndDrag={({ index }) => setSelectedMinute(index)}
+              initialSelectedIndex={minuteInHour[0]}
+              height={150}
+              width={100}
+              fontFamily="OpenSans_500Medium"
+              selectedItemBorderColor="darkgray"
+              scrollEnabled={true}
+              transparentItemRows={1}
+            />
+          </View> */}
       </View>
       <View style={styles.selectedItemWrapper}>
         <Text>Selected item index {selectedHour}</Text>
@@ -253,5 +237,3 @@ LocaleConfig.locales["vi"] = {
   today: "Hôm nay"
 };
 LocaleConfig.defaultLocale = "vi";
-
-// export default ModalCalendarComponent;

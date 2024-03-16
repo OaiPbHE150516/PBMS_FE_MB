@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "pbms-fe-mb",
-    "slug": "pbms-fe-mb",
+    "name": "pbms_fe_mb",
+    "slug": "pbms_fe_mb",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,39 +15,17 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.oaipb.pbmsfemb",
-      "runtimeVersion": {
-        "policy": "appVersion"
-      }
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.oaipb.pbmsfemb",
-      "runtimeVersion": "1.0.0"
+      "package": "com.oaipb.pbms_fe_mb"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    },
-    "plugins": [
-      [
-        "@react-native-google-signin/google-signin",
-        {
-          "iosUrlScheme": "com.oaipb.pbmsfemb"
-        }
-      ],
-      "expo-font"
-    ],
-    "extra": {
-      "eas": {
-        "projectId": "70363a42-bf09-48c9-8953-90cb72bd4fbd"
-      }
-    },
-    "updates": {
-      "url": "https://u.expo.dev/70363a42-bf09-48c9-8953-90cb72bd4fbd"
     }
   }
 }

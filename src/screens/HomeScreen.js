@@ -10,9 +10,8 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { signin } from "../redux/authenSlice";
-import { getTotalBalance } from "../redux/walletSlice";
 
-import ProfileDashboard from "../components/profile/profileDashboard";
+import ProfileDashboard from "../components/profile/profilesDashboard";
 import WalletDashboard from "../components/wallet/walletDashboard";
 import TransactionDashboard from "../components/transaction/transactionDashboard";
 

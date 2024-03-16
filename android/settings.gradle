@@ -1,4 +1,4 @@
-rootProject.name = 'pbms-fe-mb'
+rootProject.name = 'pbms_fe_mb'
 
 dependencyResolutionManagement {
   versionCatalogs {

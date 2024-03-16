@@ -2,7 +2,6 @@ import * as React from "react";
 import { Text, View, Button, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import {
   SafeAreaView,
@@ -11,7 +10,6 @@ import {
 } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
 import store from "./src/store/store";
-import 'react-native-gesture-handler';
 
 import {
   useFonts,
@@ -41,38 +39,8 @@ import {
 } from "@expo-google-fonts/open-sans";
 
 import HomeScreen from "./src/screens/HomeScreen";
-import WelcomeScreen from "./src/screens/WelcomeScreen";
 import TransactionScreen from "./src/screens/transaction/TransactionScreen";
 import AddTransactionScreen from "./src/screens/transaction/AddTransactionScreen";
-
-function SettingsScreen({ navigation }) {
-  const insets = useSafeAreaInsets();
-
-  return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "space-between",
-        alignItems: "center",
-        paddingTop: insets.top,
-        paddingBottom: insets.bottom,
-        paddingLeft: insets.left,
-        paddingRight: insets.right
-      }}
-    >
-      <Text>Settings screen</Text>
-      <Button title="Go to Home" onPress={() => navigation.navigate("Home")} />
-    </View>
-  );
-}
-
-// function DetailsScreen() {
-//   return (
-//     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-//       <Text>Details!</Text>
-//     </View>
-//   );
-// }
 
 const Tab = createBottomTabNavigator();
 
@@ -177,8 +145,6 @@ export default function App() {
                 name="AddTransaction"
                 component={AddTransactionScreen}
               />
-              <Tab.Screen name="Welcome" component={WelcomeScreen} />
-              <Tab.Screen name="Settings" component={SettingsScreen} />
               {/* <Tab.Screen name="TestScreen" component={TestScreen} /> */}
             </Tab.Navigator>
           </NavigationContainer>
@@ -187,22 +153,9 @@ export default function App() {
     </SafeAreaProvider>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1
-    // height: "100%",
-  },
-  addButton: {
-    position: "absolute",
-    zIndex: 11,
-    right: 20,
-    bottom: 90,
-    backgroundColor: "tomato",
-    width: 90,
-    height: 90,
-    borderRadius: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    elevation: 8
   }
 });

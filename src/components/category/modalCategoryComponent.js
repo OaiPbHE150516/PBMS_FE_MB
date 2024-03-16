@@ -3,18 +3,7 @@ import {
   View,
   Text,
   StyleSheet,
-  Button,
-  Alert,
-  FlatList,
   Dimensions,
-  TextInput,
-  Platform,
-  ImageBackground,
-  TouchableOpacity,
-  Modal,
-  Pressable,
-  TouchableWithoutFeedback,
-  PanResponder
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";

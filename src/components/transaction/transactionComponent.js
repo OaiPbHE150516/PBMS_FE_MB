@@ -1,30 +1,57 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Button, Alert, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Button,
+  Alert,
+  FlatList,
+  RefreshControl
+} from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import pbms from "../../api/pbms";
 import { API } from "../../constants/api.constant";
 import TransactionByDayList from "./transactionByDayList";
+import { setTransCompIsLoading } from "../../redux/transactionSlice";
 
-const TransactionComponent = () => {
+const TransactionComponent = ({route}) => {
+  // const data = route.params;
+  console.log("time: ", route);
   const account = useSelector((state) => state.authen.account);
   const datenow = useSelector((state) => state.datedisplay.datenow);
+  const isTransCompLoading = useSelector(
+    (state) => state.transaction.transCompIsLoading
+  );
+
+  const [refreshing, setRefreshing] = useState(false);
 
   const [transactions, setTransactions] = useState([]);
 
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
 
   const fetchTransactionData = async ({ accountID, time }) => {
     try {
       const apiurl =
         API.TRANSACTION.GET_TRANSACTION_BY_WEEK + accountID + "/" + time;
-      console.log("apiurl: ", apiurl);
+      // console.log("apiurl: ", apiurl);
       const response = await pbms.get(apiurl);
-      setTransactions(response.data);
-      setIsLoading(false);
+      setTimeout(() => {
+        setTransactions(response.data);
+        dispatch(setTransCompIsLoading(false));
+      }, 500);
+      // setIsLoading(false);
       // console.log("Response: ", response.data);
     } catch (error) {
       console.error("Error fetching transaction data:", error);
     }
+  };
+
+  const onRefresh = () => {
+    // setRefreshing(true);
+    // fetchTransactionData({ accountID: account.accountID, time: datenow });
+    // setTimeout(() => {
+    //   setRefreshing(false);
+    // }, 500);
   };
 
   const dispatch = useDispatch();
@@ -35,8 +62,8 @@ const TransactionComponent = () => {
       datenow !== undefined &&
       datenow !== ""
     ) {
-      setIsLoading(true);
-      console.log("Call APIIIII: ", isLoading, " - ", datenow);
+      dispatch(setTransCompIsLoading(true));
+      console.log("Call APIIIII: ", isTransCompLoading, " - ", datenow);
       fetchTransactionData({
         accountID: account.accountID,
         time: datenow
@@ -44,26 +71,26 @@ const TransactionComponent = () => {
     }
   }, [account, datenow]);
 
-  return isLoading ? (
+  return (isTransCompLoading) ? (
     <Text>Loading...</Text>
   ) : (
     <>
       <View style={styles.parentView}>
         <Text style={styles.textHeader}>
-          Các giao dịch từ {transactions.weekDetail.startDateStrFull} đến{" "}
-          {transactions.weekDetail.endDateStrFull}
+          Các giao dịch từ {transactions?.weekDetail?.startDateStrFull} đến{" "}
+          {transactions?.weekDetail?.endDateStrFull}
         </Text>
         <View style={{ marginTop: 10 }}>
           <View style={styles.viewMoney}>
             <Text style={styles.textLabelMoney}>Tổng thu</Text>
             <Text style={[styles.textDataMoney, { color: "green" }]}>
-              {transactions.totalAmountInStr}
+              {transactions?.totalAmountInStr}
             </Text>
           </View>
           <View style={styles.viewMoney}>
             <Text style={styles.textLabelMoney}>Tổng chi</Text>
             <Text style={[styles.textDataMoney, { color: "tomato" }]}>
-              -{transactions.totalAmountOutStr}
+              -{transactions?.totalAmountOutStr}
             </Text>
           </View>
           <View style={styles.viewMoney}>
@@ -72,12 +99,12 @@ const TransactionComponent = () => {
               <Text
                 style={[
                   styles.textDataMoney,
-                  transactions.totalAmount > 0
+                  transactions?.totalAmount > 0
                     ? { color: "green" }
                     : { color: "tomato" }
                 ]}
               >
-                {transactions.totalAmountStr}
+                {transactions?.totalAmountStr}
               </Text>
             </View>
           </View>
@@ -87,8 +114,12 @@ const TransactionComponent = () => {
             scrollEnabled={true}
             showsVerticalScrollIndicator={true}
             focusable={true}
-            data={transactions.transactionByDayW}
+            data={transactions?.transactionByDayW}
             keyExtractor={(item) => item.dayDetail.dayStr}
+            // refreshControl={true}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
             renderItem={({ item }) => {
               return (
                 <View style={styles.listStyle}>
@@ -113,7 +144,7 @@ const TransactionComponent = () => {
                     </View>
                   </View>
                   <View>
-                    <TransactionByDayList props={item.transactions} />
+                    <TransactionByDayList props={item?.transactions} />
                   </View>
                 </View>
               );

@@ -27,7 +27,9 @@ import ModalCategoryComponent from "../../components/category/modalCategoryCompo
 
 import { setModalAddTransactionVisible } from "../../redux/modalSlice";
 import { ModalCalendarComponent } from "../../components/calendar/mocalCalendarComponent";
-import { setAddTransactionTime } from "../../redux/transactionSlice";
+import ModalWalletComponent from "../../components/wallet/modalWalletComponent";
+import { addTransactionNoInvoice } from "../../redux/transactionSlice";
+import { getTotalBalance } from "../../redux/walletSlice";
 
 const AddTransactionScreen = () => {
   const [mCategoryVisible, setMCategoryVisible] = useState(false);
@@ -38,6 +40,8 @@ const AddTransactionScreen = () => {
   const [mWalletVisible, setMWalletVisible] = useState(false);
   const [isPulledDown, setIsPulledDown] = useState(false);
   const [isShowDetail, setIsShowDetail] = useState(false);
+  const [transAmount, setTransAmount] = useState("");
+
   const modalAddTransactionVisible = useSelector(
     (state) => state.modal.modalAddTransactionVisible
   );
@@ -49,9 +53,11 @@ const AddTransactionScreen = () => {
   const addTransactionTime = useSelector(
     (state) => state.transaction.addTransactionTime
   );
+  const addTransactionWallet = useSelector(
+    (state) => state.transaction.addTransactionWallet
+  );
 
   const dispatch = useDispatch();
-  // use effect to fetch categories
   useEffect(() => {
     // dispatch(getCategories(account?.accountID));
     // dispatch(setModalAddTransactionVisible(false));
@@ -69,6 +75,52 @@ const AddTransactionScreen = () => {
     dispatch(setModalAddTransactionVisible(false));
   };
 
+  function handleAddTransaction() {
+    console.log("handleAddTransaction");
+    // log transAmount, categoryToAddTransaction, addTransactionTime, addTransactionWallet
+    let amount = transAmount.replace(/\./g, "");
+    if (amount === "") {
+      Alert.alert("Số tiền không được để trống");
+      return;
+    }
+    let time = "";
+    if (addTransactionTime === null) {
+      time = datetimeLibrary.getCurrentTime().datetimedata;
+    } else {
+      time = addTransactionTime.datetime;
+    }
+    if (categoryToAddTransaction === null) {
+      Alert.alert("Hạng mục không được để trống");
+      return;
+    }
+    if (addTransactionWallet === null) {
+      Alert.alert("Ví không được để trống");
+      return;
+    }
+
+    const data = {
+      accountID: account.accountID,
+      walletID: addTransactionWallet.walletID,
+      categoryID: categoryToAddTransaction.categoryID,
+      totalAmount: amount,
+      transactionDate: time,
+      note: "",
+      fromPerson: "string",
+      toPerson: "string",
+      imageURL: "string",
+    };
+    console.log("data: ", data);
+    dispatch(addTransactionNoInvoice(data));
+    Alert.alert("Thêm giao dịch thành công");
+  }
+
+  function handleAmountChange(text) {
+    const formattedNumber = text
+      .replace(/\./g, "")
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    setTransAmount(formattedNumber);
+  }
+
   return (
     <View style={styles.viewStyle}>
       <View style={styles.viewTopHeader}>
@@ -82,6 +134,11 @@ const AddTransactionScreen = () => {
           <TextInput
             keyboardType={Platform.OS === "ios" ? "numeric" : "number-pad"}
             style={styles.textInputAmount}
+            value={transAmount}
+            onChangeText={(text) => handleAmountChange(text)}
+            onFocus={() => {
+              setTransAmount(transAmount);
+            }}
           />
         </View>
       </View>
@@ -95,6 +152,7 @@ const AddTransactionScreen = () => {
             onPress={() => {
               setMCategoryVisible(true);
               setMCalendarVisible(false);
+              setMWalletVisible(false);
               dispatch(setModalAddTransactionVisible(true));
             }}
           >
@@ -120,6 +178,7 @@ const AddTransactionScreen = () => {
             onPress={() => {
               setMCategoryVisible(false);
               setMCalendarVisible(true);
+              setMWalletVisible(false);
               dispatch(setModalAddTransactionVisible(true));
             }}
           >
@@ -148,9 +207,16 @@ const AddTransactionScreen = () => {
         <View style={styles.viewSelectCategory}>
           <Pressable
             style={[styles.pressSelectCategory]}
-            onPress={() => setMWalletVisible(true)}
+            onPress={() => {
+              setMWalletVisible(true);
+              setMCategoryVisible(false);
+              setMCalendarVisible(false);
+              dispatch(setModalAddTransactionVisible(true));
+            }}
           >
-            <Text style={styles.textSelectCategory}>Chọn ví</Text>
+            <Text style={styles.textSelectCategory}>
+              {addTransactionWallet?.name || "Chọn ví"}
+            </Text>
           </Pressable>
           <Icon
             name="angle-right"
@@ -216,15 +282,39 @@ const AddTransactionScreen = () => {
                 </View>
               </View>
             )}
+            {mWalletVisible && (
+              <View style={styles.viewInsideModal}>
+                <View style={styles.viewWalletInModal}>
+                  <ModalWalletComponent
+                    onDataFromChild={handleDataFromCalendar}
+                  />
+                </View>
+              </View>
+            )}
           </View>
         </Modal>
       </View>
       {/* End Modal Compnent Here */}
+      <View style={styles.viewAddTransaction}>
+        <Pressable
+          style={styles.buttonCloseModal}
+          onPress={() => {
+            handleAddTransaction();
+          }}
+          // disabled={true}
+        >
+          <Text style={styles.textButtonCloseModal}>{"Lưu"}</Text>
+        </Pressable>
+      </View>
     </View>
   );
 };
 // paste to view  {...panResponder.panHandlers}
 const styles = StyleSheet.create({
+  viewWalletInModal: {
+    width: "95%",
+    height: "50%"
+  },
   viewCategoryInModal: {
     // borderWidth: 1,
     // borderColor: "gray",
@@ -326,21 +416,30 @@ const styles = StyleSheet.create({
     // borderColor: "red",
     // borderWidth: 5
   },
+  viewAddTransaction: {
+    alignSelf: "center",
+    position: "relative",
+    // justifyContent: "flex-end",
+    // alignContent: "flex-end",
+    // alignItems: "flex-end",
+    // flexDirection: "column",
+    bottom: -Dimensions.get("window").height * 0.38,
+    width: "100%"
+  },
   buttonCloseModal: {
-    borderRadius: 20,
+    borderRadius: 10,
     padding: 10,
     elevation: 2,
-    backgroundColor: "darkgray",
-    padding: 10,
+    backgroundColor: "lightgray",
+    borderColor: "darkgray",
+    borderWidth: 1,
     alignSelf: "center",
-    bottom: 50,
-    position: "absolute",
-    flexDirection: "column",
-    alignContent: "center",
-    justifyContent: "center",
+    // flexDirection: "column",
+    // alignContent: "center",
+    // justifyContent: "center",
     alignItems: "center",
-    width: "50%",
-    height: "5%"
+    width: "75%"
+    // height: "50%"
   },
   textButtonCloseModal: {
     fontFamily: "Inconsolata_500Medium",

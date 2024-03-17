@@ -22,9 +22,6 @@ const CategoryItem = ({ category, depth = 0 }) => {
   const categoryToAddTransaction = useSelector(
     (state) => state.category.categoryToAddTransaction
   );
-  const modalCategoryVisible = useSelector(
-    (state) => state.category.modalCategoryVisible
-  );
   const dispatch = useDispatch();
   const handleTouchCateItem = (category) => {
     return () => {

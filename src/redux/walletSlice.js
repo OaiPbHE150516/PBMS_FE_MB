@@ -1,10 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import walletServices from "../services/walletServices";
 
-export const getWallet = createAsyncThunk("getWallet", async (accountid) => {
-  const response = await walletServices.getWallet(accountid);
-  return response;
-});
+export const getAllWallet = createAsyncThunk(
+  "getAllWallet",
+  async (accountid) => {
+    const response = await walletServices.getAllWallet(accountid);
+    return response;
+  }
+);
 
 export const getTotalBalance = createAsyncThunk(
   "getTotalBalance",
@@ -27,7 +30,7 @@ export const getTotalBalanceEachWallet = createAsyncThunk(
 const walletSlice = createSlice({
   name: "wallet",
   initialState: {
-    wallet: null,
+    wallets: null,
     totalBalance: null,
     totalBalanceEachWallet: null
   },
@@ -35,14 +38,14 @@ const walletSlice = createSlice({
   extraReducers: (builder) => {
     builder
       // get wallet
-      .addCase(getWallet.fulfilled, (state, action) => {
-        state.wallet = action.payload;
+      .addCase(getAllWallet.fulfilled, (state, action) => {
+        state.wallets = action.payload;
       })
-      .addCase(getWallet.rejected, (state, action) => {
-        state.wallet = null;
+      .addCase(getAllWallet.rejected, (state, action) => {
+        state.wallets = null;
       })
-      .addCase(getWallet.pending, (state, action) => {
-        state.wallet = null;
+      .addCase(getAllWallet.pending, (state, action) => {
+        state.wallets = null;
       })
       // total balance
       .addCase(getTotalBalance.fulfilled, (state, action) => {
@@ -58,7 +61,7 @@ const walletSlice = createSlice({
       .addCase(getTotalBalanceEachWallet.rejected, (state, action) => {
         console.log("getTotalBalanceEachWallet.rejected");
         state.totalBalanceEachWallet = null;
-      })
+      });
   }
 });
 

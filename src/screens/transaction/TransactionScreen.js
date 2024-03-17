@@ -17,6 +17,10 @@ import datetimeLibrary from "../../library/datetimeLibrary";
 import { setDatenow } from "../../redux/datedisplaySlice";
 import { VAR } from "../../constants/var.constant";
 
+import { getTotalBalance } from "../../redux/walletSlice";
+import { setTransCompIsLoading } from "../../redux/transactionSlice";
+import TransCompTest from "../../components/transaction/transCompTest";
+
 // function pushDataForCompoents() {
 //   for (let i = 2; i < 20; i++) {
 //     dataForCompoents.push({
@@ -27,6 +31,10 @@ import { VAR } from "../../constants/var.constant";
 //   }
 // }
 
+export const TranCompTest = (route) => {
+  return <TransCompTest initialParams={{ time: route.params.time }} />;
+};
+
 const TransactionScreen = () => {
   const account = useSelector((state) => state.authen.account);
   const totalBalance = useSelector((state) => state.wallet.totalBalance);
@@ -35,41 +43,46 @@ const TransactionScreen = () => {
   const Tab = createMaterialTopTabNavigator();
 
   const dispatch = useDispatch();
-  const fetchData = () => {
-    dispatch(setDatenow(datetimeLibrary.getTimeThisWeek()[2].toString()));
-  };
 
   const dataForCompoents = [
     {
       name: VAR.THIS_WEEK_VI,
-      component: TransactionComponent,
-      time: datetimeLibrary.getTimeWeekBefore(0)[2]
+      time: datetimeLibrary.getTimeWeekBefore(1)[2]
     },
     {
       name: VAR.LAST_WEEK_VI,
-      component: TransactionComponent,
-      time: datetimeLibrary.getTimeWeekBefore(1)[2]
+      time: datetimeLibrary.getTimeWeekBefore(2)[2]
     }
   ];
 
-  for (let i = 2; i < 20; i++) {
+  for (let i = 3; i < 20; i++) {
     dataForCompoents.push({
       name: datetimeLibrary.getTimeWeekBefore(i)[3],
-      component: TransactionComponent,
       time: datetimeLibrary.getTimeWeekBefore(i)[2]
     });
   }
 
+  const fetchData = () => {
+    dispatch(setDatenow(datetimeLibrary.getTimeThisWeek()[2].toString()));
+  };
+
   useEffect(() => {
     if (account !== null) {
       fetchData();
+      // dispatch(getTotalBalance(account.accountID));
     }
   }, [account]);
 
-  const handleTabPress = (a) => {
-    console.log("Tab pressed:", a);
-    dispatch(setDatenow(a));
-  };
+  // const handleTabPress = (a) => {
+  //   console.log("Tab pressed:", a);
+  //   dispatch(setDatenow(a));
+  //   dispatch(getTotalBalance(account.accountID));
+  // };
+
+  // const handleTabBlur = (a) => {
+  //   console.log("Tab blur:", a);
+  //   dispatch(setTransCompIsLoading(true));
+  // };
 
   return (
     <View style={styles.parentView}>
@@ -115,20 +128,20 @@ const TransactionScreen = () => {
               navigationKey={item.name}
               key={index}
               name={item.name}
-              component={item.component}
+              component={TransCompTest}
+              initialParams={{ time: item.time }}
               options={{
                 tabBarLabel: item.name
-
-                // lazyPlaceholder: "Loading...",
-                // swipeEnabled: true
               }}
               listeners={{
                 focus: (e) => {
-                  console.log("focus", e.target);
-                  handleTabPress(item.time);
+                  // handleTabPress(item.time);
                 },
                 tabLongPress: (e) => {
                   console.log("long press: ", e.target);
+                },
+                blur: (e) => {
+                  // handleTabBlur(e);
                 }
               }}
             />
@@ -150,8 +163,10 @@ const styles = StyleSheet.create({
   viewL: {
     // minHeight: Dimensions.get("window").height - 200,
     // minHeight: "95%",
-    margin: 10,
-    flex: 1
+    marginHorizontal: 5,
+    // marginBottom: 85,
+    // flex: 1,
+    // backgroundColor: "red"
   },
   viewTotalBalance: {
     margin: 10,

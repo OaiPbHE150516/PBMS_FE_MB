@@ -6,16 +6,16 @@ const headers = {
 };
 
 const walletServices = {
-  //   getWallet: async (accountid) => {
-  //     try {
-  //       const response = await axios.get(API.WALLET.GET_WALLET + accountid, {
-  //         headers
-  //       });
-  //       return response.data;
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //     }
-  //   },
+  getAllWallet: async (accountid) => {
+    try {
+      const response = await axios.get(API.WALLET.GET_ALL_WALLET + accountid, {
+        headers
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  },
 
   getTotalBalance: async (accountid) => {
     try {

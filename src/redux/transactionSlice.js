@@ -29,6 +29,29 @@ export const setAddTransactionTime = createAsyncThunk(
   }
 );
 
+export const setAddTransactionWallet = createAsyncThunk(
+  "setAddTransactionWallet",
+  async (data) => {
+    return data;
+  }
+);
+
+export const addTransactionNoInvoice = createAsyncThunk(
+  "addTransactionNoInvoice",
+  async (data) => {
+    console.log("addTransactionNoInvoice: ", data);
+    const response = await transactionServices.addTransactionNoInvoice(data);
+    return response;
+  }
+);
+
+export const setTransCompIsLoading = createAsyncThunk(
+  "setTransCompIsLoading",
+  async (data) => {
+    return data;
+  }
+);
+
 // export const addToListTransaction = createAsyncThunk(
 //   "addToListTransaction",
 //   async (data) => {
@@ -43,7 +66,9 @@ const transactionSlice = createSlice({
     transactionWeekByDayOnDisplay: null,
     transactionWeekByDay: null,
     listTransaction: [{ week: null, data: null }],
-    addTransactionTime: null
+    addTransactionTime: null,
+    addTransactionWallet: null,
+    transCompIsLoading: false
   },
   reducers: {
     // fetchTransactionData: (state, action) => {
@@ -67,6 +92,7 @@ const transactionSlice = createSlice({
       .addCase(getTransactionWeekByDay.pending, (state, action) => {
         state.transactionWeekByDay = null;
       })
+      // Set Transaction Week By Day On Display
       .addCase(setTransactionWeekByDayOnDisplay.fulfilled, (state, action) => {
         state.transactionWeekByDayOnDisplay = action.payload;
       })
@@ -77,12 +103,36 @@ const transactionSlice = createSlice({
       .addCase(setTransactionWeekByDayOnDisplay.pending, (state, action) => {
         state.transactionWeekByDayOnDisplay = null;
       })
+      // Set Add Transaction Time
       .addCase(setAddTransactionTime.fulfilled, (state, action) => {
         state.addTransactionTime = action.payload;
       })
       .addCase(setAddTransactionTime.rejected, (state, action) => {
         state.addTransactionTime = null;
         console.error("setAddTransactionTime.rejected");
+      })
+      // Set Add Transaction Wallet
+      .addCase(setAddTransactionWallet.fulfilled, (state, action) => {
+        state.addTransactionWallet = action.payload;
+      })
+      .addCase(setAddTransactionWallet.rejected, (state, action) => {
+        state.addTransactionWallet = null;
+        console.error("setAddTransactionWallet.rejected");
+      })
+      // Add Transaction No Invoice
+      .addCase(addTransactionNoInvoice.fulfilled, (state, action) => {
+        console.log("addTransactionNoInvoice.fulfilled: ", action.payload);
+      })
+      .addCase(addTransactionNoInvoice.rejected, (state, action) => {
+        console.error("addTransactionNoInvoice.rejected");
+      })
+      // Set Transaction Component Is Loading
+      .addCase(setTransCompIsLoading.fulfilled, (state, action) => {
+        state.transCompIsLoading = action.payload;
+      })
+      .addCase(setTransCompIsLoading.rejected, (state, action) => {
+        state.transCompIsLoading = false;
+        console.error("setTransCompIsLoading.rejected");
       });
   }
 });

@@ -35,10 +35,10 @@ const HomeScreen = () => {
       name: "Transaction",
       component: <TransactionDashboard style={styles.transaction} />
     },
-    {
-      name: "Transaction2",
-      component: <TransactionDashboard style={styles.transaction} />
-    }
+    // {
+    //   name: "Transaction2",
+    //   component: <TransactionDashboard style={styles.transaction} />
+    // }
   ];
 
   return (

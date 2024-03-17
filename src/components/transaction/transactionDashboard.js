@@ -18,7 +18,7 @@ const TransactionDashboard = () => {
   const fetchData = async (accountID) => {
     try {
       const transactions = await pbms.get(
-        API.TRANSACTION.GET_RECENTLY_TRANSACTION + accountID + "/10"
+        API.TRANSACTION.GET_RECENTLY_TRANSACTION + accountID + "/30"
       );
       setTransactions(transactions.data);
     } catch (error) {

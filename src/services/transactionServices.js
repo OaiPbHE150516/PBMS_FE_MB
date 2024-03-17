@@ -16,7 +16,17 @@ const transactionServices = {
       console.error("Error fetching data:", error);
     }
   },
-  
+
+  addTransactionNoInvoice: async (data) => {
+    try {
+      const response = await axios.post(API.TRANSACTION.ADD_TRANSACTION_NO_INVOICE, data, {
+        headers
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
 };
 
 export default transactionServices;

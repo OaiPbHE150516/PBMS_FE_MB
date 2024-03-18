@@ -14,7 +14,8 @@ import {
   Modal,
   Pressable,
   TouchableWithoutFeedback,
-  PanResponder
+  PanResponder,
+  ScrollView
 } from "react-native";
 
 import { useSelector, useDispatch } from "react-redux";
@@ -28,14 +29,13 @@ import { ModalCalendarComponent } from "../../components/calendar/mocalCalendarC
 import ModalWalletComponent from "../../components/wallet/modalWalletComponent";
 import { addTransactionNoInvoice } from "../../redux/transactionSlice";
 import { getTotalBalance } from "../../redux/walletSlice";
+import ModalTakeCamera from "../../components/transaction/modalTakeCamera";
 
 const AddTransactionScreen = () => {
   const [mCategoryVisible, setMCategoryVisible] = useState(false);
-  // same with mTimeVisible, mWalletVisible
-  // const [modalVisible, setModalVisible] = useState(false);
-
   const [mCalendarVisible, setMCalendarVisible] = useState(false);
   const [mWalletVisible, setMWalletVisible] = useState(false);
+  const [mTakeCamera, setMTakeCamera] = useState(false);
   const [isPulledDown, setIsPulledDown] = useState(false);
   const [isShowDetail, setIsShowDetail] = useState(false);
   const [transAmount, setTransAmount] = useState("");
@@ -60,6 +60,7 @@ const AddTransactionScreen = () => {
     // dispatch(getCategories(account?.accountID));
     // dispatch(setModalAddTransactionVisible(false));
     console.log("useEffect: AddTransactionScreen");
+
   }, [account, dispatch]);
 
   const handleDataFromCalendar = (data) => {
@@ -70,6 +71,16 @@ const AddTransactionScreen = () => {
 
   const handleDataFromCategory = (data) => {
     setMCategoryVisible(data.isCategoryVisible);
+    dispatch(setModalAddTransactionVisible(false));
+  };
+
+  const handleDataFromWallet = (data) => {
+    setMWalletVisible(data.isWalletVisible);
+    dispatch(setModalAddTransactionVisible(false));
+  };
+
+  const handleDataFromTakeCamera = (data) => {
+    setMTakeCamera(data.isCameraVisible);
     dispatch(setModalAddTransactionVisible(false));
   };
 
@@ -105,7 +116,7 @@ const AddTransactionScreen = () => {
       note: "",
       fromPerson: "string",
       toPerson: "string",
-      imageURL: "string",
+      imageURL: "string"
     };
     console.log("data: ", data);
     dispatch(addTransactionNoInvoice(data));
@@ -124,175 +135,158 @@ const AddTransactionScreen = () => {
       <View style={styles.viewTopHeader}>
         <Text style={styles.textTopHeader}>Thêm giao dịch mới</Text>
       </View>
-      <View style={styles.viewAmount}>
-        <View style={styles.viewAmountIcon}>
-          <Icon name="money-bills" size={30} color="darkgrey" />
-        </View>
-        <View style={styles.viewInputAmount}>
-          <TextInput
-            keyboardType={Platform.OS === "ios" ? "numeric" : "number-pad"}
-            style={styles.textInputAmount}
-            value={transAmount}
-            onChangeText={(text) => handleAmountChange(text)}
-            onFocus={() => {
-              setTransAmount(transAmount);
-            }}
-          />
-        </View>
+      <View style={styles.viewScrollViewParent}>
+        <ScrollView style={styles.scrollView}>
+          {/* TextInput Amount */}
+          <View style={styles.viewAmount}>
+            <View style={styles.viewAmountIcon}>
+              <Icon name="money-bills" size={30} color="darkgrey" />
+            </View>
+            <View style={styles.viewInputAmount}>
+              <TextInput
+                keyboardType={Platform.OS === "ios" ? "numeric" : "number-pad"}
+                style={styles.textInputAmount}
+                value={transAmount}
+                onChangeText={(text) => handleAmountChange(text)}
+                onFocus={() => {
+                  setTransAmount(transAmount);
+                }}
+              />
+            </View>
+          </View>
+          {/* Select Category */}
+          <View style={styles.viewAmount}>
+            <View style={styles.viewAmountIcon}>
+              <Icon name="layer-group" size={30} color="darkgrey" />
+            </View>
+            <View style={styles.viewSelectCategory}>
+              <Pressable
+                style={[styles.pressSelectCategory]}
+                onPress={() => {
+                  setMCategoryVisible(true);
+                  setMCalendarVisible(false);
+                  setMWalletVisible(false);
+                  dispatch(setModalAddTransactionVisible(true));
+                }}
+              >
+                <Text style={styles.textSelectCategory}>
+                  {categoryToAddTransaction?.nameVN || "Chọn hạng mục"}
+                </Text>
+              </Pressable>
+              <Icon
+                name="angle-right"
+                size={20}
+                color="darkgrey"
+                style={{ left: -20, top: 5 }}
+              />
+            </View>
+          </View>
+          {/* Select Time */}
+          <View style={styles.viewAmount}>
+            <View style={styles.viewAmountIcon}>
+              <Icon name="calendar" size={30} color="darkgrey" />
+            </View>
+            <View style={styles.viewSelectCategory}>
+              <Pressable
+                style={[styles.pressSelectCategory]}
+                onPress={() => {
+                  setMCategoryVisible(false);
+                  setMCalendarVisible(true);
+                  setMWalletVisible(false);
+                  dispatch(setModalAddTransactionVisible(true));
+                }}
+              >
+                <Text style={styles.textSelectCategory}>
+                  {addTransactionTime
+                    ? addTransactionTime.hour +
+                      ":" +
+                      addTransactionTime.minute +
+                      ", " +
+                      addTransactionTime.date
+                    : datetimeLibrary.getCurrentTime().datetimestr}
+                </Text>
+              </Pressable>
+              <Icon
+                name="angle-right"
+                size={20}
+                color="darkgrey"
+                style={{ left: -20, top: 5 }}
+              />
+            </View>
+          </View>
+          {/* Select Wallet */}
+          <View style={styles.viewAmount}>
+            <View style={styles.viewAmountIcon}>
+              <Icon name="wallet" size={30} color="darkgrey" />
+            </View>
+            <View style={styles.viewSelectCategory}>
+              <Pressable
+                style={[styles.pressSelectCategory]}
+                onPress={() => {
+                  setMWalletVisible(true);
+                  setMCategoryVisible(false);
+                  setMCalendarVisible(false);
+                  dispatch(setModalAddTransactionVisible(true));
+                }}
+              >
+                <Text style={styles.textSelectCategory}>
+                  {addTransactionWallet?.name || "Chọn ví"}
+                </Text>
+              </Pressable>
+              <Icon
+                name="angle-right"
+                size={20}
+                color="darkgrey"
+                style={{ left: -20, top: 5 }}
+              />
+            </View>
+          </View>
+          {/* More Detail */}
+          <View style={styles.viewMoreDetail}>
+            <View
+              style={{
+                height: isShowDetail ? 50 : 0
+                // borderWidth: 2,
+                // borderColor: "darkgray"
+              }}
+            >
+              <Text>More Detail</Text>
+            </View>
+            <View style={styles.viewPressableMoreDetail}>
+              <Pressable
+                style={[styles.pressMoreDetail]}
+                onPress={() => {
+                  setIsShowDetail(isShowDetail ? false : true);
+                  // console.log("isShowDetail: ", isShowDetail);
+                }}
+              >
+                <Text style={styles.textMoreDetail}>Thêm chi tiết</Text>
+                <Icon name="caret-down" size={20} color="darkgrey" />
+              </Pressable>
+            </View>
+          </View>
+        </ScrollView>
       </View>
-      <View style={styles.viewAmount}>
-        <View style={styles.viewAmountIcon}>
-          <Icon name="layer-group" size={30} color="darkgrey" />
-        </View>
-        <View style={styles.viewSelectCategory}>
-          <Pressable
-            style={[styles.pressSelectCategory]}
-            onPress={() => {
-              setMCategoryVisible(true);
-              setMCalendarVisible(false);
-              setMWalletVisible(false);
-              dispatch(setModalAddTransactionVisible(true));
-            }}
-          >
-            <Text style={styles.textSelectCategory}>
-              {categoryToAddTransaction?.nameVN || "Chọn hạng mục"}
-            </Text>
-          </Pressable>
-          <Icon
-            name="angle-right"
-            size={20}
-            color="darkgrey"
-            style={{ left: -20, top: 5 }}
-          />
-        </View>
-      </View>
-      <View style={styles.viewAmount}>
-        <View style={styles.viewAmountIcon}>
-          <Icon name="calendar" size={30} color="darkgrey" />
-        </View>
-        <View style={styles.viewSelectCategory}>
-          <Pressable
-            style={[styles.pressSelectCategory]}
-            onPress={() => {
-              setMCategoryVisible(false);
-              setMCalendarVisible(true);
-              setMWalletVisible(false);
-              dispatch(setModalAddTransactionVisible(true));
-            }}
-          >
-            <Text style={styles.textSelectCategory}>
-              {addTransactionTime
-                ? addTransactionTime.hour +
-                  ":" +
-                  addTransactionTime.minute +
-                  ", " +
-                  addTransactionTime.date
-                : datetimeLibrary.getCurrentTime().datetimestr}
-            </Text>
-          </Pressable>
-          <Icon
-            name="angle-right"
-            size={20}
-            color="darkgrey"
-            style={{ left: -20, top: 5 }}
-          />
-        </View>
-      </View>
-      <View style={styles.viewAmount}>
-        <View style={styles.viewAmountIcon}>
-          <Icon name="wallet" size={30} color="darkgrey" />
-        </View>
-        <View style={styles.viewSelectCategory}>
-          <Pressable
-            style={[styles.pressSelectCategory]}
-            onPress={() => {
-              setMWalletVisible(true);
-              setMCategoryVisible(false);
-              setMCalendarVisible(false);
-              dispatch(setModalAddTransactionVisible(true));
-            }}
-          >
-            <Text style={styles.textSelectCategory}>
-              {addTransactionWallet?.name || "Chọn ví"}
-            </Text>
-          </Pressable>
-          <Icon
-            name="angle-right"
-            size={20}
-            color="darkgrey"
-            style={{ left: -20, top: 5 }}
-          />
-        </View>
-      </View>
-      <View
-        style={{
-          height: isShowDetail ? 50 : 0,
-          borderWidth: 2,
-          borderColor: "darkgray"
-        }}
-      >
-        <Text>AddTransactionScreen</Text>
-        <Text>AddTransactionScreen</Text>
-        <Text>AddTransactionScreen</Text>
-        <Text>AddTransactionScreen</Text>
-        <Text>AddTransactionScreen</Text>
-        <Text>AddTransactionScreen</Text>
-        <Text>AddTransactionScreen</Text>
-        <Text>AddTransactionScreen</Text>
-        <Text>AddTransactionScreen</Text>
-        <Text>AddTransactionScreen</Text>
-        <Text>AddTransactionScreen</Text>
-        <Text>AddTransactionScreen</Text>
-      </View>
-      <View>
-        <Button
-          title="Thêm chi tiết"
-          onPress={() => setIsShowDetail(isShowDetail ? false : true)}
-        />
-      </View>
-      {/* Modal Compnent Here */}
-      <View>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalAddTransactionVisible}
-          onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
+      {/* End  View ScrollView Parent*/}
+      <View style={styles.viewTakeCamera}>
+        <Pressable
+          style={styles.pressableTakeCamera}
+          onPressIn={() => {
+            console.log("onPressIn");
+          }}
+          onPressOut={() => {}}
+          onPress={() => {
+            setMTakeCamera(true);
+            setMCategoryVisible(false);
+            setMCalendarVisible(false);
+            setMWalletVisible(false);
+            dispatch(setModalAddTransactionVisible(true));
           }}
         >
-          <View style={styles.centeredView}>
-            {mCategoryVisible && (
-              <View style={styles.viewInsideModal}>
-                <View style={styles.viewCategoryInModal}>
-                  <ModalCategoryComponent
-                    onDataFromChild={handleDataFromCategory}
-                  />
-                </View>
-                {/* <ButtonHideModel /> */}
-              </View>
-            )}
-            {mCalendarVisible && (
-              <View style={styles.viewInsideModal}>
-                <View style={styles.viewCalendarInModal}>
-                  <ModalCalendarComponent
-                    onDataFromChild={handleDataFromCalendar}
-                  />
-                </View>
-              </View>
-            )}
-            {mWalletVisible && (
-              <View style={styles.viewInsideModal}>
-                <View style={styles.viewWalletInModal}>
-                  <ModalWalletComponent
-                    onDataFromChild={handleDataFromCalendar}
-                  />
-                </View>
-              </View>
-            )}
-          </View>
-        </Modal>
+          <Icon name="camera" size={30} color="black" />
+        </Pressable>
       </View>
-      {/* End Modal Compnent Here */}
+      {/* Button Save */}
       <View style={styles.viewAddTransaction}>
         <Pressable
           style={styles.buttonCloseModal}
@@ -301,14 +295,133 @@ const AddTransactionScreen = () => {
           }}
           // disabled={true}
         >
-          <Text style={styles.textButtonCloseModal}>{"Lưu"}</Text>
+          <Text style={styles.textButtonSave}>{"Lưu"}</Text>
         </Pressable>
+      </View>
+      <View style={styles.viewStyle}>
+        {/* Modal Compnent */}
+        <View>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalAddTransactionVisible}
+            onRequestClose={() => {
+              Alert.alert("Modal has been closed.");
+            }}
+          >
+            <View style={styles.centeredView}>
+              {mCategoryVisible && (
+                <View style={styles.viewInsideModal}>
+                  <View style={styles.viewCategoryInModal}>
+                    <ModalCategoryComponent
+                      onDataFromChild={handleDataFromCategory}
+                    />
+                  </View>
+                </View>
+              )}
+              {mCalendarVisible && (
+                <View style={styles.viewInsideModal}>
+                  <View style={styles.viewCalendarInModal}>
+                    <ModalCalendarComponent
+                      onDataFromChild={handleDataFromCalendar}
+                    />
+                  </View>
+                </View>
+              )}
+              {mWalletVisible && (
+                <View style={styles.viewInsideModal}>
+                  <View style={styles.viewWalletInModal}>
+                    <ModalWalletComponent
+                      onDataFromChild={handleDataFromWallet}
+                    />
+                  </View>
+                </View>
+              )}
+              {mTakeCamera && (
+                <View style={styles.viewInsideModal}>
+                  <ModalTakeCamera onDataFromChild={handleDataFromTakeCamera} />
+                </View>
+              )}
+            </View>
+          </Modal>
+        </View>
+        {/* End Modal Compnent */}
       </View>
     </View>
   );
 };
 // paste to view  {...panResponder.panHandlers}
 const styles = StyleSheet.create({
+  scrollView: {
+    width: "100%",
+    height: "100%"
+  },
+  viewTakeCamera: {
+    width: "100%",
+    height: "8%",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center"
+    // marginVertical: 10
+  },
+  pressableTakeCamera: {
+    width: 100,
+    height: 55,
+    borderRadius: 20,
+    // backgroundColor: "lightgray",
+    justifyContent: "center",
+    alignItems: "center",
+    borderColor: "darkgray",
+    borderWidth: 1,
+    // shadow
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 2,
+    elevation: 5
+  },
+  viewPressableMoreDetail: {
+    width: "98%"
+    // height: "50%"
+  },
+  textMoreDetail: {
+    fontSize: 22,
+    fontFamily: "Inconsolata_400Regular",
+    marginHorizontal: 10
+  },
+  pressMoreDetail: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center"
+    // marginVertical: 10,
+    // borderColor: "red",
+    // borderWidth: 1,
+    // marginHorizontal: 10
+  },
+  viewMoreDetail: {
+    flexDirection: "column",
+    // justifyContent: "space-between",
+    // alignItems: "center",
+    marginVertical: 5,
+    marginHorizontal: 5,
+    // borderColor: "green",
+    // borderWidth: 1,
+    // padding: 0,
+    height: Dimensions.get("screen").height * 0.3
+    // flex: 1,
+  },
+
+  viewScrollViewParent: {
+    flexDirection: "column",
+    // backgroundColor: "red",
+    height: "70%",
+    borderColor: "darkgray",
+    borderWidth: 1
+  },
   viewWalletInModal: {
     width: "95%",
     height: "50%"
@@ -355,7 +468,7 @@ const styles = StyleSheet.create({
     alignContent: "center",
     alignItems: "center",
     justifyContent: "center",
-    padding: 15
+    padding: 10
   },
   textTopHeader: {
     fontSize: 30,
@@ -366,21 +479,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginVertical: 10,
-    marginHorizontal: 5
+    marginVertical: 10
+    // marginHorizontal: 2
   },
   viewStyle: {
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
-    flexDirection: "column"
+    flexDirection: "column",
+    alignContent: "center",
+    width: "100%"
   },
   viewAmountIcon: {
     width: 50,
     height: 50,
     justifyContent: "center",
-    alignItems: "center",
-    marginHorizontal: 5
+    alignItems: "center"
+    // marginHorizontal: 2
     // borderRightWidth: 1,
     // borderRightColor: "darkgrey"
   },
@@ -415,14 +530,8 @@ const styles = StyleSheet.create({
     // borderWidth: 5
   },
   viewAddTransaction: {
-    alignSelf: "center",
-    position: "relative",
-    // justifyContent: "flex-end",
-    // alignContent: "flex-end",
-    // alignItems: "flex-end",
-    // flexDirection: "column",
-    bottom: -Dimensions.get("window").height * 0.38,
     width: "100%"
+    // marginVertical: 15
   },
   buttonCloseModal: {
     borderRadius: 10,
@@ -439,7 +548,7 @@ const styles = StyleSheet.create({
     width: "75%"
     // height: "50%"
   },
-  textButtonCloseModal: {
+  textButtonSave: {
     fontFamily: "Inconsolata_500Medium",
     fontSize: 20
   },

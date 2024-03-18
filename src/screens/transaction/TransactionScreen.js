@@ -47,15 +47,15 @@ const TransactionScreen = () => {
   const dataForCompoents = [
     {
       name: VAR.THIS_WEEK_VI,
-      time: datetimeLibrary.getTimeWeekBefore(1)[2]
+      time: datetimeLibrary.getTimeWeekBefore(0)[2]
     },
     {
       name: VAR.LAST_WEEK_VI,
-      time: datetimeLibrary.getTimeWeekBefore(2)[2]
+      time: datetimeLibrary.getTimeWeekBefore(1)[2]
     }
   ];
 
-  for (let i = 3; i < 20; i++) {
+  for (let i = 2; i < 20; i++) {
     dataForCompoents.push({
       name: datetimeLibrary.getTimeWeekBefore(i)[3],
       time: datetimeLibrary.getTimeWeekBefore(i)[2]

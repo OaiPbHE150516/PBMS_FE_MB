@@ -21,10 +21,8 @@ import { useSelector, useDispatch } from "react-redux";
 import Icon from "react-native-vector-icons/FontAwesome6";
 
 import datetimeLibrary from "../../library/datetimeLibrary";
-
 import { setModalCategoryVisible } from "../../redux/categorySlice";
 import ModalCategoryComponent from "../../components/category/modalCategoryComponent";
-
 import { setModalAddTransactionVisible } from "../../redux/modalSlice";
 import { ModalCalendarComponent } from "../../components/calendar/mocalCalendarComponent";
 import ModalWalletComponent from "../../components/wallet/modalWalletComponent";

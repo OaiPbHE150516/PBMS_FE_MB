@@ -42,6 +42,7 @@ import {
 import HomeScreen from "./src/screens/HomeScreen";
 import TransactionScreen from "./src/screens/transaction/TransactionScreen";
 import AddTransactionScreen from "./src/screens/transaction/AddTransactionScreen";
+import TestScreen from "./src/screens/TestScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -146,6 +147,7 @@ export default function App() {
                 name="AddTransaction"
                 component={AddTransactionScreen}
               />
+              <Tab.Screen name="Settings" component={TestScreen} />
               {/* <Tab.Screen name="TestScreen" component={TestScreen} /> */}
             </Tab.Navigator>
           </NavigationContainer>

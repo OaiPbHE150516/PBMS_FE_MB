@@ -11,9 +11,17 @@ import {
   Pressable
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome6";
-
+import { BlurView } from "expo-blur";
 import { Camera, CameraType } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
+
+const SmallPopup = () => {
+  return (
+    <View style={styles.viewSmallPopup}>
+      <Text>smallPopup</Text>
+    </View>
+  );
+};
 
 const TabCamera = ({}) => {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
@@ -44,16 +52,28 @@ const TabCamera = ({}) => {
     setFocus(Camera.Constants.AutoFocus.off);
     setTimeout(() => {
       setFocus(Camera.Constants.AutoFocus.on);
-      console.log("focus: ", focus);
     }, 50);
   };
 
-  const handlehandleFlashCamera = () => {
+  const handleFlashCamera = () => {
     setFlash(
-      flash === Camera.Constants.FlashMode.torch
+      flash === Camera.Constants.FlashMode.on
         ? Camera.Constants.FlashMode.off
-        : Camera.Constants.FlashMode.torch
+        : Camera.Constants.FlashMode.on
     );
+  };
+
+  const handleTorchCamera = () => {
+    if (flash === Camera.Constants.FlashMode.torch) {
+      setFlash(Camera.Constants.FlashMode.on);
+    } else {
+      setFlash(Camera.Constants.FlashMode.torch);
+    }
+    // setFlash(
+    //   type === Camera.Constants.FlashMode.torch
+    //     ? Camera.Constants.FlashMode.on
+    //     : Camera.Constants.FlashMode.torch
+    // );
   };
 
   const handleFlipCamera = () => {
@@ -62,6 +82,10 @@ const TabCamera = ({}) => {
         ? Camera.Constants.Type.front
         : Camera.Constants.Type.back
     );
+  };
+
+  const handleTakeShot = () => {
+    takePicture();
   };
 
   const takePicture = async () => {
@@ -102,32 +126,47 @@ const TabCamera = ({}) => {
             onPress={() => handleFocusCamera()}
             style={styles.pressableOverlayCam}
           ></Pressable>
-          <View style={styles.modalViewButton}>
+          {/* <SmallPopup /> */}
+          <BlurView intensity={3} style={styles.modalViewButton}>
             <Pressable
-              //   style={[styles.button, styles.buttonClose]}
-              onPress={() => handlehandleFlashCamera()}
+              style={styles.pressableOtherButton}
+              onPress={() => handleFlashCamera()}
             >
-              <Icon name="bolt" size={40} color="white" />
+              <Icon name="bolt" size={28} color={flash === Camera.Constants.FlashMode.on ? "white" : "gray"} />
+            </Pressable>
+            <Pressable
+              style={styles.pressableOtherButton}
+              onPress={() => handleTorchCamera()}
+            >
+              <Icon
+                name={
+                  flash === Camera.Constants.FlashMode.torch
+                    ? "wand-magic-sparkles"
+                    : "wand-magic"
+                }
+                size={28}
+                color="white"
+              />
             </Pressable>
             <Pressable
               style={styles.pressableTakeCamera}
-              onPress={() => handleContinue()}
+              onPress={() => handleTakeShot()}
             >
-              <Icon name="camera" size={40} color="white" />
+              <Icon name="circle" size={80} color="white" />
             </Pressable>
             <Pressable
-              //   style={}
+              style={styles.pressableOtherButton}
               onPress={() => handleFocusCamera()}
             >
-              <Icon name="locust" size={40} color="white" />
+              <Icon name="expand" size={28} color="white" />
             </Pressable>
             <Pressable
-              //   style={}
+              style={styles.pressableOtherButton}
               onPress={() => handleFlipCamera()}
             >
-              <Icon name="camera-rotate" size={40} color="white" />
+              <Icon name="camera-rotate" size={28} color="white" />
             </Pressable>
-          </View>
+          </BlurView>
         </Camera>
       </View>
     </View>
@@ -135,16 +174,24 @@ const TabCamera = ({}) => {
 };
 
 const styles = StyleSheet.create({
+  pressableOtherButton: {
+    width: 50,
+    height: 50,
+    alignContent: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    bottom: -10
+  },
   pressableOverlayCam: {
     flex: 1,
     width: "100%",
     height: "100%"
   },
   pressableTakeCamera: {
-    width: 100,
-    height: 55,
-    borderRadius: 20,
-    // backgroundColor: "lightgray",
+    // width: 100,
+    // height: 55,
+    borderRadius: 50,
+    backgroundColor: "lightgray",
     justifyContent: "center",
     alignItems: "center",
     borderColor: "darkgray",
@@ -158,6 +205,17 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 2,
     elevation: 5
+  },
+  viewSmallPopup: {
+    // flex: 1,
+    width: 200,
+    height: 50,
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
+    borderColor: "red",
+    borderWidth: 1,
+    bottom: Dimensions.get("window").height * 0.15
   },
   container: {
     flex: 1,
@@ -180,9 +238,10 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: Dimensions.get("window").height * 0.025,
     margin: 10,
-    borderWidth: 1,
-    borderColor: "darkgray",
+    // borderWidth: 1,
+    // borderColor: "darkgray",
     width: "100%"
+    // backgroundColor: "red"
   },
   button: {
     borderRadius: 20,

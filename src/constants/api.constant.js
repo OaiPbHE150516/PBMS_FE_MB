@@ -1,5 +1,5 @@
 const Base_URL = "https://pbms-be-api-vqj42lqqmq-as.a.run.app";
-// const Base_URL = "https://localhost:32768";
+// const Base_URL = "https://192.168.0.102:8081";
 
 export const API = {
   AUTHEN: {

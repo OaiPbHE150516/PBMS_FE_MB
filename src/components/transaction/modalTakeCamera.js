@@ -9,8 +9,10 @@ import {
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import TabCamera from "./tabCamera";
 import Icon from "react-native-vector-icons/FontAwesome6";
+
+import TabCamera from "./tabCamera";
+import TabMediaLibrary from "./tabMediaLibrary";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -79,8 +81,8 @@ const ModalTakeCamera = ({ onDataFromChild }) => {
           tabBarStyle: {
             alignSelf: "center",
             flexDirection: "row",
-            width: Dimensions.get("window").width * 0.9,
-            height: 50,
+            width: Dimensions.get("window").width * 0.99,
+            height: 40,
             justifyContent: "center",
             alignContent: "center"
           },
@@ -91,7 +93,6 @@ const ModalTakeCamera = ({ onDataFromChild }) => {
             alignSelf: "center",
             alignContent: "center",
             flexDirection: "row",
-            height: 50,
             width: Dimensions.get("window").width * 0.45
           },
           tabBarLabelStyle: {
@@ -105,7 +106,7 @@ const ModalTakeCamera = ({ onDataFromChild }) => {
       >
         {/* <Tab.Screen name="Camera" component={TabCamera} initialParams={onDataFromChild: handleDataFromTabCamera()}/> */}
         <Tab.Screen name="Camera" component={TabCamera} />
-        <Tab.Screen name="Thư viện" component={Tab2} />
+        <Tab.Screen name="Thư viện" component={TabMediaLibrary} />
       </Tab.Navigator>
     </View>
   );
@@ -119,18 +120,19 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     bottom: 2,
     width: "90%",
-    height: 30
+    // height: 30
     // borderColor: "tomato",
     // borderWidth: 1
   },
   pressableCLoseModal: {
     borderRadius: 5,
     backgroundColor: "lightgrey",
-    flex: 1,
+    // flex: 1,
     justifyContent: "center",
     flexDirection: "row",
     alignContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    height: 20,
   },
   viewTabCamera: {
     flex: 1,
@@ -145,7 +147,7 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "white",
     borderRadius: 20,
-    padding: 15,
+    // padding: 15,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {

@@ -15,6 +15,9 @@ import { BlurView } from "expo-blur";
 import { Camera, CameraType } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 
+import { useSelector, useDispatch } from "react-redux";
+import { setAssetsShowing } from "../../redux/mediaLibrarySlice";
+
 const SmallPopup = () => {
   return (
     <View style={styles.viewSmallPopup}>
@@ -84,8 +87,14 @@ const TabCamera = ({}) => {
     );
   };
 
-  const handleTakeShot = () => {
-    takePicture();
+  const dispatch = useDispatch();
+
+  const handleTakeShot = async () => {
+    // takePicture();
+    if (camera) {
+      const photo = await camera.takePictureAsync();
+      dispatch(setAssetsShowing({ asset: photo, isShowingAsset: "true" }));
+    }
   };
 
   const takePicture = async () => {
@@ -94,20 +103,12 @@ const TabCamera = ({}) => {
       const asset = await MediaLibrary.createAssetAsync(photo.uri);
       console.log("photo", photo);
       setImage(photo.uri);
-      // check that we have album name "Expo" or not, if not, create it, then save photo to it, if yes, save photo to it
       const album = await MediaLibrary.getAlbumAsync("Oai");
       if (album === null) {
         await MediaLibrary.createAlbumAsync("Oai", asset, false);
       } else {
         await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
       }
-      // MediaLibrary.createAlbumAsync("Expo", asset)
-      // .then(() => {
-      //   Alert.alert("Photo saved to album!");
-      // })
-      // .catch((error) => {
-      //   Alert.alert("An Error Occurred!", error);
-      // });
     }
   };
   return (
@@ -132,7 +133,13 @@ const TabCamera = ({}) => {
               style={styles.pressableOtherButton}
               onPress={() => handleFlashCamera()}
             >
-              <Icon name="bolt" size={28} color={flash === Camera.Constants.FlashMode.on ? "white" : "gray"} />
+              <Icon
+                name="bolt"
+                size={28}
+                color={
+                  flash === Camera.Constants.FlashMode.on ? "white" : "gray"
+                }
+              />
             </Pressable>
             <Pressable
               style={styles.pressableOtherButton}

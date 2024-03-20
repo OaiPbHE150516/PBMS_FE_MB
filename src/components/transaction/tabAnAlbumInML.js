@@ -20,7 +20,21 @@ const TabAnAlbumInML = ({ album, handleOnAlbumInML }) => {
   const [coverAssets, setCoverAssets] = useState(null);
   const [isModalAssetsInAlbumVisible, setIsModalAssetsInAlbumVisible] =
     useState(false);
-  const [isShowingAsset, setIsShowingAsset] = useState(false);
+
+  const AnAssetCover = ({ data }) => {
+    return (
+      <View>
+        <Pressable
+          onPress={() => {
+            console.log("data", data);
+            handleOnAlbumInML(data); // callback of parent TabMediaLibrary
+          }}
+        >
+          <Image source={{ uri: data?.uri }} style={styles.anImageStyle} />
+        </Pressable>
+      </View>
+    );
+  };
 
   const getCoverAssets = async () => {
     if (album) {
@@ -52,6 +66,7 @@ const TabAnAlbumInML = ({ album, handleOnAlbumInML }) => {
     }
   };
 
+  // handle pressable to show all assets in an album, when tap on an album header
   const onHandlePressableAnAlbum = () => {
     return () => {
       setIsModalAssetsInAlbumVisible(!isModalAssetsInAlbumVisible);
@@ -59,7 +74,6 @@ const TabAnAlbumInML = ({ album, handleOnAlbumInML }) => {
   };
 
   const onHandlePressableAnAssetToP = (item) => {
-    // console.log("onHandlePressableAnAssetToP", item);
     setIsModalAssetsInAlbumVisible(!isModalAssetsInAlbumVisible);
     handleOnAlbumInML(item); // callback of parent TabMediaLibrary
   };
@@ -82,12 +96,7 @@ const TabAnAlbumInML = ({ album, handleOnAlbumInML }) => {
         style={styles.flatListAnAlbumItem}
         data={coverAssets?.assets}
         keyExtractor={(item) => item?.id}
-        renderItem={({ item }) => (
-          <Image source={{ uri: item?.uri }} style={styles.anImageStyle} />
-        )}
-        // refreshControl={
-        //   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        // }
+        renderItem={({ item }) => <AnAssetCover data={item} />}
         horizontal={true}
       />
       {/* a modal to show all assets in an album */}
@@ -143,13 +152,13 @@ const styles = StyleSheet.create({
   },
   pressableAnAlbum: {
     flex: 1,
-    // borderColor: "darkgray",
-    // borderWidth: 1,
+    borderColor: "darkgray",
+    borderWidth: 1,
     width: "100%",
     height: "100%",
-    position: "absolute",
+    position: "absolute"
     // backgroundColor: "rgba(0, 0, 0, 0.5)",
-    zIndex: 99
+    // zIndex: 99
   },
   textTitle: {
     fontSize: 25,

@@ -5,64 +5,152 @@ import {
   StyleSheet,
   Dimensions,
   Pressable,
-  Button
+  Button,
+  Modal,
+  Image,
+  Platform
 } from "react-native";
+import { BlurView } from "expo-blur";
 import { useSelector, useDispatch } from "react-redux";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import Icon from "react-native-vector-icons/FontAwesome6";
+import * as MediaLibrary from "expo-media-library";
 
 import TabCamera from "./tabCamera";
 import TabMediaLibrary from "./tabMediaLibrary";
+import TabImagePicker from "../../components/medialibray/tabImagePicker";
+import { setAssetsShowing } from "../../redux/mediaLibrarySlice";
+import { VAR } from "../../constants/var.constant";
+import { upToScanInvoice } from "../../redux/fileSlice";
+import * as ImagePicker from 'expo-image-picker';
+
+
+import axios from "axios";
+import { API } from "../../constants/api.constant";
 
 const Tab = createMaterialTopTabNavigator();
 
+// const Tab3 = () => {
+//   const [image, setImage] = useState(null);
+
+//   const pickImage = async () => {
+//     // No permissions request is necessary for launching the image library
+//     let result = await ImagePicker.launchImageLibraryAsync({
+//       mediaTypes: ImagePicker.MediaTypeOptions.Images,
+//       quality: 1,
+//     });
+
+//     console.log(result);
+
+//     if (!result.canceled) {
+//       setImage(result.assets[0].uri);
+//     }
+//   };
+
+//   return (
+//     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+//       <Button title="Pick an image from camera roll" onPress={pickImage} />
+//       {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
+//     </View>
+//   );
+// };
+
 const ModalTakeCamera = ({ onDataFromChild }) => {
-  // function handleContinue() {
-  //   onDataFromChild({
-  //     isCameraVisible: false
-  //   });
-  // }
+  const assetsShowing = useSelector(
+    (state) => state.mediaLibrary?.assetsShowing ?? null
+  );
+
+  const invoiceScanning = useSelector((state) => state.file?.invoiceScanning);
 
   function handleCancel() {
     onDataFromChild({
       isCameraVisible: false
     });
   }
+  const dispatch = useDispatch();
 
-  // const handleDataFromTabCamera = (data) => {
-  //   console.log("handleDataFromTabCamera, data: ", data);
-  // };
+  async function handleSaveAssetToMediaLibrary({ asset }) {
+    console.log("saveAssetToMediaLibrary", asset);
 
-  // const Tab2 = () => {
-  //   return (
-  //     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-  //       <Text>Tab 2</Text>
-  //       <View style={styles.modalViewButton}>
-  //         <Pressable
-  //           style={[styles.button, styles.buttonClose]}
-  //           onPress={() => handleContinue()}
-  //         >
-  //           <Text style={styles.textStyle}>Chụp</Text>
-  //         </Pressable>
-  //         <Pressable
-  //           style={[styles.button, styles.buttonClose]}
-  //           onPress={() => handleCancel()}
-  //         >
-  //           <Text style={styles.textStyle}>Hủy</Text>
-  //         </Pressable>
-  //       </View>
-  //     </View>
-  //   );
-  // };
+    const album = await MediaLibrary.getAlbumAsync(
+      VAR.MEDIALIBRARY.DEFAULT_ALBUM_NAME
+    );
+    if (album === null) {
+      console.log("album is null");
+      const albumCreated = await MediaLibrary.createAlbumAsync(
+        VAR.MEDIALIBRARY.DEFAULT_ALBUM_NAME,
+        asset
+      );
+      console.log("albumCreated", albumCreated);
+    } else {
+      console.log("album is not null");
+      const assetSaved = await MediaLibrary.createAssetAsync(asset.uri);
+      console.log("assetSaved", assetSaved);
+      const assetAdded = await MediaLibrary.addAssetsToAlbumAsync(
+        [assetSaved],
+        album,
+        false
+      );
+      console.log("assetAdded", assetAdded);
+    }
 
-  const handleOnCalllbackChild = (data) => {
-    console.log("handleOnCalllbackChild, data: ", data);
-    // onDataFromChild({
-    //   isCameraVisible: false,
-    //   isShowingAsset: true,
-    //   asset: data
+    // // get asset in MediaLibrary have uri and filename of asset
+    // const album = await MediaLibrary.getAlbumAsync("PBMS");
+    // const assets = await MediaLibrary.getAssetsAsync({
+    //   album: album,
+    //   first: 10
     // });
-  };
+    // console.log("assets", assets.assets[0]);
+
+    const header = {
+      "Content-Type": "multipart/form-data"
+    };
+    const urlapi = API.INVOICE.SCAN;
+    const formData = new FormData();
+
+    const filename = asset?.uri.split("/").pop();
+    const match = /\.(\w+)$/.exec(filename);
+    let type = match ? `image/${match[1]}` : `image`;
+    const filedata = {
+      uri: asset?.uri,
+      name: filename,
+      type: type
+    };
+
+    // const filename = assets.assets[0]?.filename;
+    // const filedata = {
+    //   uri: assets.assets[0]?.uri,
+    //   name: filename,
+    //   type: "image/jpg"
+    // };
+
+    console.log("filedata: ", filedata);
+    formData.append("file", filedata);
+
+    // try {
+    //   console.log("urlapi: ", urlapi);
+    //   const response = await axios.post(urlapi, formData, { header });
+    //   console.log("response: ", response.data);
+    // } catch (error) {
+    //   console.error("Error fetching data:", error);
+    // }
+
+    // dispatch to upToScanInvoice with the assetSaved
+    // dispatch(upToScanInvoice({ asset }));
+    // console.log("invoiceScanning", invoiceScanning);
+
+    dispatch(setAssetsShowing({ asset: asset, isShowingAsset: "false" }));
+    // // log the assetShowing
+    // console.log("assetsShowing", assetsShowing);
+  }
+
+  function onDispatchCloseModalShowingAsset() {
+    dispatch(setAssetsShowing({ asset: null, isShowingAsset: "false" }));
+  }
+
+  function handleOnCancelAssetShowing() {
+    onDispatchCloseModalShowingAsset();
+  }
 
   return (
     <View style={styles.modalView}>
@@ -72,6 +160,10 @@ const ModalTakeCamera = ({ onDataFromChild }) => {
           onPress={() => handleCancel()}
         >
           <Text style={styles.textStyle}>Hủy</Text>
+          <Text style={styles.textStyle}>
+            {assetsShowing?.asset?.filename ?? "Unknown filename"}
+          </Text>
+          <Text style={styles.textStyle}>{assetsShowing?.isShowingAsset}</Text>
           <Icon
             name="caret-down"
             size={20}
@@ -79,6 +171,39 @@ const ModalTakeCamera = ({ onDataFromChild }) => {
             style={styles.iconCloseModal}
           />
         </Pressable>
+        <Modal
+          visible={assetsShowing?.isShowingAsset === "true"}
+          animationType="fade"
+          transparent={true}
+          width={100}
+        >
+          <BlurView intensity={50} tint="dark" style={styles.blurViewAnAsset}>
+            <Image
+              source={{ uri: assetsShowing?.asset?.uri }}
+              style={styles.imageShowingAsset}
+            />
+            <View style={styles.viewModalShowingAssetPressable}>
+              <Pressable
+                style={styles.pressableModalCancelAsset}
+                onPress={() => {
+                  handleOnCancelAssetShowing();
+                }}
+              >
+                <Text style={styles.textModalShowingAssetPressable}>Hủy</Text>
+              </Pressable>
+              <Pressable
+                style={styles.pressableModalSaveAsset}
+                onPress={() => {
+                  handleSaveAssetToMediaLibrary({
+                    asset: assetsShowing?.asset
+                  });
+                }}
+              >
+                <Text style={styles.textModalShowingAssetPressable}>Lưu</Text>
+              </Pressable>
+            </View>
+          </BlurView>
+        </Modal>
       </View>
       <Tab.Navigator
         screenOptions={{
@@ -113,20 +238,59 @@ const ModalTakeCamera = ({ onDataFromChild }) => {
           }
         }}
       >
-        {/* <Tab.Screen name="Camera" component={TabCamera} initialParams={onDataFromChild: handleDataFromTabCamera()}/> */}
         <Tab.Screen name="Camera" component={TabCamera} />
-        <Tab.Screen
-          name="Thư viện"
-          component={TabMediaLibrary}
-          options={{ callback: handleOnCalllbackChild }}
-          // initialParams={{ callback: handleOnCalllbackChild }}
-        />
+        <Tab.Screen name="Tab 3" component={TabImagePicker} />
+        <Tab.Screen name="Thư viện (Only View)" component={TabMediaLibrary} />
       </Tab.Navigator>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  imageShowingAsset: {
+    width: "90%",
+    height: "90%",
+    alignSelf: "center",
+    justifyContent: "space-around",
+    resizeMode: "contain"
+  },
+  viewModalShowingAssetPressable: {
+    justifyContent: "space-around",
+    flexDirection: "row",
+    height: "5%"
+  },
+  pressableModalSaveAsset: {
+    backgroundColor: "#63ADF2",
+    borderColor: "darkgray",
+    borderWidth: 1,
+    borderRadius: 15,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "40%"
+  },
+  pressableModalCancelAsset: {
+    borderColor: "darkgray",
+    borderWidth: 1,
+    borderRadius: 15,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "40%"
+  },
+  textModalShowingAssetPressable: {
+    fontSize: 25,
+    fontFamily: "Inconsolata_500Medium"
+  },
+  blurViewAnAsset: {
+    flex: 1
+  },
+  viewModalShowingAsset: {
+    // flex: 1,
+    // width: "50%",
+    // // height: "50%",
+    // borderColor: "green",
+    // borderWidth: 1,
+    // backgroundColor: "rgba(0, 0, 0, 0.5)"
+  },
   iconCloseModal: {},
   modalViewCloseModal: {
     position: "absolute",
@@ -159,7 +323,7 @@ const styles = StyleSheet.create({
   modalView: {
     height: "100%",
     width: "100%",
-    backgroundColor: "white",
+    // backgroundColor: "white",
     borderRadius: 20,
     // padding: 15,
     alignItems: "center",

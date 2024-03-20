@@ -23,5 +23,8 @@ export const API = {
   },
   CATEGORY: {
     GET_CATEGORIES: `${Base_URL}/api/category/get/typebytype/`
+  },
+  INVOICE: {
+    SCAN: `${Base_URL}/api/invoice/scan`
   }
 };

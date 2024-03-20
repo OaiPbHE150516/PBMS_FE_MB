@@ -12,6 +12,8 @@ import {
 } from "react-native";
 import * as MediaLibrary from "expo-media-library";
 import TabAnAlbumInML from "./tabAnAlbumInML";
+import { useSelector, useDispatch } from "react-redux";
+import { setAssetsShowing } from "../../redux/mediaLibrarySlice";
 
 // // fuction to get assets in a specific album by name
 // const getAssets = async (albumName) => {
@@ -20,11 +22,15 @@ import TabAnAlbumInML from "./tabAnAlbumInML";
 //   console.log("assets", assets);
 // };
 
-const TabMediaLibrary = ({ handleOnCalllbackChild }) => {
+const TabMediaLibrary = ({}) => {
   const [hasLibraryPermission, setHasLibraryPermission] = useState(null);
   const [media, setMedia] = useState(null);
   const [albums, setAlbums] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+
+  const assetShowing = useSelector(
+    (state) => state.mediaLibrary?.assetsShowing ?? null
+  );
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -41,7 +47,7 @@ const TabMediaLibrary = ({ handleOnCalllbackChild }) => {
 
   //function to get newest assets
   const getNewestAssets = async () => {
-    console.log("getNewestAssets");
+    // console.log("getNewestAssets");
     const assets = await MediaLibrary.getAssetsAsync({
       mediaType: "photo",
       first: 1
@@ -65,14 +71,13 @@ const TabMediaLibrary = ({ handleOnCalllbackChild }) => {
     // setAlbums((beforeAlbums) => [...beforeAlbums, albumHasName]);
   };
 
+  const dispatch = useDispatch();
+
   // function to handle from child TabAnAlbumInML callback
   const handleOnAlbumInML = (data) => {
-    console.log("handleDataFromChild", data);
-    return (data) => {
-      handleOnCalllbackChild(data);
-      console.log("return", data);
-    }
-    // setAlbums(data.albums);
+    console.log("handleDataFromChildc", data);
+    dispatch(setAssetsShowing({ asset: data, isShowingAsset: "true" }));
+    console.log("assetShowing", assetShowing);
   };
 
   useEffect(() => {

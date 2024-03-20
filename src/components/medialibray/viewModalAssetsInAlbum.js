@@ -22,7 +22,7 @@ const ViewModalAssetsInAlbum = ({ props, onHandlePressableAnAssetToP }) => {
     const album = await MediaLibrary.getAlbumAsync(albumName);
     const assets = await MediaLibrary.getAssetsAsync({
       album: album,
-      first: 200
+      first: 50000
     });
     setAssetsInAlbum(assets);
     // console.log("assets", assets);
@@ -35,6 +35,43 @@ const ViewModalAssetsInAlbum = ({ props, onHandlePressableAnAssetToP }) => {
 
   const onHandlePressableAnAsset = ({ item }) => {
     onHandlePressableAnAssetToP(item);
+  };
+
+  const handleOnEndReached = async () => {
+    console.log("onEndReached");
+    // check that assets have 'hasNextPage' property, if not, return
+    if (!assetsInAlbum?.hasNextPage) {
+      return;
+    }
+    // if there is a next page, fetch it and add it to the current assets
+    // if (assetsInAlbum?.hasNextPage) {
+    //   // const album = await MediaLibrary.getAlbumAsync(albumData?.title);
+    //   const nextAssets = MediaLibrary.getAssetsAsync({
+    //     album: await MediaLibrary.getAlbumAsync(albumData?.title),
+    //     first: 10,
+    //     // after: assetsInAlbum.assets.length,
+    //     // after: assetsInAlbum.endCursor,
+    //     mediaType: ["photo"]
+    //   });
+    //   // setAssetsInAlbum({
+    //   //   ...assetsInAlbum,
+    //   //   assets: [...assetsInAlbum.assets, ...nextAssets.assets]
+    //   // });
+    //   // setAssetsInAlbum({
+    //   //   ...assetsInAlbum,
+    //   //   ...nextAssets.assets
+    //   // });
+    //   // setAssetsInAlbum((prevAssets) => [nextAssets.assets, ...prevAssets.assets]);
+
+    //   // push nextAssets to assetsInAlbum.assets
+    //   // assetsInAlbum?.assets?.push(nextAssets?.assets);
+
+    //   //log length of assets.assets
+    //   // setTimeout(() => {
+    //   //   console.log("assetsInAlbum.assets.length", nextAssets?.assets?.length);
+    //   // }, 1000);
+    //   console.log("assetsInAlbum.assets.length", nextAssets?.assets);
+    // }
   };
 
   useEffect(() => {
@@ -69,7 +106,7 @@ const ViewModalAssetsInAlbum = ({ props, onHandlePressableAnAssetToP }) => {
           )}
           numColumns={2}
           onEndReached={() => {
-            console.log("onEndReached");
+            handleOnEndReached();
           }}
         />
       </View>

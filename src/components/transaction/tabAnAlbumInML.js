@@ -16,15 +16,15 @@ import { BlurView } from "expo-blur";
 import * as MediaLibrary from "expo-media-library";
 import ViewModalAssetsInAlbum from "../medialibray/viewModalAssetsInAlbum";
 
-const TabAnAlbumInML = ({ album }) => {
+const TabAnAlbumInML = ({ album, handleOnAlbumInML }) => {
   const [coverAssets, setCoverAssets] = useState(null);
   const [isModalAssetsInAlbumVisible, setIsModalAssetsInAlbumVisible] =
     useState(false);
+  const [isShowingAsset, setIsShowingAsset] = useState(false);
 
   const getCoverAssets = async () => {
     if (album) {
       if (album.title === "Gần đây") {
-        console.log("album.title === Gần đây");
         try {
           const assets = await MediaLibrary.getAssetsAsync({
             mediaType: "photo",
@@ -59,8 +59,9 @@ const TabAnAlbumInML = ({ album }) => {
   };
 
   const onHandlePressableAnAssetToP = (item) => {
-    console.log("onHandlePressableAnAssetToP", item);
-    //   setIsModalAssetsInAlbumVisible(!isModalAssetsInAlbumVisible);
+    // console.log("onHandlePressableAnAssetToP", item);
+    setIsModalAssetsInAlbumVisible(!isModalAssetsInAlbumVisible);
+    handleOnAlbumInML(item); // callback of parent TabMediaLibrary
   };
 
   useEffect(() => {
@@ -142,13 +143,13 @@ const styles = StyleSheet.create({
   },
   pressableAnAlbum: {
     flex: 1,
-    borderColor: "darkgray",
-    borderWidth: 1,
+    // borderColor: "darkgray",
+    // borderWidth: 1,
     width: "100%",
     height: "100%",
     position: "absolute",
-    backgroundColor: "rgba(0, 0, 0, 0.5)"
-    // zIndex: 99
+    // backgroundColor: "rgba(0, 0, 0, 0.5)",
+    zIndex: 99
   },
   textTitle: {
     fontSize: 25,

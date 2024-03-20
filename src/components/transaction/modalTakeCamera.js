@@ -17,11 +17,11 @@ import TabMediaLibrary from "./tabMediaLibrary";
 const Tab = createMaterialTopTabNavigator();
 
 const ModalTakeCamera = ({ onDataFromChild }) => {
-  function handleContinue() {
-    onDataFromChild({
-      isCameraVisible: false
-    });
-  }
+  // function handleContinue() {
+  //   onDataFromChild({
+  //     isCameraVisible: false
+  //   });
+  // }
 
   function handleCancel() {
     onDataFromChild({
@@ -29,30 +29,39 @@ const ModalTakeCamera = ({ onDataFromChild }) => {
     });
   }
 
-  const handleDataFromTabCamera = (data) => {
-    console.log("handleDataFromTabCamera, data: ", data);
-  };
+  // const handleDataFromTabCamera = (data) => {
+  //   console.log("handleDataFromTabCamera, data: ", data);
+  // };
 
-  const Tab2 = () => {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Tab 2</Text>
-        <View style={styles.modalViewButton}>
-          <Pressable
-            style={[styles.button, styles.buttonClose]}
-            onPress={() => handleContinue()}
-          >
-            <Text style={styles.textStyle}>Chụp</Text>
-          </Pressable>
-          <Pressable
-            style={[styles.button, styles.buttonClose]}
-            onPress={() => handleCancel()}
-          >
-            <Text style={styles.textStyle}>Hủy</Text>
-          </Pressable>
-        </View>
-      </View>
-    );
+  // const Tab2 = () => {
+  //   return (
+  //     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+  //       <Text>Tab 2</Text>
+  //       <View style={styles.modalViewButton}>
+  //         <Pressable
+  //           style={[styles.button, styles.buttonClose]}
+  //           onPress={() => handleContinue()}
+  //         >
+  //           <Text style={styles.textStyle}>Chụp</Text>
+  //         </Pressable>
+  //         <Pressable
+  //           style={[styles.button, styles.buttonClose]}
+  //           onPress={() => handleCancel()}
+  //         >
+  //           <Text style={styles.textStyle}>Hủy</Text>
+  //         </Pressable>
+  //       </View>
+  //     </View>
+  //   );
+  // };
+
+  const handleOnCalllbackChild = (data) => {
+    console.log("handleOnCalllbackChild, data: ", data);
+    // onDataFromChild({
+    //   isCameraVisible: false,
+    //   isShowingAsset: true,
+    //   asset: data
+    // });
   };
 
   return (
@@ -106,7 +115,12 @@ const ModalTakeCamera = ({ onDataFromChild }) => {
       >
         {/* <Tab.Screen name="Camera" component={TabCamera} initialParams={onDataFromChild: handleDataFromTabCamera()}/> */}
         <Tab.Screen name="Camera" component={TabCamera} />
-        <Tab.Screen name="Thư viện" component={TabMediaLibrary} />
+        <Tab.Screen
+          name="Thư viện"
+          component={TabMediaLibrary}
+          options={{ callback: handleOnCalllbackChild }}
+          // initialParams={{ callback: handleOnCalllbackChild }}
+        />
       </Tab.Navigator>
     </View>
   );
@@ -119,7 +133,7 @@ const styles = StyleSheet.create({
     zIndex: 99,
     alignSelf: "center",
     bottom: 2,
-    width: "90%",
+    width: "90%"
     // height: 30
     // borderColor: "tomato",
     // borderWidth: 1
@@ -132,7 +146,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignContent: "center",
     alignItems: "center",
-    height: 20,
+    height: 20
   },
   viewTabCamera: {
     flex: 1,
@@ -165,7 +179,7 @@ const styles = StyleSheet.create({
   },
   modalViewButton: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-between"
   },
   button: {
     borderRadius: 20,

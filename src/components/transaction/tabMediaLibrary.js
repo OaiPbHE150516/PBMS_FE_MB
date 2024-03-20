@@ -13,10 +13,6 @@ import {
 import * as MediaLibrary from "expo-media-library";
 import TabAnAlbumInML from "./tabAnAlbumInML";
 
-function AnImage({ uri }) {
-  return <Image source={{ uri: uri }} style={{ width: 100, height: 100 }} />;
-}
-
 // // fuction to get assets in a specific album by name
 // const getAssets = async (albumName) => {
 //   const album = await MediaLibrary.getAlbumAsync(albumName);
@@ -24,7 +20,7 @@ function AnImage({ uri }) {
 //   console.log("assets", assets);
 // };
 
-const TabMediaLibrary = () => {
+const TabMediaLibrary = ({ handleOnCalllbackChild }) => {
   const [hasLibraryPermission, setHasLibraryPermission] = useState(null);
   const [media, setMedia] = useState(null);
   const [albums, setAlbums] = useState(null);
@@ -69,6 +65,16 @@ const TabMediaLibrary = () => {
     // setAlbums((beforeAlbums) => [...beforeAlbums, albumHasName]);
   };
 
+  // function to handle from child TabAnAlbumInML callback
+  const handleOnAlbumInML = (data) => {
+    console.log("handleDataFromChild", data);
+    return (data) => {
+      handleOnCalllbackChild(data);
+      console.log("return", data);
+    }
+    // setAlbums(data.albums);
+  };
+
   useEffect(() => {
     (async () => {
       const { statusMediaLib } = await MediaLibrary.requestPermissionsAsync();
@@ -78,13 +84,15 @@ const TabMediaLibrary = () => {
     })();
   }, []);
 
-  return  refreshing ? null : (
+  return refreshing ? null : (
     <View style={styles.container}>
       <FlatList
         style={styles.flatListStyle}
         data={albums}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <TabAnAlbumInML album={item} />}
+        renderItem={({ item }) => (
+          <TabAnAlbumInML album={item} handleOnAlbumInML={handleOnAlbumInML} />
+        )}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }

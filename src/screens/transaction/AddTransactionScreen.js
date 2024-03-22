@@ -15,11 +15,13 @@ import {
   Pressable,
   TouchableWithoutFeedback,
   PanResponder,
-  ScrollView
+  ScrollView,
+  Image
 } from "react-native";
 
 import { useSelector, useDispatch } from "react-redux";
 import Icon from "react-native-vector-icons/FontAwesome6";
+import { BlurView } from "expo-blur";
 
 import datetimeLibrary from "../../library/datetimeLibrary";
 import { setModalCategoryVisible } from "../../redux/categorySlice";
@@ -30,6 +32,8 @@ import ModalWalletComponent from "../../components/wallet/modalWalletComponent";
 import { addTransactionNoInvoice } from "../../redux/transactionSlice";
 import { getTotalBalance } from "../../redux/walletSlice";
 import ModalTakeCamera from "../../components/transaction/modalTakeCamera";
+import AnInputInvoiceScanning from "../../components/transaction/anInputInvoiceScanning";
+import AnInputProductInIS from "../../components/transaction/anInputProductInIS";
 
 const AddTransactionScreen = () => {
   const [mCategoryVisible, setMCategoryVisible] = useState(false);
@@ -39,6 +43,7 @@ const AddTransactionScreen = () => {
   const [isPulledDown, setIsPulledDown] = useState(false);
   const [isShowDetail, setIsShowDetail] = useState(false);
   const [transAmount, setTransAmount] = useState("");
+  const [isInvoiceScanning, setIsInvoiceScanning] = useState(false);
 
   const modalAddTransactionVisible = useSelector(
     (state) => state.modal.modalAddTransactionVisible
@@ -55,17 +60,28 @@ const AddTransactionScreen = () => {
     (state) => state.transaction.addTransactionWallet
   );
 
+  const assetsShowing = useSelector(
+    (state) => state.mediaLibrary?.assetsShowing
+  );
+  const invoiceScanning = useSelector((state) => state.file?.invoiceScanning);
+
+  const [invoiceResult, setInvoiceResult] = useState(null);
+
   const dispatch = useDispatch();
   useEffect(() => {
     // dispatch(getCategories(account?.accountID));
     // dispatch(setModalAddTransactionVisible(false));
-    console.log("useEffect: AddTransactionScreen");
-
-  }, [account, dispatch]);
+    // console.log("useEffect: AddTransactionScreen");
+    if (invoiceScanning) {
+      setInvoiceResult(invoiceScanning);
+      // console.log("invoiceScanning: ", invoiceScanning);
+    }
+  }, [account, dispatch, invoiceScanning]);
 
   const handleDataFromCalendar = (data) => {
     // setTransTimeData(data);
     setMCalendarVisible(data.isCalendarVisible);
+    // setIsInvoiceScanning(data.isInvoiceScanning);
     dispatch(setModalAddTransactionVisible(false));
   };
 
@@ -82,45 +98,51 @@ const AddTransactionScreen = () => {
   const handleDataFromTakeCamera = (data) => {
     setMTakeCamera(data.isCameraVisible);
     dispatch(setModalAddTransactionVisible(false));
+    console.log("AddTransactionScreen data: ", data);
   };
 
   function handleAddTransaction() {
     console.log("handleAddTransaction");
     // log transAmount, categoryToAddTransaction, addTransactionTime, addTransactionWallet
-    let amount = transAmount.replace(/\./g, "");
-    if (amount === "") {
-      Alert.alert("Số tiền không được để trống");
-      return;
-    }
-    let time = "";
-    if (addTransactionTime === null) {
-      time = datetimeLibrary.getCurrentTime().datetimedata;
-    } else {
-      time = addTransactionTime.datetime;
-    }
-    if (categoryToAddTransaction === null) {
-      Alert.alert("Hạng mục không được để trống");
-      return;
-    }
-    if (addTransactionWallet === null) {
-      Alert.alert("Ví không được để trống");
-      return;
-    }
+    // let amount = transAmount.replace(/\./g, "");
+    // if (amount === "") {
+    //   Alert.alert("Số tiền không được để trống");
+    //   return;
+    // }
+    // let time = "";
+    // if (addTransactionTime === null) {
+    //   time = datetimeLibrary.getCurrentTime().datetimedata;
+    // } else {
+    //   time = addTransactionTime.datetime;
+    // }
+    // if (categoryToAddTransaction === null) {
+    //   Alert.alert("Hạng mục không được để trống");
+    //   return;
+    // }
+    // if (addTransactionWallet === null) {
+    //   Alert.alert("Ví không được để trống");
+    //   return;
+    // }
 
-    const data = {
-      accountID: account.accountID,
-      walletID: addTransactionWallet.walletID,
-      categoryID: categoryToAddTransaction.categoryID,
-      totalAmount: amount,
-      transactionDate: time,
-      note: "",
-      fromPerson: "string",
-      toPerson: "string",
-      imageURL: "string"
-    };
-    console.log("data: ", data);
-    dispatch(addTransactionNoInvoice(data));
+    // const data = {
+    //   accountID: account.accountID,
+    //   walletID: addTransactionWallet.walletID,
+    //   categoryID: categoryToAddTransaction.categoryID,
+    //   totalAmount: amount,
+    //   transactionDate: time,
+    //   note: "",
+    //   fromPerson: "string",
+    //   toPerson: "string",
+    //   imageURL: "string"
+    // };
+    // console.log("first row data: ", data);
+    // dispatch(addTransactionNoInvoice(data));
+    // log invoice result
+    if (invoiceResult) {
+      console.log("invoiceResult: ", invoiceResult);
+    }
     Alert.alert("Thêm giao dịch thành công");
+    console.log("assetShowing", assetsShowing);
   }
 
   function handleAmountChange(text) {
@@ -129,6 +151,165 @@ const AddTransactionScreen = () => {
       .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     setTransAmount(formattedNumber);
   }
+
+  function handleChangeProductInInvoice({ newItem }) {
+    setInvoiceResult({
+      ...invoiceResult,
+      productInInvoices: invoiceResult?.productInInvoices?.map((it) =>
+        it.productID === newItem.productID
+          ? {
+              ...it,
+              productName: newItem.productName,
+              quanity: newItem.quanity,
+              unitprice: newItem.unitPrice,
+              totalAmount: newItem.totalAmount
+            }
+          : it
+      )
+    });
+    // console.log("item: ", item);
+    // set InvoiceResult with old product with update field value of it
+    // setInvoiceResult({
+    //   ...invoiceResult,
+    //   productInInvoices: invoiceResult?.productInInvoices?.map((it) =>
+    //     it.productID === item.productID ? item : it
+    //   )
+    // });
+
+    // setInvoiceResult((prevInvoiceResult) => {
+    //   prevInvoiceResult.productInInvoices.map((it) =>
+    //     it.productID === item.productID ? item : it
+    //   );
+    // });
+  }
+
+  const ViewInvoiceScanning = () => {
+    return (
+      <View style={styles.viewInvoiceScanning}>
+        <View style={styles.viewChildIS}>
+          <Text style={styles.textHeaderViewChildIS}>{"Đơn vị cung cấp"}</Text>
+          <AnInputInvoiceScanning
+            textLabelTop="Tên"
+            value={invoiceResult?.supplierName}
+            onChangeText={(text) => {
+              setInvoiceResult({ ...invoiceResult, supplierName: text });
+            }}
+          />
+          <AnInputInvoiceScanning
+            textLabelTop="Địa chỉ"
+            value={invoiceResult?.supplierAddress}
+            onChangeText={(text) => {
+              setInvoiceResult({ ...invoiceResult, supplierAddress: text });
+            }}
+          />
+          <AnInputInvoiceScanning
+            textLabelTop="Số điện thoại"
+            value={invoiceResult?.supplierPhone}
+            onChangeText={(text) => {
+              setInvoiceResult({ ...invoiceResult, supplierPhone: text });
+            }}
+          />
+        </View>
+        <View style={styles.viewChildIS}>
+          <Text style={styles.textHeaderViewChildIS}>{"Người nhận"}</Text>
+          <AnInputInvoiceScanning
+            textLabelTop="Tên"
+            value={invoiceResult?.receiverName}
+            onChangeText={(text) => {
+              setInvoiceResult({ ...invoiceResult, receiverName: text });
+            }}
+          />
+          <AnInputInvoiceScanning
+            textLabelTop="Địa chỉ"
+            value={invoiceResult?.receiverAddress}
+            onChangeText={(text) => {
+              setInvoiceResult({ ...invoiceResult, receiverAddress: text });
+            }}
+          />
+        </View>
+        <View style={styles.viewChildIS}>
+          <Text style={styles.textHeaderViewChildIS}>{"Hóa đơn"}</Text>
+          <AnInputInvoiceScanning
+            textLabelTop="Tổng tiền"
+            value={invoiceResult?.totalAmount.toString()}
+            onChangeText={(text) => {
+              setInvoiceResult({ ...invoiceResult, totalAmount: text });
+            }}
+            keyboardType={Platform.OS === "ios" ? "numeric" : "number-pad"}
+          />
+          <AnInputInvoiceScanning
+            textLabelTop="Số"
+            value={invoiceResult?.idOfInvoice}
+            onChangeText={(text) => {
+              setInvoiceResult({ ...invoiceResult, idOfInvoice: text });
+            }}
+          />
+          <AnInputInvoiceScanning
+            textLabelTop="Ngày"
+            value={invoiceResult?.invoiceDate}
+            onChangeText={(text) => {
+              setInvoiceResult({ ...invoiceResult, invoiceDate: text });
+            }}
+          />
+        </View>
+        <View style={styles.viewChildIS}>
+          <Text style={styles.textHeaderViewChildIS}>{"Sản phẩm"}</Text>
+          <FlatList
+            nestedScrollEnabled={true}
+            scrollEnabled={false}
+            data={invoiceResult?.productInInvoices}
+            keyExtractor={(item) => item.productID}
+            renderItem={({ item }) => (
+              <AnInputProductInIS
+                name={item.productName}
+                unitprice={item.unitPrice.toString()}
+                quanity={item.quanity.toString()}
+                amount={item.totalAmount.toString()}
+                onChangeTextName={(text) => {
+                  let newItem = item;
+                  newItem.productName = text;
+                  handleChangeProductInInvoice({ newItem });
+                }}
+                onChangeTextQuanity={(text) => {
+                  let newItem = item;
+                  newItem.quanity = text;
+                  handleChangeProductInInvoice({ newItem });
+                }}
+                onChangeTextUnitPrice={(text) => {
+                  let newItem = item;
+                  newItem.unitPrice = text;
+                  handleChangeProductInInvoice({ newItem });
+                }}
+                onChangeTextAmount={(text) => {
+                  let newItem = item;
+                  newItem.totalAmount = text;
+                  handleChangeProductInInvoice({ newItem });
+                }}
+              />
+            )}
+          />
+        </View>
+        <View style={[styles.viewAssetShowing, {}]}>
+          {/* image of asset showing */}
+          {assetsShowing?.asset && (
+            <View>
+              {/* <Text>{assetsShowing?.asset?.uri}aa</Text> */}
+              <Image
+                source={{ uri: assetsShowing?.asset?.uri }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  // alignSelf: "center",
+                  // justifyContent: "space-around",
+                  resizeMode: "contain"
+                }}
+              />
+            </View>
+          )}
+        </View>
+      </View>
+    );
+  };
 
   return (
     <View style={styles.viewStyle}>
@@ -241,63 +422,53 @@ const AddTransactionScreen = () => {
               />
             </View>
           </View>
-          {/* More Detail */}
-          <View style={styles.viewMoreDetail}>
-            <View
-              style={{
-                height: isShowDetail ? 50 : 0
-                // borderWidth: 2,
-                // borderColor: "darkgray"
-              }}
-            >
-              <Text>More Detail</Text>
-            </View>
-            <View style={styles.viewPressableMoreDetail}>
-              <Pressable
-                style={[styles.pressMoreDetail]}
-                onPress={() => {
-                  setIsShowDetail(isShowDetail ? false : true);
-                  // console.log("isShowDetail: ", isShowDetail);
-                }}
-              >
-                <Text style={styles.textMoreDetail}>Thêm chi tiết</Text>
-                <Icon name="caret-down" size={20} color="darkgrey" />
-              </Pressable>
-            </View>
-          </View>
+          {/* Invoice Scan */}
+          {assetsShowing?.asset && <ViewInvoiceScanning />}
         </ScrollView>
+        {/* End  View ScrollView Parent*/}
       </View>
-      {/* End  View ScrollView Parent*/}
-      <View style={styles.viewTakeCamera}>
+      <BlurView intensity={20} style={styles.viewPressableAction}>
+        {/* View and Pressable Reset */}
         <Pressable
-          style={styles.pressableTakeCamera}
-          onPressIn={() => {
-            console.log("onPressIn");
-          }}
-          onPressOut={() => {}}
+          style={styles.pressableReset}
           onPress={() => {
-            setMTakeCamera(true);
-            setMCategoryVisible(false);
-            setMCalendarVisible(false);
-            setMWalletVisible(false);
-            dispatch(setModalAddTransactionVisible(true));
+            console.log("onPress Reset");
           }}
         >
-          <Icon name="camera" size={30} color="black" />
+          <Text>Reset</Text>
         </Pressable>
-      </View>
-      {/* Button Save */}
-      <View style={styles.viewAddTransaction}>
-        <Pressable
-          style={styles.buttonCloseModal}
-          onPress={() => {
-            handleAddTransaction();
-          }}
-          // disabled={true}
-        >
-          <Text style={styles.textButtonSave}>{"Lưu"}</Text>
-        </Pressable>
-      </View>
+
+        <View style={styles.viewTakeCamera}>
+          <Pressable
+            style={styles.pressableTakeCamera}
+            onPressIn={() => {
+              console.log("onPressIn");
+            }}
+            onPressOut={() => {}}
+            onPress={() => {
+              setMTakeCamera(true);
+              setMCategoryVisible(false);
+              setMCalendarVisible(false);
+              setMWalletVisible(false);
+              dispatch(setModalAddTransactionVisible(true));
+            }}
+          >
+            <Icon name="camera" size={30} color="black" />
+          </Pressable>
+        </View>
+        {/* Button Save */}
+        <View style={styles.viewAddTransaction}>
+          <Pressable
+            style={styles.buttonCloseModal}
+            onPress={() => {
+              handleAddTransaction();
+            }}
+            // disabled={true}
+          >
+            <Text style={styles.textButtonSave}>{"Lưu"}</Text>
+          </Pressable>
+        </View>
+      </BlurView>
       <View style={styles.viewStyle}>
         {/* Modal Compnent */}
         <View>
@@ -352,21 +523,44 @@ const AddTransactionScreen = () => {
 };
 // paste to view  {...panResponder.panHandlers}
 const styles = StyleSheet.create({
-  scrollView: {
-    width: "100%",
-    height: "100%"
+  viewPressableAction: {
+    width: "98%",
+    // borderColor: "red",
+    // borderWidth: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    alignSelf: "center",
+    paddingHorizontal: "5%",
+    top: "-14%",
+    // backgroundColor: "white",
+    // zIndex: 3
+    // flexDirection: "column",
+    // alignContent: "center",
+    // justifyContent: "center",
+    // flexDirection: "column",
+    // alignContent: "center",
+    // justifyContent: "center",
+  },
+  pressableReset: {
+    borderRadius: 10,
+    padding: 10,
+    elevation: 2,
+    // backgroundColor: "lightgray",
+    borderColor: "darkgray",
+    borderWidth: 1,
+    width: 100,
+    height: "auto",
+    alignItems: "center",
   },
   viewTakeCamera: {
-    width: "100%",
-    height: "8%",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center"
+    // width: "100%",
+    // height: "8%"
     // marginVertical: 10
   },
   pressableTakeCamera: {
     width: 100,
-    height: 55,
+    height: 50,
     borderRadius: 20,
     // backgroundColor: "lightgray",
     justifyContent: "center",
@@ -383,6 +577,77 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 5
   },
+  viewAddTransaction: {
+    // width: "100%"
+    // marginVertical: 15
+  },
+  buttonCloseModal: {
+    borderRadius: 10,
+    padding: 10,
+    elevation: 2,
+    backgroundColor: "lightgray",
+    borderColor: "darkgray",
+    borderWidth: 1,
+    width: "auto",
+    width: 100,
+    alignItems: "center",
+    // height: "50%",
+  },
+  textButtonSave: {
+    fontFamily: "Inconsolata_500Medium",
+    fontSize: 20
+  },
+  viewAssetShowing: {
+    width: "100%",
+    minWidth: Dimensions.get("screen").width * 0.97,
+    maxWidth: Dimensions.get("screen").width,
+    height: "100%",
+    minHeight: 200,
+    maxHeight: 800,
+    // borderColor: "red",
+    // borderWidth: 1,
+    flex: 1
+  },
+  textHeaderViewChildIS: {
+    fontSize: 20,
+    fontFamily: "Inconsolata_500Medium",
+    alignSelf: "flex-start",
+    top: -10,
+    backgroundColor: "white",
+    paddingHorizontal: 5
+  },
+  viewChildIS: {
+    minWidth: "100%",
+    maxWidth: "100%",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    borderColor: "green",
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingLeft: 10,
+    marginVertical: 8
+  },
+  viewInvoiceScanning: {
+    visible: "hidden",
+    width: "100%",
+    flex: 1,
+    // height: 1000,
+    justifyContent: "flex-start",
+    alignItems: "center",
+    borderColor: "darkgray",
+    borderWidth: 1,
+    paddingHorizontal: 10
+    // margin: 10,
+  },
+  scrollView: {
+    // width: "100%",
+    width: Dimensions.get("screen").width * 0.97,
+    height: "100%",
+    // borderColor: "blue",
+    // borderWidth: 1,
+    flex: 1
+  },
+
   viewPressableMoreDetail: {
     width: "98%"
     // height: "50%"
@@ -408,8 +673,8 @@ const styles = StyleSheet.create({
     // alignItems: "center",
     marginVertical: 5,
     marginHorizontal: 5,
-    // borderColor: "green",
-    // borderWidth: 1,
+    borderColor: "green",
+    borderWidth: 1,
     // padding: 0,
     height: Dimensions.get("screen").height * 0.3
     // flex: 1,
@@ -417,8 +682,8 @@ const styles = StyleSheet.create({
 
   viewScrollViewParent: {
     flexDirection: "column",
-    // backgroundColor: "red",
-    height: "70%",
+    backgroundColor: "white",
+    height: "85%",
     borderColor: "darkgray",
     borderWidth: 1
   },
@@ -476,6 +741,7 @@ const styles = StyleSheet.create({
     fontFamily: "OpenSans_500Medium"
   },
   viewAmount: {
+    flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -529,29 +795,7 @@ const styles = StyleSheet.create({
     // borderColor: "red",
     // borderWidth: 5
   },
-  viewAddTransaction: {
-    width: "100%"
-    // marginVertical: 15
-  },
-  buttonCloseModal: {
-    borderRadius: 10,
-    padding: 10,
-    elevation: 2,
-    backgroundColor: "lightgray",
-    borderColor: "darkgray",
-    borderWidth: 1,
-    alignSelf: "center",
-    // flexDirection: "column",
-    // alignContent: "center",
-    // justifyContent: "center",
-    alignItems: "center",
-    width: "75%"
-    // height: "50%"
-  },
-  textButtonSave: {
-    fontFamily: "Inconsolata_500Medium",
-    fontSize: 20
-  },
+
   pressSelectCategory: {
     // backgroundColor: "#F194FF",
     width: Dimensions.get("window").width * 0.8,
@@ -584,5 +828,34 @@ const styles = StyleSheet.create({
     textAlign: "center"
   }
 });
+
+{
+  /* More Detail */
+}
+{
+  /* <View style={styles.viewMoreDetail}>
+            <View
+              style={{
+                height: isShowDetail ? 50 : 0
+                // borderWidth: 2,
+                // borderColor: "darkgray"
+              }}
+            >
+              <Text>More Detail</Text>
+            </View>
+            <View style={styles.viewPressableMoreDetail}>
+              <Pressable
+                style={[styles.pressMoreDetail]}
+                onPress={() => {
+                  setIsShowDetail(isShowDetail ? false : true);
+                  // console.log("isShowDetail: ", isShowDetail);
+                }}
+              >
+                <Text style={styles.textMoreDetail}>Thêm chi tiết</Text>
+                <Icon name="caret-down" size={20} color="darkgrey" />
+              </Pressable>
+            </View>
+          </View> */
+}
 
 export default AddTransactionScreen;

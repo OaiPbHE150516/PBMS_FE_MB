@@ -22,6 +22,22 @@ const TabImagePicker = () => {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1
     });
+
+    console.log("result", result);
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+      dispatch(
+        setAssetsShowing({ asset: result.assets[0], isShowingAsset: "true" })
+      );
+    }
+  }
+
+  async function launchCamera() {
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      aspect: [1, 1],
+      quality: 1
+    });
     console.log(result);
     if (!result.canceled) {
       setImage(result.assets[0].uri);
@@ -34,6 +50,7 @@ const TabImagePicker = () => {
   useEffect(() => {
     setTimeout(() => {
       getImageFromPicker();
+      // launchCamera();
     }, 200);
   }, []);
 
@@ -44,7 +61,10 @@ const TabImagePicker = () => {
       )} */}
       <Button
         title="Pick an image from camera roll"
-        onPress={() => getImageFromPicker()}
+        onPress={() =>
+          // launchCamera()
+          getImageFromPicker()
+        }
       />
     </View>
   );

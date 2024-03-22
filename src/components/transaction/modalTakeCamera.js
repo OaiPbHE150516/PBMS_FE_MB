@@ -18,15 +18,9 @@ import * as MediaLibrary from "expo-media-library";
 
 import TabCamera from "./tabCamera";
 import TabMediaLibrary from "./tabMediaLibrary";
-import TabImagePicker from "../../components/medialibray/tabImagePicker";
 import { setAssetsShowing } from "../../redux/mediaLibrarySlice";
 import { VAR } from "../../constants/var.constant";
 import { upToScanInvoice } from "../../redux/fileSlice";
-import * as ImagePicker from 'expo-image-picker';
-
-
-import axios from "axios";
-import { API } from "../../constants/api.constant";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -59,12 +53,12 @@ const ModalTakeCamera = ({ onDataFromChild }) => {
   const assetsShowing = useSelector(
     (state) => state.mediaLibrary?.assetsShowing ?? null
   );
-
   const invoiceScanning = useSelector((state) => state.file?.invoiceScanning);
 
   function handleCancel() {
     onDataFromChild({
-      isCameraVisible: false
+      isCameraVisible: false,
+      isInvoiceScanning: false
     });
   }
   const dispatch = useDispatch();
@@ -93,55 +87,12 @@ const ModalTakeCamera = ({ onDataFromChild }) => {
       );
       console.log("assetAdded", assetAdded);
     }
-
-    // // get asset in MediaLibrary have uri and filename of asset
-    // const album = await MediaLibrary.getAlbumAsync("PBMS");
-    // const assets = await MediaLibrary.getAssetsAsync({
-    //   album: album,
-    //   first: 10
-    // });
-    // console.log("assets", assets.assets[0]);
-
-    const header = {
-      "Content-Type": "multipart/form-data"
-    };
-    const urlapi = API.INVOICE.SCAN;
-    const formData = new FormData();
-
-    const filename = asset?.uri.split("/").pop();
-    const match = /\.(\w+)$/.exec(filename);
-    let type = match ? `image/${match[1]}` : `image`;
-    const filedata = {
-      uri: asset?.uri,
-      name: filename,
-      type: type
-    };
-
-    // const filename = assets.assets[0]?.filename;
-    // const filedata = {
-    //   uri: assets.assets[0]?.uri,
-    //   name: filename,
-    //   type: "image/jpg"
-    // };
-
-    console.log("filedata: ", filedata);
-    formData.append("file", filedata);
-
-    // try {
-    //   console.log("urlapi: ", urlapi);
-    //   const response = await axios.post(urlapi, formData, { header });
-    //   console.log("response: ", response.data);
-    // } catch (error) {
-    //   console.error("Error fetching data:", error);
-    // }
-
-    // dispatch to upToScanInvoice with the assetSaved
-    // dispatch(upToScanInvoice({ asset }));
-    // console.log("invoiceScanning", invoiceScanning);
-
+    dispatch(upToScanInvoice(asset));
     dispatch(setAssetsShowing({ asset: asset, isShowingAsset: "false" }));
-    // // log the assetShowing
-    // console.log("assetsShowing", assetsShowing);
+    onDataFromChild({
+      isCameraVisible: false,
+      isInvoiceScanning: true
+    });
   }
 
   function onDispatchCloseModalShowingAsset() {
@@ -239,7 +190,7 @@ const ModalTakeCamera = ({ onDataFromChild }) => {
         }}
       >
         <Tab.Screen name="Camera" component={TabCamera} />
-        <Tab.Screen name="Tab 3" component={TabImagePicker} />
+        {/* <Tab.Screen name="Tab 3" component={TabImagePicker} /> */}
         <Tab.Screen name="Thư viện (Only View)" component={TabMediaLibrary} />
       </Tab.Navigator>
     </View>

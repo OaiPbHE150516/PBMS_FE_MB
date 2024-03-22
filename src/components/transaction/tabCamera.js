@@ -14,6 +14,7 @@ import Icon from "react-native-vector-icons/FontAwesome6";
 import { BlurView } from "expo-blur";
 import { Camera, CameraType } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
+import * as ImagePicker from "expo-image-picker";
 
 import { useSelector, useDispatch } from "react-redux";
 import { setAssetsShowing } from "../../redux/mediaLibrarySlice";
@@ -33,8 +34,8 @@ const TabCamera = ({}) => {
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [flash, setFlash] = useState(Camera.Constants.FlashMode.off);
   const [focus, setFocus] = useState(Camera.Constants.AutoFocus.on);
-  // const cameraRef = useRef(null);
   const [camera, setCamera] = useState(null);
+  const [newestAsset, setNewestAsset] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -42,6 +43,7 @@ const TabCamera = ({}) => {
       setHasLibraryPermission(statusMediaLib === "granted");
       const { statusCamera } = await Camera.requestCameraPermissionsAsync();
       setHasCameraPermission(statusCamera === "granted");
+      getNewestAsset();
     })();
   }, []);
 
@@ -50,6 +52,15 @@ const TabCamera = ({}) => {
   //       isCameraVisible: false
   //     });
   //   }
+
+  const getNewestAsset = async () => {
+    const assets = await MediaLibrary.getAssetsAsync({
+      mediaType: "photo",
+      first: 1
+    });
+    console.log("getNewestAsset", assets.assets[0]);
+    setNewestAsset(assets.assets[0]);
+  };
 
   const handleFocusCamera = () => {
     setFocus(Camera.Constants.AutoFocus.off);
@@ -97,20 +108,34 @@ const TabCamera = ({}) => {
     }
   };
 
-  const takePicture = async () => {
-    if (camera) {
-      const photo = await camera.takePictureAsync();
-      const asset = await MediaLibrary.createAssetAsync(photo.uri);
-      console.log("photo", photo);
-      setImage(photo.uri);
-      const album = await MediaLibrary.getAlbumAsync("Oai");
-      if (album === null) {
-        await MediaLibrary.createAlbumAsync("Oai", asset, false);
-      } else {
-        await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
-      }
+  async function handleOpenImagePicker() {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1
+    });
+    console.log("result", result);
+    if (!result.canceled) {
+      // setImage(result.assets[0].uri);
+      dispatch(
+        setAssetsShowing({ asset: result.assets[0], isShowingAsset: "true" })
+      );
     }
-  };
+  }
+
+  // const takePicture = async () => {
+  //   if (camera) {
+  //     const photo = await camera.takePictureAsync();
+  //     const asset = await MediaLibrary.createAssetAsync(photo.uri);
+  //     console.log("photo", photo);
+  //     setImage(photo.uri);
+  //     const album = await MediaLibrary.getAlbumAsync("Oai");
+  //     if (album === null) {
+  //       await MediaLibrary.createAlbumAsync("Oai", asset, false);
+  //     } else {
+  //       await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
+  //     }
+  //   }
+  // };
   return (
     <View style={styles.container}>
       <View style={styles.viewTabCamera}>
@@ -131,6 +156,27 @@ const TabCamera = ({}) => {
           <BlurView intensity={3} style={styles.modalViewButton}>
             <Pressable
               style={styles.pressableOtherButton}
+              onPress={() => {
+                handleOpenImagePicker();
+              }}
+            >
+              {/* an image of newestasset */}
+              {newestAsset && (
+                <Image
+                  source={{ uri: newestAsset.uri }}
+                  style={[styles.pressableOtherButton, { borderRadius: 20 }]}
+                />
+              )}
+              {/* <Icon
+                name="bolt"
+                size={28}
+                color={
+                  flash === Camera.Constants.FlashMode.on ? "white" : "gray"
+                }
+              /> */}
+            </Pressable>
+            <Pressable
+              style={styles.pressableOtherButton}
               onPress={() => handleFlashCamera()}
             >
               <Icon
@@ -141,6 +187,19 @@ const TabCamera = ({}) => {
                 }
               />
             </Pressable>
+
+            <Pressable
+              style={styles.pressableTakeCamera}
+              onPress={() => handleTakeShot()}
+            >
+              <Icon name="circle" size={80} color="white" />
+            </Pressable>
+            {/* <Pressable
+              style={styles.pressableOtherButton}
+              onPress={() => handleFocusCamera()}
+            >
+              <Icon name="expand" size={28} color="white" />
+            </Pressable> */}
             <Pressable
               style={styles.pressableOtherButton}
               onPress={() => handleTorchCamera()}
@@ -154,18 +213,6 @@ const TabCamera = ({}) => {
                 size={28}
                 color="white"
               />
-            </Pressable>
-            <Pressable
-              style={styles.pressableTakeCamera}
-              onPress={() => handleTakeShot()}
-            >
-              <Icon name="circle" size={80} color="white" />
-            </Pressable>
-            <Pressable
-              style={styles.pressableOtherButton}
-              onPress={() => handleFocusCamera()}
-            >
-              <Icon name="expand" size={28} color="white" />
             </Pressable>
             <Pressable
               style={styles.pressableOtherButton}
@@ -187,7 +234,8 @@ const styles = StyleSheet.create({
     alignContent: "center",
     justifyContent: "center",
     alignItems: "center",
-    bottom: -10
+    // bottom: -10,
+    marginHorizontal: 10,
   },
   pressableOverlayCam: {
     flex: 1,

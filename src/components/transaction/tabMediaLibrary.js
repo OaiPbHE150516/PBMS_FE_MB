@@ -35,7 +35,7 @@ const TabMediaLibrary = ({}) => {
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     getAlbums();
-    getNewestAssets();
+    // getNewestAssets();
     setTimeout(() => setRefreshing(false), 500);
   }, []);
 
@@ -85,7 +85,7 @@ const TabMediaLibrary = ({}) => {
       const { statusMediaLib } = await MediaLibrary.requestPermissionsAsync();
       setHasLibraryPermission(statusMediaLib === "granted");
       getAlbums();
-      getNewestAssets();
+      // getNewestAssets();
     })();
   }, []);
 

@@ -77,6 +77,10 @@ const datetimeLibrary = {
 
   getTimeWeekBefore: function (numWeek) {
     const currentDate = new Date();
+    // if currentDate is Sunday, then numWeek += 1
+    if (currentDate.getDay() === 0) {
+      numWeek += 1;
+    }
     const startdate = addDays(startOfWeek(subWeeks(currentDate, numWeek)), 1);
     const enddate = addDays(endOfWeek(subWeeks(currentDate, numWeek)), 1);
     return [
@@ -204,7 +208,25 @@ const datetimeLibrary = {
       datetimestr:
         format(currentDate, "HH:mm") + ", " + this.getDayInWeek(currentDate)
     };
-  }
+  },
+
+  // get currenttime in string format, like 'yyyyMMDDHHmmss'
+  getCurrentTimeStr: function () {
+    const currentDate = new Date();
+    return (
+      currentDate.getFullYear() +
+      "" +
+      (currentDate.getMonth() + 1) +
+      "" +
+      currentDate.getDate() +
+      "" +
+      currentDate.getHours() +
+      "" +
+      currentDate.getMinutes() +
+      "" +
+      currentDate.getSeconds()
+    );
+  },
 };
 
 export default datetimeLibrary;

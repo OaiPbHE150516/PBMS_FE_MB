@@ -111,10 +111,6 @@ const ModalTakeCamera = ({ onDataFromChild }) => {
           onPress={() => handleCancel()}
         >
           <Text style={styles.textStyle}>Hủy</Text>
-          <Text style={styles.textStyle}>
-            {assetsShowing?.asset?.filename ?? "Unknown filename"}
-          </Text>
-          <Text style={styles.textStyle}>{assetsShowing?.isShowingAsset}</Text>
           <Icon
             name="caret-down"
             size={20}

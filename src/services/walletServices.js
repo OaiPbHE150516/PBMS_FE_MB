@@ -19,7 +19,7 @@ const walletServices = {
 
   getTotalBalance: async (accountid) => {
     try {
-      console.log(API.WALLET.GET_TOTAL_BALANCE + accountid);
+      // console.log(API.WALLET.GET_TOTAL_BALANCE + accountid);
       const response = await axios.get(
         API.WALLET.GET_TOTAL_BALANCE + accountid,
         {

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Text, View, Button, StyleSheet } from "react-native";
+import { Text, View, Button, StyleSheet, Platform } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -39,11 +39,12 @@ import {
   OpenSans_800ExtraBold_Italic
 } from "@expo-google-fonts/open-sans";
 
-
 import HomeScreen from "./src/screens/HomeScreen";
 import TransactionScreen from "./src/screens/transaction/TransactionScreen";
 import AddTransactionScreen from "./src/screens/transaction/AddTransactionScreen";
 import TestScreen from "./src/screens/TestScreen";
+import SigninScreen from "./src/screens/SigninScreen";
+import SignInIOS from "./src/screens/SignInIOS";
 
 const Tab = createBottomTabNavigator();
 
@@ -149,7 +150,12 @@ export default function App() {
                 component={AddTransactionScreen}
               />
               <Tab.Screen name="Settings" component={TestScreen} />
-              {/* <Tab.Screen name="TestScreen" component={TestScreen} /> */}
+              {/* if platform is IOS then add SignInIOS, if Android add SignInScreen */}
+              {Platform.OS === "ios" ? (
+                <Tab.Screen name="Welcome" component={SignInIOS} />
+              ) : (
+                <Tab.Screen name="Signin" component={SigninScreen} />
+              )}
             </Tab.Navigator>
           </NavigationContainer>
         </Provider>

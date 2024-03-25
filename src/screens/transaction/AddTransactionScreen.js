@@ -18,19 +18,36 @@ import {
   ScrollView,
   Image
 } from "react-native";
-
+// node_modules library
 import { useSelector, useDispatch } from "react-redux";
 import Icon from "react-native-vector-icons/FontAwesome6";
 import { BlurView } from "expo-blur";
 
+// library
 import datetimeLibrary from "../../library/datetimeLibrary";
-import { setModalCategoryVisible } from "../../redux/categorySlice";
-import ModalCategoryComponent from "../../components/category/modalCategoryComponent";
+import currencyLibrary from "../../library/currencyLIbrary";
+
+// slice
 import { setModalAddTransactionVisible } from "../../redux/modalSlice";
+import {
+  addTransactionNoInvoice,
+  addTransactionWithInvoice,
+  setAddTransactionTime,
+  setAddTransactionWallet
+} from "../../redux/transactionSlice";
+import { setModalCategoryVisible } from "../../redux/categorySlice";
+import { getTotalBalance } from "../../redux/walletSlice";
+import {
+  uploadToInvoiceTransaction,
+  uploadToInvoiceTransactionFileName
+} from "../../redux/fileSlice";
+import { setCategoryToAddTransaction } from "../../redux/categorySlice";
+import { setAssetsShowing } from "../../redux/mediaLibrarySlice";
+
+// component
+import ModalCategoryComponent from "../../components/category/modalCategoryComponent";
 import { ModalCalendarComponent } from "../../components/calendar/mocalCalendarComponent";
 import ModalWalletComponent from "../../components/wallet/modalWalletComponent";
-import { addTransactionNoInvoice } from "../../redux/transactionSlice";
-import { getTotalBalance } from "../../redux/walletSlice";
 import ModalTakeCamera from "../../components/transaction/modalTakeCamera";
 import AnInputInvoiceScanning from "../../components/transaction/anInputInvoiceScanning";
 import AnInputProductInIS from "../../components/transaction/anInputProductInIS";
@@ -44,6 +61,7 @@ const AddTransactionScreen = () => {
   const [isShowDetail, setIsShowDetail] = useState(false);
   const [transAmount, setTransAmount] = useState("");
   const [isInvoiceScanning, setIsInvoiceScanning] = useState(false);
+  const [currentTime, setCurrentTime] = useState("");
 
   const modalAddTransactionVisible = useSelector(
     (state) => state.modal.modalAddTransactionVisible
@@ -64,7 +82,7 @@ const AddTransactionScreen = () => {
     (state) => state.mediaLibrary?.assetsShowing
   );
   const invoiceScanning = useSelector((state) => state.file?.invoiceScanning);
-
+  // const invoiceImageURL = useSelector((state) => state.file?.invoiceImageURL);
   const [invoiceResult, setInvoiceResult] = useState(null);
 
   const dispatch = useDispatch();
@@ -74,9 +92,17 @@ const AddTransactionScreen = () => {
     // console.log("useEffect: AddTransactionScreen");
     if (invoiceScanning) {
       setInvoiceResult(invoiceScanning);
+      console.log("invoiceScanning: ", invoiceScanning);
       // console.log("invoiceScanning: ", invoiceScanning);
+      setunInputInvoiceScanning(invoiceScanning);
     }
+    setCurrentTime(datetimeLibrary.getCurrentTime().datetimestr);
   }, [account, dispatch, invoiceScanning]);
+
+  const setunInputInvoiceScanning = (invoiceScanning) => {
+    setTransAmount(invoiceScanning.totalAmount.toString());
+    // setTransAmount(invoiceScanning.totalAmount.toString());
+  };
 
   const handleDataFromCalendar = (data) => {
     // setTransTimeData(data);
@@ -104,45 +130,137 @@ const AddTransactionScreen = () => {
   function handleAddTransaction() {
     console.log("handleAddTransaction");
     // log transAmount, categoryToAddTransaction, addTransactionTime, addTransactionWallet
-    // let amount = transAmount.replace(/\./g, "");
-    // if (amount === "") {
-    //   Alert.alert("Số tiền không được để trống");
-    //   return;
-    // }
-    // let time = "";
-    // if (addTransactionTime === null) {
-    //   time = datetimeLibrary.getCurrentTime().datetimedata;
-    // } else {
-    //   time = addTransactionTime.datetime;
-    // }
-    // if (categoryToAddTransaction === null) {
-    //   Alert.alert("Hạng mục không được để trống");
-    //   return;
-    // }
-    // if (addTransactionWallet === null) {
-    //   Alert.alert("Ví không được để trống");
-    //   return;
-    // }
+    let amount = transAmount.replace(/\./g, "");
+    if (amount === "") {
+      Alert.alert("Số tiền không được để trống");
+      return;
+    }
+    let time = "";
+    if (addTransactionTime === null) {
+      time = datetimeLibrary.getCurrentTime().datetimedata;
+    } else {
+      time = addTransactionTime.datetime;
+    }
+    if (categoryToAddTransaction === null) {
+      Alert.alert("Hạng mục không được để trống");
+      return;
+    }
+    if (addTransactionWallet === null) {
+      Alert.alert("Ví không được để trống");
+      return;
+    }
 
-    // const data = {
-    //   accountID: account.accountID,
-    //   walletID: addTransactionWallet.walletID,
-    //   categoryID: categoryToAddTransaction.categoryID,
-    //   totalAmount: amount,
-    //   transactionDate: time,
-    //   note: "",
-    //   fromPerson: "string",
-    //   toPerson: "string",
-    //   imageURL: "string"
-    // };
-    // console.log("first row data: ", data);
-    // dispatch(addTransactionNoInvoice(data));
-    // log invoice result
     if (invoiceResult) {
-      console.log("invoiceResult: ", invoiceResult);
+      // console.log("invoiceResult: ", invoiceResult);
+      const filename =
+        account.accountID + "_" + datetimeLibrary.getCurrentTimeStr();
+      dispatch(
+        uploadToInvoiceTransactionFileName({
+          asset: assetsShowing?.asset,
+          filenamecustom: filename
+        })
+      );
+      const totalOfInvoice = currencyLibrary.removeCurrencyFormat(transAmount);
+      const transactionWithInvoice = {
+        accountID: account.accountID,
+        walletID: addTransactionWallet.walletID,
+        categoryID: categoryToAddTransaction.categoryID,
+        // totalAmount: amount,
+        totalAmount: totalOfInvoice,
+        transactionDate: time,
+        note: "has invoice",
+        fromPerson: invoiceResult.supplierName
+          ? invoiceResult.supplierName
+          : "",
+        toPerson: invoiceResult.receiverName ? invoiceResult.receiverName : "",
+        imageURL: filename,
+        invoice: {
+          supplierAddress: invoiceResult.supplierAddress
+            ? invoiceResult.supplierAddress
+            : "",
+          supplierEmail: invoiceResult.supplierEmail
+            ? invoiceResult.supplierEmail
+            : "",
+          supplierName: invoiceResult.supplierName
+            ? invoiceResult.supplierName
+            : "",
+          supplierPhone: invoiceResult.supplierPhone
+            ? invoiceResult.supplierPhone
+            : "",
+          receiverAddress: invoiceResult.receiverAddress
+            ? invoiceResult.receiverAddress
+            : "",
+          receiverEmail: invoiceResult.receiverEmail
+            ? invoiceResult.receiverEmail
+            : "",
+          receiverName: invoiceResult.receiverName
+            ? invoiceResult.receiverName
+            : "",
+          idOfInvoice: invoiceResult.idOfInvoice
+            ? invoiceResult.idOfInvoice
+            : "",
+          invoiceDate: invoiceResult.invoiceDate
+            ? invoiceResult.invoiceDate
+            : "",
+          invoiceType: invoiceResult.invoiceType
+            ? invoiceResult.invoiceType
+            : "",
+          paymentTerms: invoiceResult.paymentTerms
+            ? invoiceResult.paymentTerms
+            : "",
+          netAmount: invoiceResult.netAmount ? invoiceResult.netAmount : 0,
+          totalAmount: totalOfInvoice,
+          taxAmount: invoiceResult.taxAmount ? invoiceResult.taxAmount : 0,
+          discount: invoiceResult.discount ? invoiceResult.discount : 0,
+          invoiceImageURL: filename,
+          note: invoiceResult.note ? invoiceResult.note : "",
+          products: [
+            ...invoiceResult.productInInvoices.map((it) => {
+              return {
+                productName: it.productName ? it.productName : "",
+                quanity: it.quanity ? it.quanity : 0,
+                unitPrice: it.unitPrice ? it.unitPrice : 0,
+                totalAmount: it.totalAmount ? it.totalAmount : 0,
+                note: it.note ? it.note : "",
+                tagID: it.tagID ? it.tagID : 1
+              };
+            })
+          ],
+          invoiceRawDatalog: invoiceResult.invoiceRawDatalog
+            ? invoiceResult.invoiceRawDatalog
+            : ""
+        }
+      };
+      dispatch(addTransactionWithInvoice(transactionWithInvoice));
+      // const imageURL = dispatch(getInvoiceImageURL);
+    } else {
+      // console.log("invoiceResult: ", invoiceResult);
+      const data = {
+        accountID: account.accountID,
+        walletID: addTransactionWallet.walletID,
+        categoryID: categoryToAddTransaction.categoryID,
+        totalAmount: amount,
+        transactionDate: time,
+        note: "",
+        fromPerson: "string",
+        toPerson: "string",
+        imageURL: "string"
+      };
+      dispatch(addTransactionNoInvoice(data));
     }
     Alert.alert("Thêm giao dịch thành công");
-    console.log("assetShowing", assetsShowing);
+    handleResetAddTransaction();
+  }
+
+  function handleResetAddTransaction() {
+    setTransAmount("");
+    dispatch(setCategoryToAddTransaction(null));
+    dispatch(setAddTransactionTime(null));
+    setCurrentTime(datetimeLibrary.getCurrentTime().datetimestr);
+    dispatch(setAddTransactionWallet(null));
+    dispatch(setAssetsShowing({ asset: null, isShowingAsset: "false" }));
+    setInvoiceResult(null);
+    // dispatch(setModalAddTransactionVisible(false));
   }
 
   function handleAmountChange(text) {
@@ -167,25 +285,36 @@ const AddTransactionScreen = () => {
           : it
       )
     });
-    // console.log("item: ", item);
-    // set InvoiceResult with old product with update field value of it
-    // setInvoiceResult({
-    //   ...invoiceResult,
-    //   productInInvoices: invoiceResult?.productInInvoices?.map((it) =>
-    //     it.productID === item.productID ? item : it
-    //   )
-    // });
-
-    // setInvoiceResult((prevInvoiceResult) => {
-    //   prevInvoiceResult.productInInvoices.map((it) =>
-    //     it.productID === item.productID ? item : it
-    //   );
-    // });
   }
 
   const ViewInvoiceScanning = () => {
     return (
       <View style={styles.viewInvoiceScanning}>
+        <View style={styles.viewChildIS}>
+          <Text style={styles.textHeaderViewChildIS}>{"Hóa đơn"}</Text>
+          <AnInputInvoiceScanning
+            textLabelTop="Tổng tiền"
+            value={invoiceResult?.totalAmount.toString()}
+            onChangeText={(text) => {
+              setInvoiceResult({ ...invoiceResult, totalAmount: text });
+            }}
+            keyboardType={Platform.OS === "ios" ? "numeric" : "number-pad"}
+          />
+          <AnInputInvoiceScanning
+            textLabelTop="Số"
+            value={invoiceResult?.idOfInvoice}
+            onChangeText={(text) => {
+              setInvoiceResult({ ...invoiceResult, idOfInvoice: text });
+            }}
+          />
+          <AnInputInvoiceScanning
+            textLabelTop="Ngày"
+            value={invoiceResult?.invoiceDate}
+            onChangeText={(text) => {
+              setInvoiceResult({ ...invoiceResult, invoiceDate: text });
+            }}
+          />
+        </View>
         <View style={styles.viewChildIS}>
           <Text style={styles.textHeaderViewChildIS}>{"Đơn vị cung cấp"}</Text>
           <AnInputInvoiceScanning
@@ -224,31 +353,6 @@ const AddTransactionScreen = () => {
             value={invoiceResult?.receiverAddress}
             onChangeText={(text) => {
               setInvoiceResult({ ...invoiceResult, receiverAddress: text });
-            }}
-          />
-        </View>
-        <View style={styles.viewChildIS}>
-          <Text style={styles.textHeaderViewChildIS}>{"Hóa đơn"}</Text>
-          <AnInputInvoiceScanning
-            textLabelTop="Tổng tiền"
-            value={invoiceResult?.totalAmount.toString()}
-            onChangeText={(text) => {
-              setInvoiceResult({ ...invoiceResult, totalAmount: text });
-            }}
-            keyboardType={Platform.OS === "ios" ? "numeric" : "number-pad"}
-          />
-          <AnInputInvoiceScanning
-            textLabelTop="Số"
-            value={invoiceResult?.idOfInvoice}
-            onChangeText={(text) => {
-              setInvoiceResult({ ...invoiceResult, idOfInvoice: text });
-            }}
-          />
-          <AnInputInvoiceScanning
-            textLabelTop="Ngày"
-            value={invoiceResult?.invoiceDate}
-            onChangeText={(text) => {
-              setInvoiceResult({ ...invoiceResult, invoiceDate: text });
             }}
           />
         </View>
@@ -384,7 +488,7 @@ const AddTransactionScreen = () => {
                       addTransactionTime.minute +
                       ", " +
                       addTransactionTime.date
-                    : datetimeLibrary.getCurrentTime().datetimestr}
+                    : currentTime}
                 </Text>
               </Pressable>
               <Icon
@@ -433,9 +537,10 @@ const AddTransactionScreen = () => {
           style={styles.pressableReset}
           onPress={() => {
             console.log("onPress Reset");
+            handleResetAddTransaction();
           }}
         >
-          <Text>Reset</Text>
+          <Text>{"Reset"}</Text>
         </Pressable>
 
         <View style={styles.viewTakeCamera}>
@@ -532,7 +637,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     alignSelf: "center",
     paddingHorizontal: "5%",
-    top: "-14%",
+    top: "-14%"
     // backgroundColor: "white",
     // zIndex: 3
     // flexDirection: "column",
@@ -551,7 +656,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     width: 100,
     height: "auto",
-    alignItems: "center",
+    alignItems: "center"
   },
   viewTakeCamera: {
     // width: "100%",
@@ -590,7 +695,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     width: "auto",
     width: 100,
-    alignItems: "center",
+    alignItems: "center"
     // height: "50%",
   },
   textButtonSave: {
@@ -621,9 +726,9 @@ const styles = StyleSheet.create({
     maxWidth: "100%",
     flexDirection: "column",
     justifyContent: "space-between",
-    borderColor: "green",
+    borderColor: "darkgray",
     borderWidth: 1,
-    borderRadius: 10,
+    borderRadius: 5,
     paddingLeft: 10,
     marginVertical: 8
   },
@@ -634,8 +739,8 @@ const styles = StyleSheet.create({
     // height: 1000,
     justifyContent: "flex-start",
     alignItems: "center",
-    borderColor: "darkgray",
-    borderWidth: 1,
+    // borderColor: "darkgray",
+    // borderWidth: 1,
     paddingHorizontal: 10
     // margin: 10,
   },

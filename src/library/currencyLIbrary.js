@@ -1,4 +1,3 @@
-
 const currencyLibrary = {
   formatCurrency: (number) => {
     // using loop to add comma to number, each 3 digits from right to left
@@ -13,5 +12,11 @@ const currencyLibrary = {
       }
     }
     return result;
+  },
+  // remove all '.' and 'space' and 'đ' in string
+  removeCurrencyFormat: (currency) => {
+    return currency.replace(/\./g, "").replace(/ /g, "").replace(/đ/g, "");
   }
 };
+
+export default currencyLibrary;

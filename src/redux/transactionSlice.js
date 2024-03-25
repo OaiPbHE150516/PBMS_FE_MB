@@ -52,6 +52,17 @@ export const setTransCompIsLoading = createAsyncThunk(
   }
 );
 
+export const addTransactionWithInvoice = createAsyncThunk(
+  "addTransactionWithInvoice",
+  async (data) => {
+    console.log("addTransactionWithInvoice: ", data);
+    console.log("invoice: ", data.invoice);
+    console.log("products: ", data.invoice.products);
+    const response = await transactionServices.addTransactionWithInvoice(data);
+    return response;
+  }
+);
+
 // export const addToListTransaction = createAsyncThunk(
 //   "addToListTransaction",
 //   async (data) => {
@@ -68,7 +79,9 @@ const transactionSlice = createSlice({
     listTransaction: [{ week: null, data: null }],
     addTransactionTime: null,
     addTransactionWallet: null,
-    transCompIsLoading: false
+    transCompIsLoading: false,
+    addTransactionWithInvoice: null
+
   },
   reducers: {
     // fetchTransactionData: (state, action) => {
@@ -133,6 +146,15 @@ const transactionSlice = createSlice({
       .addCase(setTransCompIsLoading.rejected, (state, action) => {
         state.transCompIsLoading = false;
         console.error("setTransCompIsLoading.rejected");
+      })
+      // Add Transaction With Invoice
+      .addCase(addTransactionWithInvoice.fulfilled, (state, action) => {
+        state.addTransactionWithInvoice = action.payload;
+        console.log("addTransactionWithInvoice.fulfilled: ", action.payload);
+      })
+      .addCase(addTransactionWithInvoice.rejected, (state, action) => {
+        state.addTransactionWithInvoice = null;
+        console.error("addTransactionWithInvoice.rejected");
       });
   }
 });

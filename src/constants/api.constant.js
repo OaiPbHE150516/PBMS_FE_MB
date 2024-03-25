@@ -19,12 +19,17 @@ export const API = {
     GET_TRANSACTION_BY_ACCOUNT: `${Base_URL}/api/transaction/get/account/`,
     GET_RECENTLY_TRANSACTION: `${Base_URL}/api/transaction/get/recently/`,
     GET_TRANSACTION_BY_WEEK: `${Base_URL}/api/transaction/get/weekbyweek/custom/`,
-    ADD_TRANSACTION_NO_INVOICE: `${Base_URL}/api/transaction/create/withoutinvoice`
+    ADD_TRANSACTION_NO_INVOICE: `${Base_URL}/api/transaction/create/withoutinvoice`,
+    ADD_TRANSACTION_WITH_INVOICE: `${Base_URL}/api/transaction/create`
   },
   CATEGORY: {
     GET_CATEGORIES: `${Base_URL}/api/category/get/typebytype/`
   },
   INVOICE: {
     SCAN: `${Base_URL}/api/invoice/scan`
+  },
+  FILE: {
+    UPLOAD_INVOICE_OF_TRANSACTION: `${Base_URL}/api/file/upload/transaction/invoice`,
+    UPLOAD_INVOICE_OF_TRANSACTION_FILE_NAME: `${Base_URL}/api/file/upload/transaction/invoice/filename`
   }
 };

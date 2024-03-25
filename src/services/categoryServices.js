@@ -9,7 +9,7 @@ const categoryServices = {
   getCategories: async (accountid) => {
     try {
       const urlapi = API.CATEGORY.GET_CATEGORIES + accountid;
-      console.log("urlapi: ", urlapi);
+      // console.log("urlapi: ", urlapi);
       const response = await axios.get(urlapi, { headers });
       return response.data;
     } catch (error) {

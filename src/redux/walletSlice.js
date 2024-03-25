@@ -22,7 +22,7 @@ export const getTotalBalanceEachWallet = createAsyncThunk(
   "getTotalBalanceEachWallet",
   async (accountid) => {
     const response = await walletServices.getTotalBalanceEachWallet(accountid);
-    console.log("getTotalBalanceEachWallet: ", response);
+    // console.log("getTotalBalanceEachWallet: ", response);
     return response;
   }
 );

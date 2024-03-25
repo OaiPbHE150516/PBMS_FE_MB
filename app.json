@@ -49,7 +49,20 @@
         {
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.oaipb.pbms_fe_mb"
+        }
       ]
+      //,
+      // [
+      //   "@react-native-google-signin/google-signin",
+      //   {
+      //     // "iosUrlScheme": "com.googleusercontent.apps._some_id_here_"
+      //   }
+      // ]
     ]
   }
 }

@@ -30,7 +30,8 @@ const SigninScreen = () => {
         "461985987390-p2vekcu9quj88910pqiftjctqegp5rl1.apps.googleusercontent.com",
       offlineAccess: true,
       scopes: ["profile", "email"],
-      requestIdToken: "461985987390-sb848ug9vlln2lemncolefu15ckc7ljg.apps.googleusercontent.com",
+      requestIdToken:
+        "461985987390-sb848ug9vlln2lemncolefu15ckc7ljg.apps.googleusercontent.com"
     });
   }, []);
 
@@ -62,6 +63,17 @@ const SigninScreen = () => {
       }
     }
   };
+
+  const handleSignOut = async () => {
+    try {
+      await GoogleSignin.revokeAccess();
+      await GoogleSignin.signOut();
+      console.log("Signed out successfully");
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <GoogleSigninButton
@@ -69,6 +81,13 @@ const SigninScreen = () => {
         color={GoogleSigninButton.Color.Dark}
         onPress={signInWithGoogle}
       />
+      <Pressable
+        onPress={() => {
+          handleSignOut();
+        }}
+      >
+        <Text>Sign out</Text>
+      </Pressable>
     </View>
   );
 };

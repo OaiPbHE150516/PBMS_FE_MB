@@ -15,14 +15,29 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Allow $(PRODUCT_NAME) to access your photos.",
+        "NSPhotoLibraryAddUsageDescription": "Allow $(PRODUCT_NAME) to save photos."
+      },
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.oaipb.pbms_fe_mb"
+      "package": "com.oaipb.pbms_fe_mb",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.ACCESS_MEDIA_LOCATION"
+      ],
+      "runtimeVersion": "1.0.0"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -56,13 +71,14 @@
           "iosUrlScheme": "com.oaipb.pbms_fe_mb"
         }
       ]
-      //,
-      // [
-      //   "@react-native-google-signin/google-signin",
-      //   {
-      //     // "iosUrlScheme": "com.googleusercontent.apps._some_id_here_"
-      //   }
-      // ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "c29a6a9e-f494-49ef-9680-0cc0e75a091a"
+      }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/c29a6a9e-f494-49ef-9680-0cc0e75a091a"
+    }
   }
 }

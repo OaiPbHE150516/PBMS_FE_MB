@@ -27,7 +27,13 @@
       "distribution": "internal"
     },
     "production": {
-      "channel": "production"
+      "channel": "production",
+      "android": {
+        "image": "latest"
+      },
+      "ios": {
+        "image": "latest"
+      }
     }
   },
   "submit": {

@@ -1,9 +1,13 @@
 import * as React from "react";
+import { useState, useEffect, useRef } from "react";
 import { Text, View, Button, StyleSheet, Platform } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
+import {
+  NavigationContainer,
+  getFocusedRouteNameFromRoute
+} from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
-
+import Icon from "react-native-vector-icons/FontAwesome6";
 import {
   SafeAreaView,
   SafeAreaProvider,
@@ -11,6 +15,7 @@ import {
 } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
 import store from "./src/store/store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import {
   useFonts,
@@ -45,10 +50,16 @@ import AddTransactionScreen from "./src/screens/transaction/AddTransactionScreen
 import TestScreen from "./src/screens/TestScreen";
 import SigninScreen from "./src/screens/SigninScreen";
 import SignInIOS from "./src/screens/SignInIOS";
+import MyAccount from "./src/screens/MyAccount";
 
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+  const [isSignin, setIsSignin] = useState(false);
+  useEffect(() => {
+    checkUserSignedIn();
+  });
+
   const [fontsLoaded] = useFonts({
     Inconsolata_200ExtraLight,
     Inconsolata_300Light,
@@ -71,6 +82,31 @@ export default function App() {
     OpenSans_800ExtraBold,
     OpenSans_800ExtraBold_Italic
   });
+
+  if (!fontsLoaded) {
+    return <Text>Loading...</Text>;
+  }
+
+  async function checkUserSignedIn() {
+    try {
+      const userInfo = await AsyncStorage.getItem("userInfo");
+      if (userInfo === null || userInfo === "") {
+        console.log("false: ", userInfo);
+        setIsSignin(false);
+      } else {
+        console.log("true: ", userInfo);
+        setIsSignin(true);
+      }
+    } catch (error) {
+      console.error("Error checking user signed in:", error);
+    }
+  }
+  // check that the user is signed in or not by checking the token of the user in the AsyncStorage
+  // if the token is not null then the user is signed in
+  // if the token is null then the user is not signed in
+  // if the user is not signed in then navigate to the SigninScreen
+  // if the user is signed in then navigate to the HomeScreen
+
   return (
     <SafeAreaProvider style={styles.container}>
       <SafeAreaView
@@ -91,13 +127,16 @@ export default function App() {
                       iconName = focused ? "settings" : "settings-outline";
                       break;
                     case "Signin":
-                      iconName = focused ? "person" : "person-outline";
+                      iconName = focused ? "log-in" : "log-in-outline";
                       break;
                     case "Transaction":
                       iconName = focused ? "cash" : "cash-outline";
                       break;
                     case "AddTransaction":
                       iconName = focused ? "add-circle" : "add-circle-outline";
+                      break;
+                    case "MyAccount":
+                      iconName = focused ? "person" : "person-outline";
                       break;
                   }
                   return (
@@ -109,8 +148,6 @@ export default function App() {
                         position: "absolute",
                         bottom: -10,
                         top: route.name == "AddTransaction" ? -12 : 15,
-                        // backgroundColor:
-                        //   route.name == "AddTransaction" ? "tomato" : null,
                         borderRadius: 50,
                         padding: route.name == "AddTransaction" ? 5 : 0
                       }}
@@ -139,10 +176,17 @@ export default function App() {
                   borderRadius: 20,
                   height: 60,
                   borderWidth: 1,
-                  borderColor: "lightgray"
+                  borderColor: "lightgray",
+                  display: route.name == "Signin" ? "none" : "flex"
                 }
               })}
             >
+              {/* if platform is IOS then add SignInIOS, if Android add SignInScreen */}
+              {Platform.OS === "ios" ? (
+                <Tab.Screen name="Signin" component={SignInIOS} />
+              ) : (
+                <Tab.Screen name="Signin" component={SigninScreen} />
+              )}
               <Tab.Screen name="Home" component={HomeScreen} />
               <Tab.Screen name="Transaction" component={TransactionScreen} />
               <Tab.Screen
@@ -150,12 +194,8 @@ export default function App() {
                 component={AddTransactionScreen}
               />
               <Tab.Screen name="Settings" component={TestScreen} />
-              {/* if platform is IOS then add SignInIOS, if Android add SignInScreen */}
-              {Platform.OS === "ios" ? (
-                <Tab.Screen name="Signin" component={SignInIOS} />
-              ) : (
-                <Tab.Screen name="Signin" component={SigninScreen} />
-              )}
+              {/* if the user is signed in then add MyAccount screen */}
+              {isSignin ? <Tab.Screen name="MyAccount" component={MyAccount} /> : null}
             </Tab.Navigator>
           </NavigationContainer>
         </Provider>

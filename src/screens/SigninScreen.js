@@ -9,41 +9,101 @@ import {
   Dimensions,
   Image,
   Pressable,
-  TextInput
+  TextInput,
+  ImageBackground,
+  ActivityIndicator
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useDispatch, useSelector } from "react-redux";
+import { BlurView } from "expo-blur";
 
-import {
-  GoogleSignin,
-  GoogleSigninButton,
-  statusCodes,
-  isErrorWithCode
-} from "@react-native-google-signin/google-signin";
+import { signin, signout } from "../redux/authenSlice";
+
+// import {
+//   GoogleSignin,
+//   GoogleSigninButton,
+//   statusCodes,
+//   isErrorWithCode
+// } from "@react-native-google-signin/google-signin";
+
+const imageBackground = { uri: "https://picsum.photos/1080/1920" };
 
 const SigninScreen = () => {
   const navigation = useNavigation();
-  const [androidClientId, setAndroidClientId] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const account = useSelector((state) => state.authen.account);
+  const dispatch = useDispatch();
+
+  const configureGoogleSignIn = () => {
+    // GoogleSignin.configure({
+    //   webClientId:
+    //     "461985987390-sb848ug9vlln2lemncolefu15ckc7ljg.apps.googleusercontent.com",
+    //   androidClientId:
+    //     "461985987390-p2vekcu9quj88910pqiftjctqegp5rl1.apps.googleusercontent.com",
+    //   offlineAccess: true,
+    //   // scopes: ["profile", "email"],
+    //   requestIdToken:
+    //     "461985987390-sb848ug9vlln2lemncolefu15ckc7ljg.apps.googleusercontent.com"
+    // });
+  };
+
+  // async function lastAccount() {
+  //   const userInfo = await AsyncStorage.getItem("userInfo");
+  //   console.log("userInfo: ", userInfo);
+  //   if (userInfo !== null) {
+  //     dispatch(signin(JSON.parse(userInfo).idToken));
+  //     navigation.navigate("Home");
+  //   }
+  // }
+
+  async function lastAccount() {
+    const userInfo = await AsyncStorage.getItem("userInfo");
+    // console.log("userInfo: ", userInfo);
+    if (userInfo !== null) {
+      console.log("not null");
+      // console.log("userInfo: ", userInfo);
+      console.log("JSON.parse(userInfo).idToken: ", JSON.parse(userInfo).idToken);
+      dispatch(signin(JSON.parse(userInfo).idToken));
+      setTimeout(() => {
+        setIsLoading(false);
+        navigation.navigate("Home");
+      }, 500);
+    }
+  }
+
   useEffect(() => {
-    // configureGoogleSignIn();
-    GoogleSignin.configure({
-      webClientId:
-        "461985987390-sb848ug9vlln2lemncolefu15ckc7ljg.apps.googleusercontent.com",
-      androidClientId: androidClientId,
-      offlineAccess: true,
-      scopes: ["profile", "email"],
-      requestIdToken:
-        "461985987390-sb848ug9vlln2lemncolefu15ckc7ljg.apps.googleusercontent.com"
-    });
+    setIsLoading(true);
+    console.log("account: ", account);
+    configureGoogleSignIn();
+    if (account !== null) {
+      setIsLoading(false);
+      navigation.navigate("Home");
+    }
+    lastAccount();
   }, []);
+
+  const saveData = async (key, value) => {
+    try {
+      await AsyncStorage.setItem(key, value);
+    } catch (error) {
+      console.error("Error saving data: ", error);
+    }
+  };
 
   const signInWithGoogle = async () => {
     try {
-      await GoogleSignin.hasPlayServices();
-      const userInfo = await GoogleSignin.signIn();
-      console.log("userInfo: ", userInfo);
-      // Handle successful sign in here
-      // alert("Signed in successfully");
-      Alert.alert("Signed in successfully: ", userInfo.user.email);
+      // setIsLoading(true);
+      // await GoogleSignin.hasPlayServices();
+      // const userInfo = await GoogleSignin.signIn();
+      // // Handle successful sign in here
+      // //alert("Signed in successfully");
+      // // Alert.alert("Signed in successfully: ", userInfo.user.email);
+      // // console.log("userInfo: ", userInfo);
+      // saveData("userInfo", JSON.stringify(userInfo));
+      // dispatch(signin(userInfo.idToken));
+      // setIsLoading(false);
+      // navigation.navigate("Home");
     } catch (error) {
       switch (error.code) {
         case statusCodes.SIGN_IN_CANCELLED:
@@ -68,9 +128,13 @@ const SigninScreen = () => {
   };
 
   const handleSignOut = async () => {
+    setIsLoading(false);
     try {
       await GoogleSignin.revokeAccess();
       await GoogleSignin.signOut();
+      // set userInfo to null
+      saveData("userInfo", "");
+      dispatch(signout());
       console.log("Signed out successfully");
       Alert.alert("Signed out successfully");
     } catch (error) {
@@ -80,39 +144,103 @@ const SigninScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.textInput}>
-        <TextInput
-          onChangeText={(text) => {
-            setAndroidClientId(text);
+    <ImageBackground source={imageBackground} style={styles.container}>
+      {/* a button to sign in with Google custom */}
+      <BlurView intensity={20} tint="light" style={styles.viewCenter}>
+        <Image
+          source={{
+            uri: "https://static.vecteezy.com/system/resources/previews/025/559/670/original/hands-coin-donation-charity-outline-blue-icon-button-logo-community-support-design-vector.jpg"
           }}
-          numberOfLines={2}
-          multiline={true}
+          style={{ width: "50%", height: "50%" }}
+        />
+
+        <Pressable
+          // onPressIn={() => {
+          //   setIsLoading(true);
+          // }}
+          onPress={signInWithGoogle}
+          style={styles.pressableSigninWithGoogle}
+          disabled={isLoading}
         >
-          {androidClientId}
-        </TextInput>
-      </View>
-      <GoogleSigninButton
-        size={GoogleSigninButton.Size.Wide}
-        color={GoogleSigninButton.Color.Dark}
-        onPress={signInWithGoogle}
-      />
-      <Pressable
-        onPress={() => {
-          handleSignOut();
-        }}
-      >
-        <Text>Sign out</Text>
-      </Pressable>
-    </View>
+          <Image
+            source={require("../../assets/7123025_logo_google_g_icon.png")}
+            style={{ width: 60, height: 60 }}
+          />
+          <Text style={styles.textSigninWithGoogle}>
+            {isLoading ? "Signing in..." : "Sign in with Google"}
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={() => {
+            navigation.navigate("Home");
+          }}
+        >
+          <Text>Go to Home</Text>
+        </Pressable>
+        <Pressable
+          onPress={() => {
+            handleSignOut();
+          }}
+        >
+          <Text>Sign out</Text>
+        </Pressable>
+      </BlurView>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  viewCenter: {
+    // flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
+    width: "80%",
+    height: "45%",
+    borderWidth: 0.5,
+    borderColor: "darkgray",
+    borderRadius: 15,
+    shadowColor: "darkgray",
+    shadowOffset: {
+      width: 0,
+      height: 10
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 3.5,
+    elevation: 5,
+    // top: "20%"
+  },
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center"
+  },
+  pressableSigninWithGoogle: {
+    width: "90%",
+    height: 50,
+    marginHorizontal: 10,
+    marginVertical: 15,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    alignContent: "center",
+    borderWidth: 0.5,
+    borderColor: "darkgray",
+    borderRadius: 15,
+    backgroundColor: "white",
+    shadowColor: "darkgray",
+    shadowOffset: {
+      width: 0,
+      height: 10
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 3.5,
+    elevation: 5
+  },
+  textSigninWithGoogle: {
+    fontSize: 20,
+    fontFamily: "Inconsolata_400Regular",
+    textAlign: "left"
   },
   textInput: {
     width: "80%",

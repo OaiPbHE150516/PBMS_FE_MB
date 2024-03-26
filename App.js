@@ -90,7 +90,7 @@ export default function App() {
                     case "Settings":
                       iconName = focused ? "settings" : "settings-outline";
                       break;
-                    case "Welcome":
+                    case "Signin":
                       iconName = focused ? "person" : "person-outline";
                       break;
                     case "Transaction":
@@ -152,7 +152,7 @@ export default function App() {
               <Tab.Screen name="Settings" component={TestScreen} />
               {/* if platform is IOS then add SignInIOS, if Android add SignInScreen */}
               {Platform.OS === "ios" ? (
-                <Tab.Screen name="Welcome" component={SignInIOS} />
+                <Tab.Screen name="Signin" component={SignInIOS} />
               ) : (
                 <Tab.Screen name="Signin" component={SigninScreen} />
               )}

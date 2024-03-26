@@ -8,7 +8,8 @@ import {
   FlatList,
   Dimensions,
   Image,
-  Pressable
+  Pressable,
+  TextInput
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -21,13 +22,13 @@ import {
 
 const SigninScreen = () => {
   const navigation = useNavigation();
+  const [androidClientId, setAndroidClientId] = useState("");
   useEffect(() => {
     // configureGoogleSignIn();
     GoogleSignin.configure({
       webClientId:
         "461985987390-sb848ug9vlln2lemncolefu15ckc7ljg.apps.googleusercontent.com",
-      androidClientId:
-        "461985987390-p2vekcu9quj88910pqiftjctqegp5rl1.apps.googleusercontent.com",
+      androidClientId: androidClientId,
       offlineAccess: true,
       scopes: ["profile", "email"],
       requestIdToken:
@@ -41,6 +42,8 @@ const SigninScreen = () => {
       const userInfo = await GoogleSignin.signIn();
       console.log("userInfo: ", userInfo);
       // Handle successful sign in here
+      // alert("Signed in successfully");
+      Alert.alert("Signed in successfully: ", userInfo.user.email);
     } catch (error) {
       switch (error.code) {
         case statusCodes.SIGN_IN_CANCELLED:
@@ -69,13 +72,26 @@ const SigninScreen = () => {
       await GoogleSignin.revokeAccess();
       await GoogleSignin.signOut();
       console.log("Signed out successfully");
+      Alert.alert("Signed out successfully");
     } catch (error) {
       console.error("Error signing out: ", error);
+      Alert.alert("Error signing out: ");
     }
   };
 
   return (
     <View style={styles.container}>
+      <View style={styles.textInput}>
+        <TextInput
+          onChangeText={(text) => {
+            setAndroidClientId(text);
+          }}
+          numberOfLines={2}
+          multiline={true}
+        >
+          {androidClientId}
+        </TextInput>
+      </View>
       <GoogleSigninButton
         size={GoogleSigninButton.Size.Wide}
         color={GoogleSigninButton.Color.Dark}
@@ -97,6 +113,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center"
+  },
+  textInput: {
+    width: "80%",
+    height: 50,
+    borderColor: "gray",
+    borderWidth: 1,
+    marginBottom: 20
   }
 });
 

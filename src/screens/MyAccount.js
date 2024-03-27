@@ -29,6 +29,9 @@ import { SimpleGrid } from "react-native-super-grid";
 
 // components
 import AccountManagerComponent from "../components/myaccount/accountManagerComponent";
+import CategoryManagerScreen from "./categories/categoryManagerScreen";
+import WalletsManagerScreen from "./wallets/walletsManagerScreen";
+import ReportScreen from "./reports/reportScreen";
 
 function NotificationsScreen({ navigation }) {
   return (
@@ -80,8 +83,8 @@ const AccountManagerPressable = ({ navigation }) => {
         </View>
         <Icon
           name="chevron-right"
-          size={20}
-          color="black"
+          size={15}
+          color="darkgray"
           style={styles.sigleIcon}
         />
       </View>
@@ -89,9 +92,17 @@ const AccountManagerPressable = ({ navigation }) => {
   );
 };
 
-const AnItemInGrid = ({ item }) => {
+const AnItemInGrid = ({ item, navigation }) => {
+  const handleItemOnPress = (item) => {
+    console.log("item: ", item);
+    navigation.navigate(item.screen);
+  };
+
   return (
-    <Pressable style={styles.AnItemInGrid}>
+    <Pressable
+      style={styles.AnItemInGrid}
+      onPress={() => handleItemOnPress(item)}
+    >
       <View
         style={[styles.viewAnIconOfItemGrid, { backgroundColor: item.color }]}
       >
@@ -116,35 +127,47 @@ const dataGridFeature = [
     id: 1,
     name: "Hạng mục",
     icon: "list",
-    color: "mediumvioletred"
+    color: "mediumvioletred",
+    screen: "CategoryManagerScreen"
   },
   {
     id: 2,
-    name: "Tài khoản",
+    name: "Ví tiền",
     icon: "wallet",
-    color: "lightgreen"
+    color: "lightgreen",
+    screen: "WalletsManagerScreen"
   },
   {
     id: 3,
     name: "Báo cáo",
     icon: "chart-simple",
-    color: "lightskyblue"
+    color: "lightskyblue",
+    screen: "ReportScreen"
   },
   {
     id: 4,
     name: "Nhắc nhở",
-    icon: "bell",
-    color: "goldenrod"
+    icon: "note-sticky",
+    color: "goldenrod",
+    screen: "NotificationsScreen"
   },
   {
     id: 5,
-    name: "Cài đặt",
-    icon: "gear",
-    color: "mediumslateblue"
+    name: "Dự kiến",
+    icon: "business-time",
+    color: "mediumslateblue",
+    screen: "SettingsScreen"
+  },
+  {
+    id: 6,
+    name: "Mua sắm",
+    icon: "cart-shopping",
+    color: "lightcoral",
+    screen: "ShoppingScreen"
   }
 ];
 
-const SimpleGridFeature = () => {
+const SimpleGridFeature = ({ navigation }) => {
   return (
     <View style={styles.simpleGridFeature}>
       <Text style={styles.textHeaderGrid}>{"Tính năng"}</Text>
@@ -152,7 +175,9 @@ const SimpleGridFeature = () => {
         itemDimension={Dimensions.get("window").width / 5}
         data={dataGridFeature}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <AnItemInGrid item={item} />}
+        renderItem={({ item }) => (
+          <AnItemInGrid item={item} navigation={navigation} />
+        )}
       />
     </View>
   );
@@ -246,7 +271,7 @@ const MyAccount = () => {
         pagingEnabled={true}
       >
         <AccountManagerPressable navigation={navigation} />
-        <SimpleGridFeature />
+        <SimpleGridFeature navigation={navigation} />
         <View style={styles.viewFlatListOtherSetting}>
           <Text style={styles.textHeaderGrid}>{"Cài đặt khác"}</Text>
           <FlatList
@@ -273,6 +298,11 @@ const MyAccount = () => {
           component={AccountManagerComponent}
         />
         <Stack.Screen name="Settings" component={SettingsScreen} />
+        {/* Simple Grid Feature */}
+        <Stack.Screen name="CategoryManagerScreen" component={CategoryManagerScreen} />
+        {/* WalletManagerScreen, ReportScreen,  */}
+        <Stack.Screen name="WalletsManagerScreen" component={WalletsManagerScreen} />
+        <Stack.Screen name="ReportScreen" component={ReportScreen} />
       </Stack.Navigator>
     </View>
   );
@@ -281,9 +311,9 @@ const MyAccount = () => {
 const styles = StyleSheet.create({
   textAnItemNameInList: {
     fontSize: 22,
-    fontFamily: "Inconsolata_400Regular",
+    fontFamily: "Inconsolata_400Regular"
   },
-  viewAnIconOfItemList:{
+  viewAnIconOfItemList: {
     flexDirection: "row",
     justifyContent: "center",
     alignContent: "center",
@@ -296,7 +326,7 @@ const styles = StyleSheet.create({
     width: 50,
     marginHorizontal: 10
   },
-  AnItemInList:{
+  AnItemInList: {
     flexDirection: "row",
     justifyContent: "flex-start",
     alignContent: "center",
@@ -333,7 +363,7 @@ const styles = StyleSheet.create({
   },
   textAnItemNameInGrid: {
     fontSize: 18,
-    fontFamily: "Inconsolata_400Regular",
+    fontFamily: "Inconsolata_400Regular"
     // color: "black"
   },
   viewAnIconOfItemGrid: {
@@ -404,7 +434,7 @@ const styles = StyleSheet.create({
     elevation: 5
   },
   textAccountManager: {
-    fontSize: 25,
+    fontSize: 24,
     fontFamily: "Inconsolata_400Regular",
     marginHorizontal: 10
   },
@@ -443,7 +473,7 @@ const styles = StyleSheet.create({
   viewStyle: {
     // flex: 1,
     width: "100%",
-    height: "90%",
+    height: "90%"
     // borderWidth: 1,
     // borderColor: "black"
   }

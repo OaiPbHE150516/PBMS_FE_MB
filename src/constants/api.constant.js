@@ -11,7 +11,8 @@ export const API = {
   WALLET: {
     GET_TOTAL_BALANCE: `${Base_URL}/api/wallet/get/total-amount/`,
     GET_ALL_WALLET: `${Base_URL}/api/wallet/get/account/`,
-    GET_EACH_WALLET_BALANCE: `${Base_URL}/api/wallet/get/total-amount-each-wallet/`
+    GET_EACH_WALLET_BALANCE: `${Base_URL}/api/wallet/get/total-amount-each-wallet/`,
+    CREATE_WALLET: `${Base_URL}/api/wallet/create`
   },
   TRANSACTION: {
     GET_TRANSACTION: `${Base_URL}/api/transaction/get/`,

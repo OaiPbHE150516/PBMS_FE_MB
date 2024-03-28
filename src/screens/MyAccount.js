@@ -42,6 +42,11 @@ import SuggestToDeveScreen from "./suggest/suggestToDeveScreen";
 
 // redux
 import { getCategories } from "../redux/categorySlice";
+import {
+  getTotalBalance,
+  getAllWallet,
+  getTotalBalanceEachWallet
+} from "../redux/walletSlice";
 
 function NotificationsScreen({ navigation }) {
   return (
@@ -302,6 +307,11 @@ const Stack = createStackNavigator();
 const MyAccount = () => {
   const account = useSelector((state) => state.authen?.account);
   const categories = useSelector((state) => state.category?.categories);
+  const wallets = useSelector((state) => state.wallet?.wallets);
+  const totalBalance = useSelector((state) => state.wallet?.totalBalance);
+  const totalBalanceEachWallet = useSelector(
+    (state) => state.wallet?.totalBalanceEachWallet
+  );
   // console.log("account: ", account);
   const dispatch = useDispatch();
 
@@ -311,9 +321,9 @@ const MyAccount = () => {
         console.log("dispatch getCategories");
         dispatch(getCategories(account?.accountID));
       }
+
     }
   }, [account, categories]);
-
 
   function MainScreen({ navigation }) {
     return (

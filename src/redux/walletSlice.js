@@ -27,12 +27,19 @@ export const getTotalBalanceEachWallet = createAsyncThunk(
   }
 );
 
+// createWallet
+export const createWallet = createAsyncThunk("createWallet", async (wallet) => {
+  const response = await walletServices.createWallet(wallet);
+  return response;
+});
+
 const walletSlice = createSlice({
   name: "wallet",
   initialState: {
     wallets: null,
     totalBalance: null,
-    totalBalanceEachWallet: null
+    totalBalanceEachWallet: null,
+    createWallet: null
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -61,6 +68,14 @@ const walletSlice = createSlice({
       .addCase(getTotalBalanceEachWallet.rejected, (state, action) => {
         console.log("getTotalBalanceEachWallet.rejected");
         state.totalBalanceEachWallet = null;
+      });
+    builder
+      .addCase(createWallet.fulfilled, (state, action) => {
+        state.createWallet = action.payload;
+      })
+      .addCase(createWallet.rejected, (state, action) => {
+        state.createWallet = null;
+        console.log("createWallet.rejected");
       });
   }
 });

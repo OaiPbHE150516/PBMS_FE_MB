@@ -43,6 +43,17 @@ const walletServices = {
     } catch (error) {
       console.error("Error fetching data:", error);
     }
+  },
+  createWallet: async (wallet) => {
+    try {
+      console.log("wallet", wallet);
+      const response = await axios.post(API.WALLET.CREATE_WALLET, wallet, {
+        headers
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+    }
   }
 };
 export default walletServices;

@@ -5,6 +5,10 @@ export const API = {
   AUTHEN: {
     SIGN_IN: `${Base_URL}/api/Auth/signin`
   },
+  COLLABFUND: {
+    GET_ALL_COLLABFUND: `${Base_URL}/api/collabfund/get/all/`,
+    GET_COLLABFUND_ACTIVITIES: `${Base_URL}/api/collabfund/get/activity/`,
+  },
   PROFILE: {
     GET_PROFILE: `${Base_URL}/api/profile/get/`
   },

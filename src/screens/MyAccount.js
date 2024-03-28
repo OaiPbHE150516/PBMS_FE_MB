@@ -353,7 +353,7 @@ const MyAccount = () => {
   return (
     <View style={styles.viewStyle}>
       <Stack.Navigator
-        initialRouteName="Home"
+        initialRouteName="Main"
         screenOptions={{ headerShown: false }}
       >
         <Stack.Screen name="Main" component={MainScreen} />

@@ -51,6 +51,7 @@ import TestScreen from "./src/screens/TestScreen";
 import SigninScreen from "./src/screens/SigninScreen";
 import SignInIOS from "./src/screens/SignInIOS";
 import MyAccount from "./src/screens/MyAccount";
+import CollabFundScreen from "./src/screens/collabfund/collabfundScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -136,7 +137,10 @@ export default function App() {
                       iconName = focused ? "add-circle" : "add-circle-outline";
                       break;
                     case "MyAccount":
-                      iconName = focused ? "person" : "person-outline";
+                      iconName = focused ? "grid" : "grid-outline";
+                      break;
+                    case "CollabFund":
+                      iconName = focused ? "people" : "people-outline";
                       break;
                   }
                   return (
@@ -193,9 +197,12 @@ export default function App() {
                 name="AddTransaction"
                 component={AddTransactionScreen}
               />
+              <Tab.Screen name="CollabFund" component={CollabFundScreen} />
               {/* <Tab.Screen name="Settings" component={TestScreen} /> */}
               {/* if the user is signed in then add MyAccount screen */}
-              {isSignin ? <Tab.Screen name="MyAccount" component={MyAccount} /> : null}
+              {isSignin ? (
+                <Tab.Screen name="MyAccount" component={MyAccount} />
+              ) : null}
             </Tab.Navigator>
           </NavigationContainer>
         </Provider>

@@ -23,7 +23,8 @@ export const API = {
     ADD_TRANSACTION_WITH_INVOICE: `${Base_URL}/api/transaction/create`
   },
   CATEGORY: {
-    GET_CATEGORIES: `${Base_URL}/api/category/get/typebytype/`
+    GET_CATEGORIES: `${Base_URL}/api/category/get/typebytype/`,
+    CREATE_CATEGORY: `${Base_URL}/api/category/create`
   },
   INVOICE: {
     SCAN: `${Base_URL}/api/invoice/scan`

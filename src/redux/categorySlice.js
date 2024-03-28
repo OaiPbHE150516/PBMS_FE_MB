@@ -23,12 +23,21 @@ export const setModalCategoryVisible = createAsyncThunk(
   }
 );
 
+export const createCategory = createAsyncThunk(
+  "createCategory",
+  async (category) => {
+    const response = await categoryServices.createCategory(category);
+    return response;
+  }
+);
+
 const categorySlice = createSlice({
   name: "category",
   initialState: {
     categories: null,
     categoryToAddTransaction: null,
-    modalCategoryVisible: false
+    modalCategoryVisible: false,
+    createCategory: null
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -59,6 +68,18 @@ const categorySlice = createSlice({
       .addCase(setModalCategoryVisible.rejected, (state, action) => {
         state.modalCategoryVisible = false;
         console.error("setModalCategoryVisible.rejected");
+      });
+
+    builder
+      .addCase(createCategory.fulfilled, (state, action) => {
+        state.createCategory = action.payload;
+      })
+      .addCase(createCategory.rejected, (state, action) => {
+        state.createCategory = null;
+        console.error("createCategory.rejected");
+      })
+      .addCase(createCategory.pending, (state, action) => {
+        state.createCategory = null;
       });
   }
 });

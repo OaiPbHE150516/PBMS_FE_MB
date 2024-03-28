@@ -13,7 +13,7 @@ import { API } from "../../constants/api.constant";
 import { useSelector, useDispatch } from "react-redux";
 
 const TransactionDashboard = () => {
-  const account = useSelector((state) => state.authen.account);
+  const account = useSelector((state) => state.authen?.account);
   const [transactions, setTransactions] = useState([]);
   const fetchData = async (accountID) => {
     try {

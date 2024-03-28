@@ -15,7 +15,24 @@ const categoryServices = {
     } catch (error) {
       console.error("Error fetching data:", error);
     }
-  }
+  },
+  createCategory: async (category) => {
+    try {
+      const newCategory = {
+        accountID: category.accountID,
+        nameVN: category.name,
+        nameEN: category.name,
+        parentCategoryID: category.parentID,
+      };
+      console.log("newCategory: ", newCategory);
+      const response = await axios.post(API.CATEGORY.CREATE_CATEGORY, newCategory, {
+        headers
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  },
 };
 
 export default categoryServices;

@@ -17,8 +17,8 @@ import { setTransCompIsLoading } from "../../redux/transactionSlice";
 const TransactionComponent = ({route}) => {
   // const data = route.params;
   console.log("time: ", route);
-  const account = useSelector((state) => state.authen.account);
-  const datenow = useSelector((state) => state.datedisplay.datenow);
+  const account = useSelector((state) => state.authen?.account);
+  const datenow = useSelector((state) => state.datedisplay?.datenow);
   const isTransCompLoading = useSelector(
     (state) => state.transaction.transCompIsLoading
   );

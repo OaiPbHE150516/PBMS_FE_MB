@@ -91,10 +91,10 @@ export default function App() {
     try {
       const userInfo = await AsyncStorage.getItem("userInfo");
       if (userInfo === null || userInfo === "") {
-        console.log("false: ", userInfo);
+        // console.log("false: ", userInfo);
         setIsSignin(false);
       } else {
-        console.log("true: ", userInfo);
+        // console.log("true: ", userInfo);
         setIsSignin(true);
       }
     } catch (error) {
@@ -193,7 +193,7 @@ export default function App() {
                 name="AddTransaction"
                 component={AddTransactionScreen}
               />
-              <Tab.Screen name="Settings" component={TestScreen} />
+              {/* <Tab.Screen name="Settings" component={TestScreen} /> */}
               {/* if the user is signed in then add MyAccount screen */}
               {isSignin ? <Tab.Screen name="MyAccount" component={MyAccount} /> : null}
             </Tab.Navigator>

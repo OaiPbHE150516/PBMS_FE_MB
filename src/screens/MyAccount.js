@@ -32,6 +32,16 @@ import AccountManagerComponent from "../components/myaccount/accountManagerCompo
 import CategoryManagerScreen from "./categories/categoryManagerScreen";
 import WalletsManagerScreen from "./wallets/walletsManagerScreen";
 import ReportScreen from "./reports/reportScreen";
+import SettingsGeneralScreen from "./settings/settingsGeneralScreen";
+import SettingsDataScreen from "./settings/settingsDataScreen";
+// PrivacyPolicyScreen, TermsOfUseScreen, HelpScreen, SuggestToDeveScreen
+import PrivacyPolicyScreen from "./others/privacyPolicyScreen";
+import TermsOfUseScreen from "./others/termsOfUseScreen";
+import HelpScreen from "./others/helpScreen";
+import SuggestToDeveScreen from "./suggest/suggestToDeveScreen";
+
+// redux
+import { getCategories } from "../redux/categorySlice";
 
 function NotificationsScreen({ navigation }) {
   return (
@@ -54,7 +64,7 @@ function SettingsScreen({ navigation }) {
 }
 
 const AccountManagerPressable = ({ navigation }) => {
-  const account = useSelector((state) => state.authen.account);
+  const account = useSelector((state) => state.authen?.account);
   return (
     <Pressable
       style={styles.pressableAccountManager}
@@ -62,10 +72,10 @@ const AccountManagerPressable = ({ navigation }) => {
     >
       <View style={styles.accountInfor}>
         <Image
-          source={{ uri: account.pictureURL }}
+          source={{ uri: account?.pictureURL }}
           style={styles.imageAvatar}
         />
-        <Text style={styles.textAccountManager}>{account.accountName}</Text>
+        <Text style={styles.textAccountManager}>{account?.accountName}</Text>
         <Text
           style={{
             fontSize: 17,
@@ -73,7 +83,7 @@ const AccountManagerPressable = ({ navigation }) => {
             color: "gray"
           }}
         >
-          {account.emailAddress}
+          {account?.emailAddress}
         </Text>
       </View>
       <View style={styles.viewHorizontalAccountManager}>
@@ -93,10 +103,10 @@ const AccountManagerPressable = ({ navigation }) => {
 };
 
 const AnItemInGrid = ({ item, navigation }) => {
-  const handleItemOnPress = (item) => {
-    console.log("item: ", item);
+  function handleItemOnPress(item) {
+    // console.log("item: ", item);
     navigation.navigate(item.screen);
-  };
+  }
 
   return (
     <Pressable
@@ -188,61 +198,77 @@ const dataListOtherSettings = [
     id: 1,
     name: "Cài đặt chung",
     icon: "gear",
-    color: "lightgray"
+    color: "lightgray",
+    screen: "SettingsGeneralScreen"
   },
   {
     id: 2,
     name: "Cài đặt dữ liệu",
     icon: "database",
-    color: "lightgray"
+    color: "lightgray",
+    screen: "SettingsDataScreen"
   },
   {
     id: 3,
     name: "Giới thiệu bạn bè",
     icon: "share",
-    color: "lightgray"
+    color: "lightgray",
+    screen: "ShareWithFriendsScreen"
   },
   {
     id: 4,
     name: "Đánh giá ứng dụng",
     icon: "star",
-    color: "lightgray"
+    color: "lightgray",
+    screen: "RateAppScreen"
   },
   {
     id: 5,
     name: "Góp ý với nhà phát triển",
     icon: "comment",
-    color: "lightgray"
+    color: "lightgray",
+    screen: "SuggestToDeveScreen"
   },
   {
     id: 6,
     name: "Chính sách bảo mật",
     icon: "user-shield",
-    color: "lightgray"
+    color: "lightgray",
+    screen: "PrivacyPolicyScreen"
   },
   {
     id: 7,
     name: "Điều khoản sử dụng",
     icon: "file-alt",
-    color: "lightgray"
+    color: "lightgray",
+    screen: "TermsOfUseScreen"
   },
   {
     id: 8,
     name: "Trợ giúp",
     icon: "info",
-    color: "lightgray"
+    color: "lightgray",
+    screen: "HelpScreen"
   }
 ];
 
-const AnItemInList = ({ item }) => {
+const AnItemInList = ({ item, navigation }) => {
+  function handleItemOnPress(item) {
+    // console.log("item: ", item);
+    navigation.navigate(item.screen);
+  }
+
   return (
-    <Pressable style={styles.AnItemInList}>
+    <Pressable
+      style={styles.AnItemInList}
+      onPress={() => handleItemOnPress(item)}
+    >
       <View
         style={[styles.viewAnIconOfItemList, { backgroundColor: item.color }]}
       >
         <Icon
           name={item.icon}
-          size={25}
+          size={22}
           color="white"
           style={{
             borderRadius: 50,
@@ -255,11 +281,39 @@ const AnItemInList = ({ item }) => {
   );
 };
 
+const ListSettings = ({ navigation }) => {
+  return (
+    <View style={styles.viewFlatListOtherSetting}>
+      <Text style={styles.textHeaderGrid}>{"Cài đặt khác"}</Text>
+      <FlatList
+        scrollEnabled={false}
+        data={dataListOtherSettings}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <AnItemInList item={item} navigation={navigation} />
+        )}
+      />
+    </View>
+  );
+};
+
 const Stack = createStackNavigator();
 
 const MyAccount = () => {
-  const account = useSelector((state) => state.authen.account);
-  console.log("account: ", account);
+  const account = useSelector((state) => state.authen?.account);
+  const categories = useSelector((state) => state.category?.categories);
+  // console.log("account: ", account);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (account !== null) {
+      if (categories === null) {
+        console.log("dispatch getCategories");
+        dispatch(getCategories(account?.accountID));
+      }
+    }
+  }, [account, categories]);
+
 
   function MainScreen({ navigation }) {
     return (
@@ -272,7 +326,7 @@ const MyAccount = () => {
       >
         <AccountManagerPressable navigation={navigation} />
         <SimpleGridFeature navigation={navigation} />
-        <View style={styles.viewFlatListOtherSetting}>
+        {/* <View style={styles.viewFlatListOtherSetting}>
           <Text style={styles.textHeaderGrid}>{"Cài đặt khác"}</Text>
           <FlatList
             scrollEnabled={false}
@@ -280,7 +334,8 @@ const MyAccount = () => {
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => <AnItemInList item={item} />}
           />
-        </View>
+        </View> */}
+        <ListSettings navigation={navigation} />
       </ScrollView>
     );
   }
@@ -298,11 +353,33 @@ const MyAccount = () => {
           component={AccountManagerComponent}
         />
         <Stack.Screen name="Settings" component={SettingsScreen} />
+
         {/* Simple Grid Feature */}
-        <Stack.Screen name="CategoryManagerScreen" component={CategoryManagerScreen} />
-        {/* WalletManagerScreen, ReportScreen,  */}
-        <Stack.Screen name="WalletsManagerScreen" component={WalletsManagerScreen} />
+        <Stack.Screen
+          name="CategoryManagerScreen"
+          component={CategoryManagerScreen}
+        />
+        <Stack.Screen
+          name="WalletsManagerScreen"
+          component={WalletsManagerScreen}
+        />
         <Stack.Screen name="ReportScreen" component={ReportScreen} />
+
+        {/* Others Settings */}
+        <Stack.Screen
+          name="SettingsGeneralScreen"
+          component={SettingsGeneralScreen}
+        />
+        <Stack.Screen
+          name="SettingsDataScreen"
+          component={SettingsDataScreen}
+        />
+        <Stack.Screen
+          name="PrivacyPolicyScreen"
+          component={PrivacyPolicyScreen}
+        />
+        <Stack.Screen name="TermsOfUseScreen" component={TermsOfUseScreen} />
+        <Stack.Screen name="HelpScreen" component={HelpScreen} />
       </Stack.Navigator>
     </View>
   );

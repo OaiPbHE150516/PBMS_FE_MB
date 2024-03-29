@@ -220,7 +220,8 @@ const styles = StyleSheet.create({
   textCollabFundItemBalance: {
     fontSize: 20,
     fontFamily: "OpenSans_600SemiBold",
-    textAlign: "right"
+    textAlign: "right",
+    color: "white"
   },
   // viewCollabFundItemHeader: {
   //   flexDirection: "row",
@@ -288,8 +289,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     // alignItems: "center",
     // justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "darkgray"
+    // borderWidth: 1,
+    // borderColor: "darkgray"
   }
 });
 

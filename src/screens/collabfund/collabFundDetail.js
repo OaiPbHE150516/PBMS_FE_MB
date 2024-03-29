@@ -134,8 +134,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "flex-start",
-    borderWidth: 1,
-    borderColor: "red"
+    // borderWidth: 1,
+    // borderColor: "red"
   }
 });
 

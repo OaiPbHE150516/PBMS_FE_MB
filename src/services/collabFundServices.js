@@ -21,13 +21,26 @@ const collabFundServices = {
   },
   getCollabFundActivities: async (data) => {
     try {
-      console.log("dataa: ", data);
-      console.log("accoundID: ", data?.data?.accountID);
       const response = await axios.get(
         API.COLLABFUND.GET_COLLABFUND_ACTIVITIES +
           data?.data?.collabFundID +
           "/" +
           data?.data?.accountID,
+        {
+          headers
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  },
+  // create activity no transaction form
+  createActivityNoTransaction: async (data) => {
+    try {
+      const response = await axios.post(
+        API.COLLABFUND.CREATE_ACTIVITY_NO_TRANSACTION,
+        data,
         {
           headers
         }

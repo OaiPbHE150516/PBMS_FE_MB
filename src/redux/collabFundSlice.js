@@ -9,19 +9,12 @@ export const getAllCollabFund = createAsyncThunk(
   }
 );
 
-export const getCollabFundActivities = createAsyncThunk(
-  "getCollabFundActivities",
-  async (data) => {
-    const response = await collabFundServices.getCollabFundActivities(data);
-    return response;
-  }
-);
+
 
 const collabFundSlice = createSlice({
   name: "collabFund",
   initialState: {
     collabFunds: null,
-    collabFundActivities: null
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -35,18 +28,6 @@ const collabFundSlice = createSlice({
       })
       .addCase(getAllCollabFund.pending, (state, action) => {
         state.collabFunds = null;
-      });
-
-    builder
-      .addCase(getCollabFundActivities.fulfilled, (state, action) => {
-        state.collabFundActivities = action.payload;
-      })
-      .addCase(getCollabFundActivities.rejected, (state, action) => {
-        console.log("getCollabFundActivities.rejected");
-        state.collabFundActivities = null;
-      })
-      .addCase(getCollabFundActivities.pending, (state, action) => {
-        state.collabFundActivities = null;
       });
   }
 });

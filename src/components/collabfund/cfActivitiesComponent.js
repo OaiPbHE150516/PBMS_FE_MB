@@ -40,6 +40,8 @@ const CfActivitiesComponent = ({ route }) => {
   const [nowCollabFundActivities, setNowCollabFundActivities] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  const textInputRef = useRef(null);
+
   const dispatch = useDispatch();
 
   async function handleOnSendChat({ text }) {
@@ -65,9 +67,15 @@ const CfActivitiesComponent = ({ route }) => {
         data.append("file", null);
       }
       console.log("data: ", data);
-      const response =
-        await collabFundServices.createActivityNoTransaction(data);
-      console.log("response: ", response);
+      const response = await collabFundServices
+        .createActivityNoTransaction(data)
+        .then((res) => {
+          // console.log("res: ", res);
+          fetchCollabFundActivities();
+          setImage(null);
+          textInputRef?.current?.clear();
+        });
+      // console.log("response: ", response);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -76,7 +84,7 @@ const CfActivitiesComponent = ({ route }) => {
   async function handleOnPickMedia() {
     console.log("Pick Media");
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1
     });
     console.log(result);
@@ -156,14 +164,14 @@ const CfActivitiesComponent = ({ route }) => {
               // borderColor: "green"
             }}
           > */}
-            {item?.filename === "" ? null : (
-              <Image
-                source={{ uri: item?.filename }}
-                style={{ width: "auto", height: 250 }}
-                // defaultSource={require("../../../assets/images/placeholder.png")}
-                // loadingIndicatorSource={require("../../../assets/images/placeholder.png")}
-              />
-            )}
+          {item?.filename === "" ? null : (
+            <Image
+              source={{ uri: item?.filename }}
+              style={{ width: "auto", height: 250 }}
+              // defaultSource={require("../../../assets/images/placeholder.png")}
+              // loadingIndicatorSource={require("../../../assets/images/placeholder.png")}
+            />
+          )}
           {/* </View> */}
         </View>
         <View style={styles.viewAnActivityItemTimeAmount}>
@@ -215,6 +223,7 @@ const CfActivitiesComponent = ({ route }) => {
         </View>
         <View style={styles.viewActionUserChat}>
           <TextInput
+            ref={textInputRef}
             key={account?.accountID}
             style={styles.textInputActionUserChat}
             placeholder="Nhập nội dung..."

@@ -38,11 +38,14 @@ const collabFundServices = {
   // create activity no transaction form
   createActivityNoTransaction: async (data) => {
     try {
+      const formHeader = {
+        "Content-Type": "multipart/form-data"
+      };
       const response = await axios.post(
         API.COLLABFUND.CREATE_ACTIVITY_NO_TRANSACTION,
         data,
         {
-          headers
+          formHeader
         }
       );
       return response.data;

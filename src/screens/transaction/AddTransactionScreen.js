@@ -92,7 +92,6 @@ const AddTransactionScreen = () => {
     // console.log("useEffect: AddTransactionScreen");
     if (invoiceScanning) {
       setInvoiceResult(invoiceScanning);
-      console.log("invoiceScanning: ", invoiceScanning);
       // console.log("invoiceScanning: ", invoiceScanning);
       setunInputInvoiceScanning(invoiceScanning);
     }
@@ -154,6 +153,7 @@ const AddTransactionScreen = () => {
       // console.log("invoiceResult: ", invoiceResult);
       const filename =
         account.accountID + "_" + datetimeLibrary.getCurrentTimeStr();
+      console.log("assetsShowing?.asset: ", assetsShowing?.asset);
       dispatch(
         uploadToInvoiceTransactionFileName({
           asset: assetsShowing?.asset,

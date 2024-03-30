@@ -66,15 +66,15 @@ const fileServices = {
       const header = {
         "Content-Type": "multipart/form-data"
       };
-      console.log("filenamecustom: ", filenamecustom);
+      // console.log("filenamecustom: ", filenamecustom);
       const urlapi =
         API.FILE.UPLOAD_INVOICE_OF_TRANSACTION_FILE_NAME +
         "?" +
         "filename" +
         "=" +
         filenamecustom;
-      console.log("api: ", urlapi);
-      console.log("asset: ", asset);
+      // console.log("api: ", urlapi);
+      // console.log("asset: ", asset);
 
       const formData = new FormData();
       const filename = asset?.uri.split("/").pop();

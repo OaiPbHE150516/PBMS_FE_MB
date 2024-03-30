@@ -49,7 +49,7 @@ const fileSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(upToScanInvoice.fulfilled, (state, action) => {
       state.invoiceScanning = action.payload;
-      console.log("upToScanInvoice.fulfilled: ", action.payload);
+      // console.log("upToScanInvoice.fulfilled: ", action.payload);
     });
     builder.addCase(upToScanInvoice.rejected, (state, action) => {
       state.invoiceScanning = null;

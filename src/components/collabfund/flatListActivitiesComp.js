@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, memo } from "react";
 import {
   View,
   Text,
@@ -39,6 +39,7 @@ const FlatListActivities = ({ collabFund }) => {
           accountID: account?.accountID
         }
       });
+      console.log("data: ");
       setNowCollabFundActivities(data);
     } catch (error) {
       console.error("Error fetching collab fund activities:", error);
@@ -75,7 +76,7 @@ const FlatListActivities = ({ collabFund }) => {
             {item?.account?.accountName}
           </Text>
           <Text style={styles.textActivityNote}>{item?.note}</Text>
-          <View
+          {/* <View
             style={{
               width: "auto",
               height: item?.filename !== "" ? 300 : 0
@@ -87,11 +88,11 @@ const FlatListActivities = ({ collabFund }) => {
               <Image
                 source={{ uri: item?.filename }}
                 style={{ width: "auto", height: 300 }}
-                defaultSource={require("../../../assets/images/placeholder.png")}
-                loadingIndicatorSource={require("../../../assets/images/placeholder.png")}
+                // defaultSource={require("../../../assets/images/placeholder.png")}
+                // loadingIndicatorSource={require("../../../assets/images/placeholder.png")}
               />
             )}
-          </View>
+          </View> */}
         </View>
         <View style={styles.viewAnActivityItemTimeAmount}>
           <Text style={styles.textActivityTime}>{item?.createTimeString}</Text>
@@ -150,9 +151,9 @@ const styles = StyleSheet.create({
   flatListActivitiesContent: {
     // height: Dimensions.get("window").height * 0.2,
     // height: 500,
-    height: "auto",
+    // height: "auto",
     width: "100%",
-    flex: 1
+    // flex: 1
     // borderWidth: 1,
     // borderColor: "red"
   },

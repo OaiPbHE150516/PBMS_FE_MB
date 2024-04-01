@@ -46,6 +46,16 @@ const transactionServices = {
     } catch (error) {
       console.error("Error fetching data:", error);
     }
+  },
+  getLastNumberExpensesTransaction: async (accountid, numberOfLastDay) => {
+    try {
+      const urlapi =
+        API.TRANSACTION.GET_LASTNUMBERDAY_EXPENSES_TRANSACTION + accountid + "/" + numberOfLastDay;
+      const response = await axios.get(urlapi, { headers });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching data GET_LASTNUMBERDAY_EXPENSES_TRANSACTION:", error);
+    }
   }
 };
 

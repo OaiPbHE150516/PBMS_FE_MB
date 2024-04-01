@@ -7,5 +7,7 @@ export const VAR = {
 
   MEDIALIBRARY: {
     DEFAULT_ALBUM_NAME: "PBMS"
-  }
+  },
+
+  NUMBER_LASTDAY_EXPENSES_TRANSACTION: 20,
 };

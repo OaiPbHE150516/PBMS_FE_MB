@@ -29,6 +29,7 @@ export const API = {
     GET_TRANSACTION_BY_ACCOUNT: `${Base_URL}/api/transaction/get/account/`,
     GET_RECENTLY_TRANSACTION: `${Base_URL}/api/transaction/get/recently/`,
     GET_TRANSACTION_BY_WEEK: `${Base_URL}/api/transaction/get/weekbyweek/custom/`,
+    GET_LASTNUMBERDAY_EXPENSES_TRANSACTION: `${Base_URL}/api/transaction/get/expenses/lastnumdays/`,
     ADD_TRANSACTION_NO_INVOICE: `${Base_URL}/api/transaction/create/withoutinvoice`,
     ADD_TRANSACTION_WITH_INVOICE: `${Base_URL}/api/transaction/create`
   },

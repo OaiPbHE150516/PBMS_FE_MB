@@ -396,9 +396,9 @@ const styles = StyleSheet.create({
     alignContent: "center",
     backgroundColor: "white",
     padding: 5,
-    minHeight: "70%",
+    minHeight: "85%",
     height: "auto",
-    maxHeight: "90%",
+    maxHeight: "95%",
     // marginBottom: 20,
     borderRadius: 10
   },

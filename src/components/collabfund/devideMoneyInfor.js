@@ -17,7 +17,8 @@ import {
   PanResponder,
   ScrollView,
   Animated,
-  Image
+  Image,
+  ActivityIndicator
 } from "react-native";
 // node_modules library
 import { useNavigation } from "@react-navigation/native";
@@ -31,6 +32,7 @@ const DevideMoneyInfor = ({ collabFund }) => {
   const account = useSelector((state) => state.authen?.account);
 
   const [nowDivideMoneyInfor, setNowDivideMoneyInfor] = useState([]);
+  const [isFetchingData, setIsFetchingData] = useState(false);
 
   async function fetchDivideMoneyInfor() {
     try {
@@ -40,8 +42,10 @@ const DevideMoneyInfor = ({ collabFund }) => {
           accountID: account?.accountID
         }
       };
-      const response = await collabFundServices.getDivideMoneyInfor(data);
-      setNowDivideMoneyInfor(response);
+      await collabFundServices.getDivideMoneyInfor(data).then((response) => {
+        setNowDivideMoneyInfor(response);
+        setIsFetchingData(false);
+      });
     } catch (error) {
       console.error("Error fetching data collab fund participants:", error);
     }
@@ -49,9 +53,10 @@ const DevideMoneyInfor = ({ collabFund }) => {
 
   useEffect(() => {
     if (account) {
+      setIsFetchingData(true);
       fetchDivideMoneyInfor();
     }
-  }, [account]);
+  }, [account, collabFund]);
 
   async function handlePressableDivideMoney() {
     console.log("handlePressableDivideMoney");
@@ -155,38 +160,50 @@ const DevideMoneyInfor = ({ collabFund }) => {
             {"Chi tiết"}
           </Text>
         </View> */}
-        <View style={styles.view_cfdm_result}>
-          <View style={styles.view_a_cfdm_result}>
-            <Text style={styles.text_cfdm_result_label}>
-              {"Tổng số tiền (T): "}
-            </Text>
-            <Text style={styles.text_cfdm_result_number}>
-              {nowDivideMoneyInfor?.cfdividingmoney_result?.totalAmountStr}
-            </Text>
+        {isFetchingData ? (
+          // <ActivityIndicator size="large" color="#0000ff" />
+          <View style={styles.viewCenter}>
+            <Text>{"Đang tải dữ liệu..."}</Text>
           </View>
-          <View style={styles.view_a_cfdm_result}>
-            <Text style={styles.text_cfdm_result_label}>
-              {"Số người tham gia (N): "}
-            </Text>
-            <Text style={styles.text_cfdm_result_number}>
-              {nowDivideMoneyInfor?.cfdividingmoney_result?.numberParticipant}
-            </Text>
+        ) : !nowDivideMoneyInfor || nowDivideMoneyInfor.length === 0 ? (
+          <View style={styles.viewCenter}>
+            <Text>{"Không có dữ liệu"}</Text>
           </View>
-          <View style={styles.view_a_cfdm_result}>
-            <Text style={styles.text_cfdm_result_label}>
-              {"Tiền trung bình cộng (Ti): "}
-            </Text>
-            <Text style={styles.text_cfdm_result_number}>
-              {nowDivideMoneyInfor?.cfdividingmoney_result?.averageAmountStr}
-            </Text>
+        ) : (
+          <View style={styles.view_cfdm_result}>
+            <View style={styles.view_a_cfdm_result}>
+              <Text style={styles.text_cfdm_result_label}>
+                {"Tổng số tiền (T): "}
+              </Text>
+              <Text style={styles.text_cfdm_result_number}>
+                {nowDivideMoneyInfor?.cfdividingmoney_result?.totalAmountStr}
+              </Text>
+            </View>
+            <View style={styles.view_a_cfdm_result}>
+              <Text style={styles.text_cfdm_result_label}>
+                {"Số người tham gia (N): "}
+              </Text>
+              <Text style={styles.text_cfdm_result_number}>
+                {nowDivideMoneyInfor?.cfdividingmoney_result?.numberParticipant}
+              </Text>
+            </View>
+            <View style={styles.view_a_cfdm_result}>
+              <Text style={styles.text_cfdm_result_label}>
+                {"Tiền trung bình cộng (Ti): "}
+              </Text>
+              <Text style={styles.text_cfdm_result_number}>
+                {nowDivideMoneyInfor?.cfdividingmoney_result?.averageAmountStr}
+              </Text>
+            </View>
+            <View style={styles.view_a_cfdm_result}>
+              <Text style={styles.text_cfdm_result_label}>{"Số dư(S): "}</Text>
+              <Text style={styles.text_cfdm_result_number}>
+                {nowDivideMoneyInfor?.cfdividingmoney_result?.remainAmountStr}
+              </Text>
+            </View>
           </View>
-          <View style={styles.view_a_cfdm_result}>
-            <Text style={styles.text_cfdm_result_label}>{"Số dư(S): "}</Text>
-            <Text style={styles.text_cfdm_result_number}>
-              {nowDivideMoneyInfor?.cfdividingmoney_result?.remainAmountStr}
-            </Text>
-          </View>
-        </View>
+        )}
+
         {/* <View style={styles.viewTableHeader}>
           <Text style={styles.textLabelHeaderChildInContent}>
             {"Chi tiết chuyển tiền"}
@@ -217,6 +234,13 @@ const DevideMoneyInfor = ({ collabFund }) => {
 };
 
 const styles = StyleSheet.create({
+  viewCenter: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center",
+    alignSelf: "center"
+  },
   textPressableDivideMoneyAction: {
     fontSize: 20,
     fontFamily: "Inconsolata_500Medium",
@@ -297,9 +321,9 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    alignContent: "center"
-    // borderWidth: 0.5,
-    // borderColor: "red"
+    alignContent: "center",
+    borderWidth: 0.5,
+    borderColor: "red"
   },
   viewTableHeader: {
     alignContent: "center",

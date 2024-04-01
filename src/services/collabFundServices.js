@@ -35,6 +35,41 @@ const collabFundServices = {
       console.error("Error fetching data:", error);
     }
   },
+  // get participant list of collab fund by collab fund id and account id
+  getCollabFundParticipants: async (data) => {
+    try {
+      const response = await axios.get(
+        API.COLLABFUND.GET_ALL_COLLABFUND_PARTICIPANTS +
+          data?.data?.collabFundID +
+          "/" +
+          data?.data?.accountID,
+        {
+          headers
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  },
+  // get divide money information by collab fund id and account id
+  getDivideMoneyInfor: async (data) => {
+    try {
+      const response = await axios.get(
+        API.COLLABFUND.GET_DIVIDI_MONEY_INFOR +
+          data?.data?.collabFundID +
+          "/" +
+          data?.data?.accountID,
+        {
+          headers
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  },
+
   // create activity no transaction form
   createActivityNoTransaction: async (data) => {
     try {

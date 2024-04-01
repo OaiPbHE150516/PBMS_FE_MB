@@ -52,6 +52,8 @@ import ModalTakeCamera from "../../components/transaction/modalTakeCamera";
 import AnInputInvoiceScanning from "../../components/transaction/anInputInvoiceScanning";
 import AnInputProductInIS from "../../components/transaction/anInputProductInIS";
 
+// https://www.npmjs.com/package/react-native-date-picker
+
 const AddTransactionScreen = () => {
   const [mCategoryVisible, setMCategoryVisible] = useState(false);
   const [mCalendarVisible, setMCalendarVisible] = useState(false);

@@ -16,6 +16,7 @@ import {
   TouchableWithoutFeedback,
   PanResponder,
   ScrollView,
+  Animated,
   Image
 } from "react-native";
 // node_modules library
@@ -37,6 +38,7 @@ import { useSelector, useDispatch } from "react-redux";
 import CfActivitiesComponent from "../../components/collabfund/cfActivitiesComponent";
 import CfHistoryComponent from "../../components/collabfund/cfHistoryComponent";
 import CfPaticianComponent from "../../components/collabfund/cfParticianComponent";
+import DevideMoneyInfor from "../../components/collabfund/devideMoneyInfor";
 
 const TabCollabFund = createMaterialTopTabNavigator();
 
@@ -44,8 +46,60 @@ const CollabFundDetail = ({ route, navigation }) => {
   const { collabFund, otherParam } = route.params;
   const tabWidth = Dimensions.get("window").width * 0.98;
 
+  const [modalVisible, setModalVisible] = useState(false);
+  const screenHeight = Dimensions.get("window").height;
+  const modalHeight = screenHeight * 0.2;
+
+  // const translateY = new Animated.Value(-modalHeight);
+
+  // useEffect(() => {
+  //   if (modalVisible) {
+  //     Animated.timing(translateY, {
+  //       toValue: 0,
+  //       duration: 100,
+  //       useNativeDriver: true
+  //     }).start();
+  //   } else {
+  //     Animated.timing(translateY, {
+  //       toValue: -modalHeight,
+  //       duration: 100,
+  //       useNativeDriver: true
+  //     }).start();
+  //   }
+  // }, [modalVisible]);
+
+  async function handleModalVisible() {
+    setModalVisible(!modalVisible);
+  }
+
+  // const ViewMoreDetail = () => {
+  //   return (
+  //     <View style={styles.viewModalMoreDetail}>
+  //       <View style={styles.viewModalMoreDetailDivideMoneyContent}>
+  //         <Text>{"Thông tin chi tiết"}</Text>
+  //       </View>
+  //       <View style={styles.viewModalMoreDetailAction}>
+  //         <Pressable onPress={() => {}}>
+  //           <Text>{"Chia tiền"}</Text>
+  //         </Pressable>
+  //       </View>
+  //     </View>
+  //   );
+  // };
+
   return (
     <View style={styles.container}>
+      <Modal visible={modalVisible} transparent animationType="fade">
+        <View style={{ flex: 1, backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <Pressable
+            style={{ flex: 1 }}
+            onPressOut={() => setModalVisible(!modalVisible)}
+          >
+            {/* <Text>{"This is your modal content"}</Text> */}
+          </Pressable>
+          <DevideMoneyInfor collabFund={collabFund} />
+        </View>
+      </Modal>
       <View style={styles.viewHeaderDetail}>
         <Pressable
           style={styles.pressableBackToList}
@@ -54,6 +108,12 @@ const CollabFundDetail = ({ route, navigation }) => {
           <Icon name="angle-left" size={20} color="blue" />
         </Pressable>
         <Text style={styles.textCollabFundName}>{collabFund?.name}</Text>
+        <Pressable
+          style={styles.pressableMoreCFAction}
+          onPress={() => handleModalVisible()}
+        >
+          <Icon name="bars" size={20} color="black" />
+        </Pressable>
         {/* <Text>otherParam: {JSON.stringify(otherParam)}</Text> */}
       </View>
 
@@ -108,6 +168,31 @@ const CollabFundDetail = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  viewModalMoreDetailDivideMoneyContent: {
+    borderWidth: 0.5,
+    borderColor: "darkgray",
+    flex: 5
+  },
+  viewModalMoreDetailAction: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    alignContent: "center",
+    alignSelf: "center",
+    width: "100%",
+    padding: 10,
+    backgroundColor: "lightblue",
+    flex: 1
+  },
+  viewModalMoreDetail: {
+    backgroundColor: "white",
+    width: "100%",
+    zIndex: 10,
+    flex: 5,
+    borderRadius: 10,
+    borderWidth: 0.5,
+    borderColor: "darkgray"
+  },
   textCollabFundName: {
     fontSize: 25,
     fontFamily: "Inconsolata_500Medium",
@@ -118,6 +203,15 @@ const styles = StyleSheet.create({
     left: 10,
     zIndex: 1,
     width: "40%"
+    // borderWidth: 1,
+  },
+  pressableMoreCFAction: {
+    position: "absolute",
+    right: 10,
+    zIndex: 1,
+    width: "40%",
+    alignItems: "flex-end"
+    // borderWidth: 1,
   },
   viewHeaderDetail: {
     flexDirection: "row",
@@ -128,12 +222,13 @@ const styles = StyleSheet.create({
     width: "100%",
     padding: 10,
     backgroundColor: "lightblue"
+    // borderWidth: 1,
   },
   container: {
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
-    justifyContent: "flex-start",
+    justifyContent: "flex-start"
     // borderWidth: 1,
     // borderColor: "red"
   }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import {
   View,
   Text,
@@ -19,9 +19,9 @@ import {
   KeyboardAvoidingView,
   Keyboard
 } from "react-native";
-import { useHeaderHeight } from "@react-navigation/elements";
 import Icon from "react-native-vector-icons/FontAwesome6";
 import * as ImagePicker from "expo-image-picker";
+import FastImage from "react-native-fast-image";
 
 // redux
 import { useSelector, useDispatch } from "react-redux";
@@ -29,6 +29,7 @@ import collabFundServices from "../../services/collabFundServices";
 
 // components
 // import FlatListActivities from "./flatListActivitiesComp";
+import FlatListTransactionToAddCF from "./flatlistTransactionToAddCF";
 
 const CfActivitiesComponent = ({ route }) => {
   const { collabFund } = route.params;
@@ -39,6 +40,11 @@ const CfActivitiesComponent = ({ route }) => {
 
   const [nowCollabFundActivities, setNowCollabFundActivities] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isModalMediaCameraVisible, setIsModalMediaCameraVisible] =
+    useState(false);
+
+  const [isModalAddTransactionVisible, setIsModalAddTransactionVisible] =
+    useState(false);
 
   const textInputRef = useRef(null);
 
@@ -90,6 +96,7 @@ const CfActivitiesComponent = ({ route }) => {
     console.log(result);
     if (!result.canceled) {
       setImage(result.assets[0]);
+      setIsModalMediaCameraVisible(!isModalMediaCameraVisible);
     }
   }
 
@@ -103,6 +110,15 @@ const CfActivitiesComponent = ({ route }) => {
 
     if (!result.canceled) {
       setImage(result.assets[0]);
+      setIsModalMediaCameraVisible(!isModalMediaCameraVisible);
+    }
+  }
+
+  async function handleAddTransaction() {
+    try {
+      console.log("handleAddTransaction");
+    } catch (error) {
+      console.error("Error handleAddTransaction data:", error);
     }
   }
 
@@ -147,7 +163,9 @@ const CfActivitiesComponent = ({ route }) => {
           <Image
             source={{
               uri: item?.account?.pictureURL
+              // priority: FastImage.priority.normal
             }}
+            // resizeMode={FastImage.resizeMode.contain}
             style={{ width: 30, height: 30, borderRadius: 30 }}
           />
         </View>
@@ -166,7 +184,11 @@ const CfActivitiesComponent = ({ route }) => {
           > */}
           {item?.filename === "" ? null : (
             <Image
-              source={{ uri: item?.filename }}
+              source={{
+                uri: item?.filename
+                // priority: FastImage.priority.normal
+              }}
+              // resizeMode={FastImage.resizeMode.contain}
               style={{ width: "auto", height: 250 }}
               // defaultSource={require("../../../assets/images/placeholder.png")}
               // loadingIndicatorSource={require("../../../assets/images/placeholder.png")}
@@ -288,34 +310,119 @@ const CfActivitiesComponent = ({ route }) => {
             style={styles.pressableActionUserActionable}
             onPressIn={() => {
               Keyboard.dismiss();
-              handleOnSendChat();
+              handleAddTransaction();
+              setIsModalAddTransactionVisible(!isModalAddTransactionVisible);
             }}
           >
-            <Icon name="paper-plane" size={25} color="darkgray" />
+            <Icon name="money-bill-transfer" size={25} color="darkgray" />
           </Pressable>
           <Pressable
             style={styles.pressableActionUserActionable}
             onPressIn={() => {
-              handleOnPickMedia();
+              setIsModalMediaCameraVisible(!isModalMediaCameraVisible);
             }}
           >
             <Icon name="file-image" size={25} color="darkgray" />
           </Pressable>
-          <Pressable
-            style={styles.pressableActionUserActionable}
-            onPressIn={() => {
-              handleOnLaunchCamera();
-            }}
-          >
-            <Icon name="camera" size={25} color="darkgray" />
-          </Pressable>
         </View>
+        <Modal
+          visible={isModalMediaCameraVisible}
+          transparent
+          animationType="fade"
+        >
+          <View style={styles.viewModalBackground}>
+            <Pressable
+              style={{ flex: 1 }}
+              onPress={() =>
+                setIsModalMediaCameraVisible(!isModalMediaCameraVisible)
+              }
+            ></Pressable>
+            <View style={styles.viewModalMediaCamera}>
+              <Pressable
+                style={styles.pressableActionUserActionable}
+                onPressIn={() => {
+                  handleOnPickMedia();
+                  // setIsModalMediaCameraVisible(!isModalMediaCameraVisible);
+                }}
+              >
+                <Icon name="images" size={35} color="darkgray" />
+                <Text style={styles.textLabelActionable}>{"Thư viện"}</Text>
+              </Pressable>
+              <Pressable
+                style={styles.pressableActionUserActionable}
+                onPressIn={() => {
+                  handleOnLaunchCamera();
+                  // setIsModalMediaCameraVisible(!isModalMediaCameraVisible);
+                }}
+              >
+                <Icon name="camera" size={35} color="darkgray" />
+                <Text style={styles.textLabelActionable}>{"Máy ảnh"}</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
+        <Modal
+          visible={isModalAddTransactionVisible}
+          transparent
+          animationType="fade"
+        >
+          <View style={styles.viewModalBackground}>
+            <Pressable
+              style={{ flex: 1 }}
+              onPress={() =>
+                setIsModalAddTransactionVisible(!isModalAddTransactionVisible)
+              }
+            />
+            <View style={styles.viewModalAddTransaction}>
+              <Text>{"Thêm giao dịch vào ngân sách hợp tác"}</Text>
+              <FlatListTransactionToAddCF callback={onCallbackAddTransaction} />
+            </View>
+          </View>
+        </Modal>
       </View>
     </KeyboardAvoidingView>
   );
 };
 
+const onCallbackAddTransaction = ({ data }) => {
+  console.log("data: ", data);
+};
+
 const styles = StyleSheet.create({
+  viewModalAddTransaction: {
+    flexDirection: "column",
+    justifyContent: "space-around",
+    alignItems: "center",
+    alignContent: "center",
+    backgroundColor: "white",
+    padding: 5,
+    minHeight: "70%",
+    height: "auto",
+    maxHeight: "90%",
+    // marginBottom: 20,
+    borderRadius: 10
+  },
+  viewModalBackground: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "flex-end"
+  },
+  viewModalMediaCamera: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    alignContent: "center",
+    backgroundColor: "white",
+    padding: 5,
+    // marginBottom: 20,
+    borderRadius: 10
+  },
+  textLabelActionable: {
+    fontSize: 20,
+    fontFamily: "Inconsolata_400Regular",
+    marginVertical: 10,
+    alignSelf: "flex-end"
+  },
   // flatListActivitiesContent
   textActivityTime: {
     fontSize: 15,
@@ -398,11 +505,11 @@ const styles = StyleSheet.create({
     // marginHorizontal: 2,
     borderRadius: 5,
     // backgroundColor: "rgba(0,0,0,0.05)",
-    justifyContent: "center",
+    justifyContent: "space-between",
     alignItems: "center",
-    alignContent: "center",
-    width: 35,
-    height: 35
+    alignContent: "center"
+    // width: 35,
+    // height: 35
   },
   viewActionUserActionable: {
     width: "auto",
@@ -448,7 +555,7 @@ const styles = StyleSheet.create({
     fontFamily: "Inconsolata_400Regular"
   },
   viewActionUserChat: {
-    width: "60%",
+    width: "65%",
     height: "90%",
     borderWidth: 1,
     borderColor: "darkgray",

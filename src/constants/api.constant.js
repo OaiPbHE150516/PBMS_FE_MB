@@ -13,6 +13,7 @@ export const API = {
     GET_DIVIDI_MONEY_INFOR: `${Base_URL}/api/collabfund/get/divide-money-info/`,
 
     CREATE_ACTIVITY_NO_TRANSACTION: `${Base_URL}/api/collabfund/create/activity/notrans/form`,
+    CREATE_ACTIVITY: `${Base_URL}/api/collabfund/create/activity/withtrans/form`,
   },
   PROFILE: {
     GET_PROFILE: `${Base_URL}/api/profile/get/`
@@ -38,7 +39,8 @@ export const API = {
     CREATE_CATEGORY: `${Base_URL}/api/category/create`
   },
   INVOICE: {
-    SCAN: `${Base_URL}/api/invoice/scan`
+    SCAN: `${Base_URL}/api/invoice/scan`,
+    TEST: `${Base_URL}/api/invoice/scantest`
   },
   FILE: {
     UPLOAD_INVOICE_OF_TRANSACTION: `${Base_URL}/api/file/upload/transaction/invoice`,

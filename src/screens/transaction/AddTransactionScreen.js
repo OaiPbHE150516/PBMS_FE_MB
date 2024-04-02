@@ -22,10 +22,13 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import Icon from "react-native-vector-icons/FontAwesome6";
 import { BlurView } from "expo-blur";
+import * as ImagePicker from "expo-image-picker";
+import * as MediaLibrary from "expo-media-library";
 
 // library
 import datetimeLibrary from "../../library/datetimeLibrary";
 import currencyLibrary from "../../library/currencyLIbrary";
+import { VAR } from "../../constants/var.constant";
 
 // slice
 import { setModalAddTransactionVisible } from "../../redux/modalSlice";
@@ -42,7 +45,6 @@ import {
   uploadToInvoiceTransactionFileName
 } from "../../redux/fileSlice";
 import { setCategoryToAddTransaction } from "../../redux/categorySlice";
-import { setAssetsShowing } from "../../redux/mediaLibrarySlice";
 
 // component
 import ModalCategoryComponent from "../../components/category/modalCategoryComponent";
@@ -51,6 +53,7 @@ import ModalWalletComponent from "../../components/wallet/modalWalletComponent";
 import ModalTakeCamera from "../../components/transaction/modalTakeCamera";
 import AnInputInvoiceScanning from "../../components/transaction/anInputInvoiceScanning";
 import AnInputProductInIS from "../../components/transaction/anInputProductInIS";
+import fileServices from "../../services/fileServices";
 
 // https://www.npmjs.com/package/react-native-date-picker
 
@@ -59,6 +62,13 @@ const AddTransactionScreen = () => {
   const [mCalendarVisible, setMCalendarVisible] = useState(false);
   const [mWalletVisible, setMWalletVisible] = useState(false);
   const [mTakeCamera, setMTakeCamera] = useState(false);
+
+  const [newAssetShowing, setNewAssetShowing] = useState(null);
+  const [mIsProcessing, setMIsProcessing] = useState(null);
+  const [processingContent, setProcessingContent] = useState("");
+
+  const [isAddingTransaction, setIsAddingTransaction] = useState(false);
+
   const [isPulledDown, setIsPulledDown] = useState(false);
   const [isShowDetail, setIsShowDetail] = useState(false);
   const [transAmount, setTransAmount] = useState("");
@@ -80,29 +90,21 @@ const AddTransactionScreen = () => {
     (state) => state.transaction.addTransactionWallet
   );
 
-  const assetsShowing = useSelector(
-    (state) => state.mediaLibrary?.assetsShowing
-  );
   const invoiceScanning = useSelector((state) => state.file?.invoiceScanning);
   // const invoiceImageURL = useSelector((state) => state.file?.invoiceImageURL);
   const [invoiceResult, setInvoiceResult] = useState(null);
 
   const dispatch = useDispatch();
   useEffect(() => {
-    // dispatch(getCategories(account?.accountID));
-    // dispatch(setModalAddTransactionVisible(false));
-    // console.log("useEffect: AddTransactionScreen");
     if (invoiceScanning) {
       setInvoiceResult(invoiceScanning);
-      // console.log("invoiceScanning: ", invoiceScanning);
       setunInputInvoiceScanning(invoiceScanning);
     }
     setCurrentTime(datetimeLibrary.getCurrentTime().datetimestr);
-  }, [account, dispatch, invoiceScanning]);
+  }, [account, dispatch]);
 
   const setunInputInvoiceScanning = (invoiceScanning) => {
     setTransAmount(invoiceScanning.totalAmount.toString());
-    // setTransAmount(invoiceScanning.totalAmount.toString());
   };
 
   const handleDataFromCalendar = (data) => {
@@ -114,12 +116,11 @@ const AddTransactionScreen = () => {
 
   const handleDataFromCategory = (data) => {
     setMCategoryVisible(data.isCategoryVisible);
-    dispatch(setModalAddTransactionVisible(false));
+    // dispatch(setModalAddTransactionVisible(false));
   };
 
   const handleDataFromWallet = (data) => {
     setMWalletVisible(data.isWalletVisible);
-    dispatch(setModalAddTransactionVisible(false));
   };
 
   const handleDataFromTakeCamera = (data) => {
@@ -128,7 +129,7 @@ const AddTransactionScreen = () => {
     console.log("AddTransactionScreen data: ", data);
   };
 
-  function handleAddTransaction() {
+  async function handleAddTransaction() {
     console.log("handleAddTransaction");
     // log transAmount, categoryToAddTransaction, addTransactionTime, addTransactionWallet
     let amount = transAmount.replace(/\./g, "");
@@ -150,90 +151,103 @@ const AddTransactionScreen = () => {
       Alert.alert("Ví không được để trống");
       return;
     }
-
+    setIsAddingTransaction(true);
     if (invoiceResult) {
       // console.log("invoiceResult: ", invoiceResult);
       const filename =
         account.accountID + "_" + datetimeLibrary.getCurrentTimeStr();
-      console.log("assetsShowing?.asset: ", assetsShowing?.asset);
+      console.log("assetsShowing?.asset: ", newAssetShowing?.asset);
       dispatch(
         uploadToInvoiceTransactionFileName({
-          asset: assetsShowing?.asset,
-          filenamecustom: filename
+          asset: newAssetShowing?.asset,
+          filenamecustom: filename,
+          accountID: account?.accountID
         })
       );
-      const totalOfInvoice = currencyLibrary.removeCurrencyFormat(transAmount);
-      const transactionWithInvoice = {
-        accountID: account.accountID,
-        walletID: addTransactionWallet.walletID,
-        categoryID: categoryToAddTransaction.categoryID,
-        // totalAmount: amount,
-        totalAmount: totalOfInvoice,
-        transactionDate: time,
-        note: "has invoice",
-        fromPerson: invoiceResult.supplierName
-          ? invoiceResult.supplierName
-          : "",
-        toPerson: invoiceResult.receiverName ? invoiceResult.receiverName : "",
-        imageURL: filename,
-        invoice: {
-          supplierAddress: invoiceResult.supplierAddress
-            ? invoiceResult.supplierAddress
-            : "",
-          supplierEmail: invoiceResult.supplierEmail
-            ? invoiceResult.supplierEmail
-            : "",
-          supplierName: invoiceResult.supplierName
-            ? invoiceResult.supplierName
-            : "",
-          supplierPhone: invoiceResult.supplierPhone
-            ? invoiceResult.supplierPhone
-            : "",
-          receiverAddress: invoiceResult.receiverAddress
-            ? invoiceResult.receiverAddress
-            : "",
-          receiverEmail: invoiceResult.receiverEmail
-            ? invoiceResult.receiverEmail
-            : "",
-          receiverName: invoiceResult.receiverName
-            ? invoiceResult.receiverName
-            : "",
-          idOfInvoice: invoiceResult.idOfInvoice
-            ? invoiceResult.idOfInvoice
-            : "",
-          invoiceDate: invoiceResult.invoiceDate
-            ? invoiceResult.invoiceDate
-            : "",
-          invoiceType: invoiceResult.invoiceType
-            ? invoiceResult.invoiceType
-            : "",
-          paymentTerms: invoiceResult.paymentTerms
-            ? invoiceResult.paymentTerms
-            : "",
-          netAmount: invoiceResult.netAmount ? invoiceResult.netAmount : 0,
-          totalAmount: totalOfInvoice,
-          taxAmount: invoiceResult.taxAmount ? invoiceResult.taxAmount : 0,
-          discount: invoiceResult.discount ? invoiceResult.discount : 0,
-          invoiceImageURL: filename,
-          note: invoiceResult.note ? invoiceResult.note : "",
-          products: [
-            ...invoiceResult.productInInvoices.map((it) => {
-              return {
-                productName: it.productName ? it.productName : "",
-                quanity: it.quanity ? it.quanity : 0,
-                unitPrice: it.unitPrice ? it.unitPrice : 0,
-                totalAmount: it.totalAmount ? it.totalAmount : 0,
-                note: it.note ? it.note : "",
-                tagID: it.tagID ? it.tagID : 1
-              };
-            })
-          ],
-          invoiceRawDatalog: invoiceResult.invoiceRawDatalog
-            ? invoiceResult.invoiceRawDatalog
-            : ""
-        }
-      };
-      dispatch(addTransactionWithInvoice(transactionWithInvoice));
+      await fileServices
+        .uploadToInvoiceTransactionFileName({
+          asset: newAssetShowing?.asset,
+          filenamecustom: filename,
+          accountID: account?.accountID
+        })
+        .then((response) => {
+          console.log("response: ", response);
+          const totalOfInvoice =
+            currencyLibrary.removeCurrencyFormat(transAmount);
+          const transactionWithInvoice = {
+            accountID: account.accountID,
+            walletID: addTransactionWallet.walletID,
+            categoryID: categoryToAddTransaction.categoryID,
+            // totalAmount: amount,
+            totalAmount: totalOfInvoice,
+            transactionDate: time,
+            note: "has invoice",
+            fromPerson: invoiceResult.supplierName
+              ? invoiceResult.supplierName
+              : "",
+            toPerson: invoiceResult.receiverName
+              ? invoiceResult.receiverName
+              : "",
+            imageURL: response,
+            invoice: {
+              supplierAddress: invoiceResult.supplierAddress
+                ? invoiceResult.supplierAddress
+                : "",
+              supplierEmail: invoiceResult.supplierEmail
+                ? invoiceResult.supplierEmail
+                : "",
+              supplierName: invoiceResult.supplierName
+                ? invoiceResult.supplierName
+                : "",
+              supplierPhone: invoiceResult.supplierPhone
+                ? invoiceResult.supplierPhone
+                : "",
+              receiverAddress: invoiceResult.receiverAddress
+                ? invoiceResult.receiverAddress
+                : "",
+              receiverEmail: invoiceResult.receiverEmail
+                ? invoiceResult.receiverEmail
+                : "",
+              receiverName: invoiceResult.receiverName
+                ? invoiceResult.receiverName
+                : "",
+              idOfInvoice: invoiceResult.idOfInvoice
+                ? invoiceResult.idOfInvoice
+                : "",
+              invoiceDate: invoiceResult.invoiceDate
+                ? invoiceResult.invoiceDate
+                : "",
+              invoiceType: invoiceResult.invoiceType
+                ? invoiceResult.invoiceType
+                : "",
+              paymentTerms: invoiceResult.paymentTerms
+                ? invoiceResult.paymentTerms
+                : "",
+              netAmount: invoiceResult.netAmount ? invoiceResult.netAmount : 0,
+              totalAmount: totalOfInvoice,
+              taxAmount: invoiceResult.taxAmount ? invoiceResult.taxAmount : 0,
+              discount: invoiceResult.discount ? invoiceResult.discount : 0,
+              invoiceImageURL: filename,
+              note: invoiceResult.note ? invoiceResult.note : "",
+              products: [
+                ...invoiceResult.productInInvoices.map((it) => {
+                  return {
+                    productName: it.productName ? it.productName : "",
+                    quanity: it.quanity ? it.quanity : 0,
+                    unitPrice: it.unitPrice ? it.unitPrice : 0,
+                    totalAmount: it.totalAmount ? it.totalAmount : 0,
+                    note: it.note ? it.note : "",
+                    tagID: it.tagID ? it.tagID : 1
+                  };
+                })
+              ],
+              invoiceRawDatalog: invoiceResult.invoiceRawDatalog
+                ? invoiceResult.invoiceRawDatalog
+                : ""
+            }
+          };
+          dispatch(addTransactionWithInvoice(transactionWithInvoice));
+        });
       // const imageURL = dispatch(getInvoiceImageURL);
     } else {
       // console.log("invoiceResult: ", invoiceResult);
@@ -250,6 +264,8 @@ const AddTransactionScreen = () => {
       };
       dispatch(addTransactionNoInvoice(data));
     }
+    saveAssetToMediaLibrary(newAssetShowing?.asset);
+    setIsAddingTransaction(false);
     Alert.alert("Thêm giao dịch thành công");
     handleResetAddTransaction();
   }
@@ -260,8 +276,10 @@ const AddTransactionScreen = () => {
     dispatch(setAddTransactionTime(null));
     setCurrentTime(datetimeLibrary.getCurrentTime().datetimestr);
     dispatch(setAddTransactionWallet(null));
-    dispatch(setAssetsShowing({ asset: null, isShowingAsset: "false" }));
+    // dispatch(setAssetsShowing({ asset: null, isShowingAsset: "false" }));
+    setNewAssetShowing({ asset: null, isShowingAsset: "false" });
     setInvoiceResult(null);
+    setMIsProcessing(null);
     // dispatch(setModalAddTransactionVisible(false));
   }
 
@@ -288,6 +306,90 @@ const AddTransactionScreen = () => {
       )
     });
   }
+
+  async function handleOnPickMedia() {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1
+    });
+    console.log(result);
+    if (!result.canceled) {
+      setMTakeCamera(false);
+      handleSaveAndUploadInvoice(result.assets[0]);
+    }
+  }
+
+  async function handleOnLaunchCamera() {
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1
+    });
+    console.log(result);
+    if (!result.canceled) {
+      setMTakeCamera(false);
+      handleSaveAndUploadInvoice(result.assets[0]);
+    }
+  }
+
+  async function saveAssetToMediaLibrary(asset) {
+    const album = await MediaLibrary.getAlbumAsync(
+      VAR.MEDIALIBRARY.DEFAULT_ALBUM_NAME
+    );
+    if (album === null) {
+      console.log("album is null");
+      setProcessingContent(
+        "Đang tạo album " + VAR.MEDIALIBRARY.DEFAULT_ALBUM_NAME + " mới ..."
+      );
+      await MediaLibrary.createAlbumAsync(
+        VAR.MEDIALIBRARY.DEFAULT_ALBUM_NAME,
+        asset
+      ).finally(() => {
+        setProcessingContent(
+          "Đã tạo album " + VAR.MEDIALIBRARY.DEFAULT_ALBUM_NAME
+        );
+      });
+      // console.log("albumCreated", albumCreated);
+    } else {
+      const assetSaved = await MediaLibrary.createAssetAsync(asset.uri).finally(
+        () => {
+          setProcessingContent("Đang xử lý hình ảnh ...");
+        }
+      );
+      const assetAdded = await MediaLibrary.addAssetsToAlbumAsync(
+        [assetSaved],
+        album,
+        false
+      ).finally(() => {
+        setProcessingContent("Đã lưu hình ảnh vào album " + album.title);
+      });
+    }
+  }
+
+  async function handleSaveAndUploadInvoice(asset) {
+    console.log("asset: ", asset);
+    setMIsProcessing(true);
+    setNewAssetShowing({ asset: asset, isShowingAsset: "true" });
+    setProcessingContent("Đang xử lý hóa đơn ...");
+    await fileServices.upToScanInvoice(asset).then((response) => {
+      console.log("response: ", response);
+      setProcessingContent("Đã xử lý hóa đơn");
+      if (response) {
+        setInvoiceResult(response);
+        setunInputInvoiceScanning(response);
+        setMIsProcessing(false);
+      }
+      // setMIsProcessing(false);
+      // dispatch(setAssetsShowing({ asset: asset, isShowingAsset: "true" }));
+    });
+  }
+
+  const ViewProcessing = () => {
+    return (
+      <View style={styles.viewProcessing}>
+        <Text>{processingContent}</Text>
+      </View>
+    );
+  };
 
   const ViewInvoiceScanning = () => {
     return (
@@ -395,24 +497,6 @@ const AddTransactionScreen = () => {
             )}
           />
         </View>
-        <View style={[styles.viewAssetShowing, {}]}>
-          {/* image of asset showing */}
-          {assetsShowing?.asset && (
-            <View>
-              {/* <Text>{assetsShowing?.asset?.uri}aa</Text> */}
-              <Image
-                source={{ uri: assetsShowing?.asset?.uri }}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  // alignSelf: "center",
-                  // justifyContent: "space-around",
-                  resizeMode: "contain"
-                }}
-              />
-            </View>
-          )}
-        </View>
       </View>
     );
   };
@@ -451,9 +535,7 @@ const AddTransactionScreen = () => {
                 style={[styles.pressSelectCategory]}
                 onPress={() => {
                   setMCategoryVisible(true);
-                  setMCalendarVisible(false);
-                  setMWalletVisible(false);
-                  dispatch(setModalAddTransactionVisible(true));
+                  // dispatch(setModalAddTransactionVisible(true));
                 }}
               >
                 <Text style={styles.textSelectCategory}>
@@ -477,10 +559,8 @@ const AddTransactionScreen = () => {
               <Pressable
                 style={[styles.pressSelectCategory]}
                 onPress={() => {
-                  setMCategoryVisible(false);
                   setMCalendarVisible(true);
-                  setMWalletVisible(false);
-                  dispatch(setModalAddTransactionVisible(true));
+                  // dispatch(setModalAddTransactionVisible(true));
                 }}
               >
                 <Text style={styles.textSelectCategory}>
@@ -511,9 +591,7 @@ const AddTransactionScreen = () => {
                 style={[styles.pressSelectCategory]}
                 onPress={() => {
                   setMWalletVisible(true);
-                  setMCategoryVisible(false);
-                  setMCalendarVisible(false);
-                  dispatch(setModalAddTransactionVisible(true));
+                  // dispatch(setModalAddTransactionVisible(true));
                 }}
               >
                 <Text style={styles.textSelectCategory}>
@@ -529,35 +607,43 @@ const AddTransactionScreen = () => {
             </View>
           </View>
           {/* Invoice Scan */}
-          {assetsShowing?.asset && <ViewInvoiceScanning />}
+          {!mIsProcessing && mIsProcessing !== null && <ViewInvoiceScanning />}
+          {mIsProcessing && mIsProcessing !== null && <ViewProcessing />}
+          <View style={[styles.viewAssetShowing, {}]}>
+            {newAssetShowing?.asset && (
+              <View>
+                {/* <Text>{assetsShowing?.asset?.uri}aa</Text> */}
+                <Image
+                  source={{ uri: newAssetShowing?.asset?.uri }}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    // alignSelf: "center",
+                    // justifyContent: "space-around",
+                    resizeMode: "contain"
+                  }}
+                />
+              </View>
+            )}
+          </View>
         </ScrollView>
         {/* End  View ScrollView Parent*/}
       </View>
       <BlurView intensity={20} style={styles.viewPressableAction}>
-        {/* View and Pressable Reset */}
         <Pressable
           style={styles.pressableReset}
           onPress={() => {
-            console.log("onPress Reset");
             handleResetAddTransaction();
           }}
         >
           <Text>{"Reset"}</Text>
         </Pressable>
-
         <View style={styles.viewTakeCamera}>
           <Pressable
             style={styles.pressableTakeCamera}
-            onPressIn={() => {
-              console.log("onPressIn");
-            }}
-            onPressOut={() => {}}
             onPress={() => {
               setMTakeCamera(true);
-              setMCategoryVisible(false);
-              setMCalendarVisible(false);
-              setMWalletVisible(false);
-              dispatch(setModalAddTransactionVisible(true));
+              // dispatch(setModalAddTransactionVisible(true));
             }}
           >
             <Icon name="camera" size={30} color="black" />
@@ -576,53 +662,122 @@ const AddTransactionScreen = () => {
           </Pressable>
         </View>
       </BlurView>
+      {/* Modal Compnent */}
       <View style={styles.viewStyle}>
-        {/* Modal Compnent */}
-        <View>
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalAddTransactionVisible}
-            onRequestClose={() => {
-              Alert.alert("Modal has been closed.");
-            }}
-          >
-            <View style={styles.centeredView}>
-              {mCategoryVisible && (
-                <View style={styles.viewInsideModal}>
-                  <View style={styles.viewCategoryInModal}>
-                    <ModalCategoryComponent
-                      onDataFromChild={handleDataFromCategory}
-                    />
-                  </View>
-                </View>
-              )}
-              {mCalendarVisible && (
-                <View style={styles.viewInsideModal}>
-                  <View style={styles.viewCalendarInModal}>
-                    <ModalCalendarComponent
-                      onDataFromChild={handleDataFromCalendar}
-                    />
-                  </View>
-                </View>
-              )}
-              {mWalletVisible && (
-                <View style={styles.viewInsideModal}>
-                  <View style={styles.viewWalletInModal}>
-                    <ModalWalletComponent
-                      onDataFromChild={handleDataFromWallet}
-                    />
-                  </View>
-                </View>
-              )}
-              {mTakeCamera && (
-                <View style={styles.viewInsideModal}>
-                  <ModalTakeCamera onDataFromChild={handleDataFromTakeCamera} />
-                </View>
-              )}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={mCategoryVisible}
+        >
+          <View style={styles.view_BackgroudModal}>
+            <Pressable
+              onPress={() => {
+                setMCategoryVisible(false);
+              }}
+              style={styles.pressable_CloseModal}
+            />
+            <View style={styles.viewCategoryInModal}>
+              <ModalCategoryComponent
+                onDataFromChild={handleDataFromCategory}
+              />
             </View>
-          </Modal>
-        </View>
+            <Pressable
+              onPress={() => {
+                setMCategoryVisible(false);
+              }}
+              style={styles.pressable_CloseModal}
+            />
+          </View>
+        </Modal>
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={mCalendarVisible}
+        >
+          <View style={styles.view_BackgroudModal}>
+            <Pressable
+              onPress={() => {
+                setMCalendarVisible(false);
+              }}
+              style={styles.pressable_CloseModal}
+            />
+            <View style={styles.viewCalendarInModal}>
+              <ModalCalendarComponent
+                onDataFromChild={handleDataFromCalendar}
+              />
+            </View>
+            <Pressable
+              onPress={() => {
+                setMCalendarVisible(false);
+              }}
+              style={styles.pressable_CloseModal}
+            />
+          </View>
+        </Modal>
+        <Modal animationType="fade" transparent={true} visible={mWalletVisible}>
+          <View style={styles.view_BackgroudModal}>
+            <Pressable
+              onPress={() => {
+                setMWalletVisible(false);
+              }}
+              style={styles.pressable_CloseModal}
+            />
+            <View style={styles.viewWalletInModal}>
+              <ModalWalletComponent onDataFromChild={handleDataFromWallet} />
+            </View>
+            <Pressable
+              onPress={() => {
+                setMWalletVisible(false);
+              }}
+              style={styles.pressable_CloseModal}
+            />
+          </View>
+        </Modal>
+        <Modal animationType="fade" transparent={true} visible={mTakeCamera}>
+          <View style={styles.view_BackgroudModal}>
+            <Pressable
+              onPress={() => {
+                setMTakeCamera(false);
+              }}
+              style={styles.pressable_CloseModal}
+            />
+            <View style={styles.view_Modal_TakeCamera}>
+              <Pressable
+                style={styles.pressableActionUserActionable}
+                onPressIn={() => {
+                  handleOnPickMedia();
+                  // setIsModalMediaCameraVisible(!isModalMediaCameraVisible);
+                }}
+              >
+                <Icon name="images" size={50} color="darkgray" />
+                <Text style={styles.textLabelActionable}>{"Thư viện"}</Text>
+              </Pressable>
+              <Pressable
+                style={styles.pressableActionUserActionable}
+                onPressIn={() => {
+                  handleOnLaunchCamera();
+                  // setIsModalMediaCameraVisible(!isModalMediaCameraVisible);
+                }}
+              >
+                <Icon name="camera" size={50} color="darkgray" />
+                <Text style={styles.textLabelActionable}>{"Máy ảnh"}</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={isAddingTransaction}
+        >
+          <View style={styles.view_BackgroudModal}>
+            <View style={styles.view_ModalAddingTransaction}>
+              <Text style={styles.text_ModalAddingTransaction}>
+                {"Đang thêm giao dịch..."}
+              </Text>
+            </View>
+          </View>
+        </Modal>
         {/* End Modal Compnent */}
       </View>
     </View>
@@ -630,6 +785,65 @@ const AddTransactionScreen = () => {
 };
 // paste to view  {...panResponder.panHandlers}
 const styles = StyleSheet.create({
+  text_ModalAddingTransaction: {
+    fontSize: 20,
+    fontFamily: "Inconsolata_400Regular",
+    marginVertical: 10
+  },
+  view_ModalAddingTransaction: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center",
+    backgroundColor: "white",
+    padding: 5,
+    margin: 10,
+    borderRadius: 10,
+    width: "80%",
+    height: "10%"
+  },
+  viewProcessing: {
+    width: "100%",
+    height: "20%",
+    flex: 1,
+    backgroundColor: "red",
+    borderWidth: 10,
+    borderColor: "yellow"
+  },
+  textLabelActionable: {
+    fontSize: 20,
+    fontFamily: "Inconsolata_400Regular",
+    marginVertical: 10,
+    alignSelf: "flex-end"
+  },
+  pressableActionUserActionable: {
+    padding: 5,
+    // marginHorizontal: 2,
+    borderRadius: 5,
+    // backgroundColor: "rgba(0,0,0,0.05)",
+    justifyContent: "space-between",
+    alignItems: "center",
+    alignContent: "center"
+    // width: 35,
+    // height: 35
+  },
+  view_Modal_TakeCamera: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    alignContent: "center",
+    backgroundColor: "white",
+    padding: 5,
+    // marginBottom: 20,
+    borderRadius: 10,
+    width: "100%",
+    height: "15%"
+  },
+  pressable_CloseModal: {
+    flex: 1,
+    width: "100%",
+    height: "100%"
+  },
   viewPressableAction: {
     width: "98%",
     // borderColor: "red",
@@ -735,7 +949,7 @@ const styles = StyleSheet.create({
     marginVertical: 8
   },
   viewInvoiceScanning: {
-    visible: "hidden",
+    // visible: "hidden",
     width: "100%",
     flex: 1,
     // height: 1000,
@@ -803,7 +1017,7 @@ const styles = StyleSheet.create({
     // borderColor: "gray",
     // backgroundColor: "green",
     // flex: 1,
-    height: "80%",
+    height: "70%",
     width: "100%"
   },
   viewInsideModal: {
@@ -813,9 +1027,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     alignContent: "center",
-    width: "95%",
-    // flex: 1,
-    height: "95%"
+    // width: "100%",
+    flex: 1,
+    // height: "100%",
+    zIndex: 99,
+    borderWidth: 1,
+    borderColor: "red"
   },
   viewCalendarInModal: {
     borderWidth: 1,
@@ -892,13 +1109,18 @@ const styles = StyleSheet.create({
     // borderBottomColor: "darkgrey",
     // borderBottomWidth: 1
   },
-  centeredView: {
+  view_BackgroudModal: {
     // flex: 1,
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
-    height: "100%"
-    // flexDirection: "column",
+    height: "100%",
+    backgroundColor: "rgba(0, 0, 0, 0.25)",
+    // borderColor: "yellow",
+    // borderWidth: 10,
+    zIndex: 1,
+    flexDirection: "column",
+    paddingHorizontal: 5
     // borderColor: "red",
     // borderWidth: 5
   },

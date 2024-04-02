@@ -11,7 +11,7 @@ const fileServices = {
       const header = {
         "Content-Type": "multipart/form-data"
       };
-      const urlapi = API.INVOICE.SCAN;
+      const urlapi = API.INVOICE.TEST;
       // const urlapi = API.INVOICE.SCAN;
       const formData = new FormData();
       const filename = asset?.uri.split("/").pop();
@@ -34,6 +34,7 @@ const fileServices = {
       console.error("Error fetching data:", error);
     }
   },
+
   uploadToInvoiceTransaction: async (asset) => {
     try {
       const header = {
@@ -61,21 +62,18 @@ const fileServices = {
       console.error("Error fetching data:", error);
     }
   },
-  uploadToInvoiceTransactionFileName: async ({ asset, filenamecustom }) => {
+
+  uploadToInvoiceTransactionFileName: async ({
+    asset,
+    filenamecustom,
+    accountID
+  }) => {
     try {
       const header = {
         "Content-Type": "multipart/form-data"
       };
       // console.log("filenamecustom: ", filenamecustom);
-      const urlapi =
-        API.FILE.UPLOAD_INVOICE_OF_TRANSACTION_FILE_NAME +
-        "?" +
-        "filename" +
-        "=" +
-        filenamecustom;
-      // console.log("api: ", urlapi);
-      // console.log("asset: ", asset);
-
+      const urlapi = API.FILE.UPLOAD_INVOICE_OF_TRANSACTION_FILE_NAME;
       const formData = new FormData();
       const filename = asset?.uri.split("/").pop();
       const match = /\.(\w+)$/.exec(filename);
@@ -86,11 +84,8 @@ const fileServices = {
         type: type
       };
       formData.append("file", filedata);
-      //   formData.append("file", {
-      //     uri: file.uri,
-      //     name: filename,
-      //     type
-      //   });
+      formData.append("filename", filenamecustom);
+      formData.append("accountID", accountID);
       const response = await axios.post(urlapi, formData, { header });
       return response.data;
     } catch (error) {

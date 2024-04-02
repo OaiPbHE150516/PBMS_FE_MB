@@ -37,6 +37,13 @@ const CfActivitiesComponent = ({ route }) => {
   const [keyboardHeight, setKeyboardHeight] = useState(170);
 
   const [image, setImage] = useState(null);
+  const [
+    transactionToAddCollabFundActivity,
+    setTransactionToAddCollabFundActivity
+  ] = useState({});
+
+  const [isAddTransactionViewsVisible, setIsAddTransactionViewsVisible] =
+    useState(false);
 
   const [nowCollabFundActivities, setNowCollabFundActivities] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -72,14 +79,27 @@ const CfActivitiesComponent = ({ route }) => {
       } else {
         data.append("file", null);
       }
-      console.log("data: ", data);
+      // transactionid
+      if (transactionToAddCollabFundActivity) {
+        data.append(
+          "transactionID",
+          transactionToAddCollabFundActivity?.transactionID
+        );
+      }
+      console.log("handleOnSendChat data: ", data);
       const response = await collabFundServices
-        .createActivityNoTransaction(data)
+        .createActivity(data)
         .then((res) => {
           // console.log("res: ", res);
           fetchCollabFundActivities();
           setImage(null);
           textInputRef?.current?.clear();
+          setTransactionToAddCollabFundActivity({});
+          setIsAddTransactionViewsVisible(false);
+        })
+        .catch((error) => {
+          Alert.alert("Lỗi", "Không thể gửi hoạt động, vui lòng thử lại!");
+          console.error("Error handleOnSendChat data:", error);
         });
       // console.log("response: ", response);
     } catch (error) {
@@ -116,7 +136,7 @@ const CfActivitiesComponent = ({ route }) => {
 
   async function handleAddTransaction() {
     try {
-      console.log("handleAddTransaction");
+      // console.log("handleAddTransaction");
     } catch (error) {
       console.error("Error handleAddTransaction data:", error);
     }
@@ -124,14 +144,17 @@ const CfActivitiesComponent = ({ route }) => {
 
   const fetchCollabFundActivities = async () => {
     try {
-      const data = await collabFundServices.getCollabFundActivities({
-        data: {
-          collabFundID: collabFund?.collabFundID,
-          accountID: account?.accountID
-        }
-      });
-      console.log("data: ");
-      setNowCollabFundActivities(data);
+      await collabFundServices
+        .getCollabFundActivities({
+          data: {
+            collabFundID: collabFund?.collabFundID,
+            accountID: account?.accountID
+          }
+        })
+        .then((response) => {
+          console.log(response);
+          setNowCollabFundActivities(response);
+        });
     } catch (error) {
       console.error("Error fetching collab fund activities:", error);
     }
@@ -150,6 +173,18 @@ const CfActivitiesComponent = ({ route }) => {
       setIsRefreshing(false);
     }, 1000);
   };
+
+  function onCallbackAddTransaction({ data }) {
+    console.log("data: ", data);
+    setIsModalAddTransactionVisible(!isModalAddTransactionVisible);
+    setTransactionToAddCollabFundActivity(data);
+    setIsAddTransactionViewsVisible(true);
+  }
+
+  function onPressRemoveTransactionSelected() {
+    setTransactionToAddCollabFundActivity({});
+    setIsAddTransactionViewsVisible(false);
+  }
 
   const AnActivityItem = ({ item }) => {
     return (
@@ -174,27 +209,17 @@ const CfActivitiesComponent = ({ route }) => {
             {item?.account?.accountName}
           </Text>
           <Text style={styles.textActivityNote}>{item?.note}</Text>
-          {/* <View
-            style={{
-              width: "auto",
-              height: item?.filename !== "" ? 300 : 0
-              // borderWidth: 1,
-              // borderColor: "green"
-            }}
-          > */}
+
           {item?.filename === "" ? null : (
             <Image
               source={{
                 uri: item?.filename
-                // priority: FastImage.priority.normal
               }}
-              // resizeMode={FastImage.resizeMode.contain}
               style={{ width: "auto", height: 250 }}
               // defaultSource={require("../../../assets/images/placeholder.png")}
               // loadingIndicatorSource={require("../../../assets/images/placeholder.png")}
             />
           )}
-          {/* </View> */}
         </View>
         <View style={styles.viewAnActivityItemTimeAmount}>
           <Text style={styles.textActivityTime}>{item?.createTimeString}</Text>
@@ -209,15 +234,60 @@ const CfActivitiesComponent = ({ route }) => {
     );
   };
 
+  const ATransactionSelected = ({ transaction }) => {
+    return (
+      <Pressable
+        onPress={() => {
+          Keyboard.dismiss();
+          handleAddTransaction();
+          setIsModalAddTransactionVisible(!isModalAddTransactionVisible);
+        }}
+        style={styles.view_ViewTransactionSelected}
+      >
+        <View style={styles.view_ViewTransactionSelected_Date}>
+          <Text style={styles.text_ViewTransactionSelected_Date}>
+            {transaction?.dayOfWeekStrMdl + " " + transaction?.dateShortStr}
+          </Text>
+          <Pressable
+            onPress={() => onPressRemoveTransactionSelected()}
+            style={{}}
+          >
+            <Icon name="xmark" size={25} color="darkgray" />
+          </Pressable>
+        </View>
+        <View style={styles.view_ViewTransactionSelected_Infor}>
+          <View style={styles.view_ATransactionInDay_Time}>
+            <Text style={styles.text_ATransactionInDay_Time}>
+              {transaction?.timeStr}
+            </Text>
+          </View>
+          <View style={styles.view_ATransactionInDay_Cate}>
+            <Text style={styles.text_ATransactionInDay_Normal}>
+              {transaction?.category?.nameVN}
+            </Text>
+          </View>
+          <View style={styles.view_ATransactionInDay_Note}>
+            <Text style={styles.text_ATransactionInDay_Note}>
+              {transaction?.note}
+            </Text>
+          </View>
+          <View style={styles.view_ATransactionInDay_TotalAmount}>
+            <Text style={styles.text_ATransactionInDay_TotalAmount}>
+              {transaction?.totalAmountStr}
+            </Text>
+          </View>
+        </View>
+      </Pressable>
+    );
+  };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.viewContainer}
       keyboardVerticalOffset={Platform.OS === "ios" ? keyboardHeight : 0}
-      // keyboardVerticalOffset={Platform.OS === "ios" ? 170 : 0}
     >
       <View style={styles.viewActivitiesContent}>
-        {/* <FlatListActivities collabFund={collabFund} /> */}
         <FlatList
           style={styles.flatListActivitiesContent}
           inverted
@@ -228,12 +298,15 @@ const CfActivitiesComponent = ({ route }) => {
           refreshControl={
             <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
           }
-          // contentInset={{ top: 0, bottom: 200, left: 0, right: 0 }}
-          // contentInsetAdjustmentBehavior="automatic"
         />
       </View>
       <View style={styles.viewActivitiesAction}>
-        {/* <Button title="Add Activity" onPress={() => {}} /> */}
+        {!isAddTransactionViewsVisible ? null : (
+          <ATransactionSelected
+            transaction={transactionToAddCollabFundActivity}
+          />
+        )}
+        {/* <View style={{ width: "100%" }}> */}
         <View style={styles.viewActionUserInfor}>
           <Image
             source={{
@@ -241,7 +314,6 @@ const CfActivitiesComponent = ({ route }) => {
             }}
             style={{ width: 40, height: 40, borderRadius: 40 }}
           />
-          {/* <Text style={styles.textUserInforName}>{account?.accountName}</Text> */}
         </View>
         <View style={styles.viewActionUserChat}>
           <TextInput
@@ -256,10 +328,7 @@ const CfActivitiesComponent = ({ route }) => {
             onSubmitEditing={(event) => {
               handleOnSendChat({ text: event.nativeEvent.text });
               console.log("event.nativeEvent.text: ", event.nativeEvent);
-              // clear text input after send 500ms later to avoid the bug of TextInput
-              // handleOnSendChat();
             }}
-            // ref={textInputRef}
             multiline={true}
             blurOnSubmit={true}
             numberOfLines={2}
@@ -384,11 +453,66 @@ const CfActivitiesComponent = ({ route }) => {
   );
 };
 
-const onCallbackAddTransaction = ({ data }) => {
-  console.log("data: ", data);
-};
-
 const styles = StyleSheet.create({
+  text_ViewTransactionSelected_Date: {
+    fontFamily: "Inconsolata_400Regular",
+    fontSize: 20
+  },
+  view_ATransactionInDay_Time: {
+    flex: 1
+  },
+  text_ATransactionInDay_Time: {
+    fontFamily: "Inconsolata_500Medium",
+    fontSize: 20
+  },
+  view_ATransactionInDay_Cate: {
+    flex: 2
+  },
+  text_ATransactionInDay_Normal: {
+    fontFamily: "Inconsolata_400Regular",
+    fontSize: 18
+  },
+  view_ATransactionInDay_Note: {
+    flex: 2
+  },
+  text_ATransactionInDay_Note: {
+    fontFamily: "Inconsolata_400Regular",
+    fontSize: 18
+  },
+  view_ATransactionInDay_TotalAmount: {
+    flex: 2
+  },
+  text_ATransactionInDay_TotalAmount: {
+    textAlign: "right",
+    fontFamily: "OpenSans_500Medium",
+    fontSize: 20
+  },
+  view_ViewTransactionSelected_Infor: {
+    flexDirection: "row",
+    alignContent: "center",
+    justifyContent: "space-around",
+    alignItems: "center"
+  },
+  view_ViewTransactionSelected_Date: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    alignContent: "center",
+    paddingHorizontal: 10
+  },
+  view_ViewTransactionSelected: {
+    width: "100%",
+    height: "auto",
+    borderWidth: 1,
+    borderColor: "darkgray",
+    borderRadius: 10,
+    position: "absolute",
+    backgroundColor: "white",
+    bottom: 50,
+    zIndex: 10,
+    flexDirection: "column",
+    padding: 5
+  },
   viewModalAddTransaction: {
     flexDirection: "column",
     justifyContent: "space-around",
@@ -538,7 +662,7 @@ const styles = StyleSheet.create({
   viewActivitiesAction: {
     flexDirection: "row",
     // borderWidth: 1,
-    // borderColor: "darkgray",
+    // borderColor: "red",
     borderRadius: 8,
     marginTop: 5,
     padding: 2,

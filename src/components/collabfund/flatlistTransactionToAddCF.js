@@ -42,13 +42,13 @@ const FlatListTransactionToAddCF = ({ callback }) => {
 
   const fetchLastNumberDayExpensesTransaction = async () => {
     try {
-      const response = await transactionServices
+      await transactionServices
         .getLastNumberExpensesTransaction(
           account?.accountID,
           VAR.NUMBER_LASTDAY_EXPENSES_TRANSACTION
         )
         .then((response) => {
-          console.log("response: ", response);
+          // console.log("response: ", response);
           setNowLastExpensesTransaction(response);
           setIsFetchingData(false);
         });
@@ -72,7 +72,8 @@ const FlatListTransactionToAddCF = ({ callback }) => {
   };
 
   function onHandleATransactionInDayPress({ aTransaction }) {
-    console.log("aTransaction: ", aTransaction);
+    // console.log("aTransaction: ", aTransaction);
+    callback({ data: aTransaction });
   }
 
   function onHandleNewTransactionPress() {
@@ -99,7 +100,15 @@ const FlatListTransactionToAddCF = ({ callback }) => {
 
   const ATransactionInDay = ({ aTransaction }) => {
     return (
-      <Pressable style={styles.view_ATransactionInDay}>
+      <Pressable
+        onPress={() => onHandleATransactionInDayPress({ aTransaction })}
+        style={({ pressed }) => [
+          {
+            backgroundColor: pressed ? "rgb(211, 211, 211)" : "white"
+          },
+          styles.view_ATransactionInDay
+        ]}
+      >
         <View style={styles.view_ATransactionInDay_Time}>
           <Text style={styles.text_ATransactionInDay_Time}>
             {aTransaction?.timeStr}
@@ -126,6 +135,24 @@ const FlatListTransactionToAddCF = ({ callback }) => {
 
   return (
     <View style={styles.view_Container}>
+      <View style={styles.view_Actionable}>
+        <Pressable
+          style={({ pressed }) => [
+            {
+              backgroundColor: pressed ? "gray" : "lightgray"
+            },
+            styles.pressable_Actionable_NewTransaction
+          ]}
+          onPress={() => onHandleNewTransactionPress()}
+        >
+          <Text style={styles.text_Container_Header}>
+            {"Tạo giao dịch mới"}
+          </Text>
+        </Pressable>
+      </View>
+      <View style={styles.view_HorizontalDivider}>
+        <Text style={styles.text_HorizontalDivider}>{"hoặc"}</Text>
+      </View>
       <View style={styles.view_Container_Header}>
         <Text style={styles.text_Container_Header}>
           {"Chọn giao dịch gần đây"}
@@ -151,27 +178,38 @@ const FlatListTransactionToAddCF = ({ callback }) => {
           />
         )}
       </View>
-      <View style={styles.view_Actionable}>
-        <Pressable
-          style={styles.pressable_Actionable_NewTransaction}
-          onPress={() => onHandleNewTransactionPress()}
-        >
-          <Text>{"Thêm giao dịch mới"}</Text>
-        </Pressable>
-      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  view_HorizontalDivider: {
+    alignSelf: "center",
+    borderTopWidth: 1,
+    borderTopColor: "darkgray",
+    width: "90%",
+    alignContent: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
+    // borderWidth: 1,
+    // borderColor: "red"
+  },
+  text_HorizontalDivider: {
+    fontFamily: "Inconsolata_400Regular",
+    fontSize: 18,
+    top: -10,
+    backgroundColor: "white",
+    paddingHorizontal: 15
+  },
   text_Container_Header: {
     fontFamily: "Inconsolata_500Medium",
     fontSize: 20
   },
   view_Container_Header: {
-    height: "5%",
-    borderWidth: 1,
-    borderColor: "red",
+    height: "auto",
+    // borderWidth: 1,
+    // borderColor: "red",
     alignContent: "center",
     justifyContent: "center",
     alignItems: "center"
@@ -180,15 +218,22 @@ const styles = StyleSheet.create({
     height: "80%"
   },
   view_Actionable: {
-    height: "15%",
-    borderWidth: 1,
-    borderColor: "red",
+    height: "5%",
+    // borderWidth: 1,
+    // borderColor: "red",
     alignContent: "center",
     justifyContent: "space-around",
     alignItems: "center"
   },
   pressable_Actionable_NewTransaction: {
-    backgroundColor: "darkgray"
+    height: "80%",
+    width: "50%",
+    alignContent: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "darkgray"
   },
   view_ATransactionInDay_Time: {
     flex: 1
@@ -234,7 +279,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 2,
     marginVertical: 5,
     flexDirection: "row",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+    alignItems: "center",
+    alignContent: "center",
+    height: 35
   },
   view_ADayHasTransaction_FlatList: {
     padding: 5

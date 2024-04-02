@@ -56,7 +56,11 @@ const ModalWalletComponent = ({ onDataFromChild }) => {
   const handleSelectWallet = (wallet) => {
     console.log("handleSelectWallet, wallet: ", wallet.name);
     dispatch(setAddTransactionWallet(wallet));
-    onDataFromChild(false);
+    const data = {
+      walletID: wallet.walletID,
+      isWalletVisible: false
+    };
+    onDataFromChild(data);
   };
 
   return (
@@ -81,14 +85,6 @@ const ModalWalletComponent = ({ onDataFromChild }) => {
         renderItem={({ item }) => <WalletItem wallet={item} />}
         keyExtractor={(item) => item.walletID}
       />
-      <Pressable
-        style={styles.buttonContinue}
-        onPress={() => {
-          onDataFromChild(false);
-        }}
-      >
-        <Text>Close</Text>
-      </Pressable>
     </View>
   );
 };
@@ -99,7 +95,7 @@ const styles = StyleSheet.create({
     fontFamily: "Inconsolata_400Regular"
   },
   viewWalletItemInfor: {
-    flexDirection: "column",
+    flexDirection: "column"
     // alignContent: "flex-start",
     // alignItems: "flex-start"
   },

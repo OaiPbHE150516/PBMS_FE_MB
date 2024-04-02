@@ -87,6 +87,21 @@ const collabFundServices = {
     } catch (error) {
       console.error("Error fetching data:", error);
     }
+  },
+
+  // create activity with transaction form ( default )
+  createActivity: async (data) => {
+    try {
+      const formHeader = {
+        "Content-Type": "multipart/form-data"
+      };
+      const response = await axios.post(API.COLLABFUND.CREATE_ACTIVITY, data, {
+        formHeader
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error posting data createActivity:", error);
+    }
   }
 };
 

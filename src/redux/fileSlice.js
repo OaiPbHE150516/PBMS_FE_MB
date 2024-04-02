@@ -20,10 +20,11 @@ export const uploadToInvoiceTransaction = createAsyncThunk(
 
 export const uploadToInvoiceTransactionFileName = createAsyncThunk(
   "uploadToInvoiceTransactionFileName",
-  async ({ asset, filenamecustom }) => {
+  async ({ asset, filenamecustom, accountID }) => {
     const response = await fileServices.uploadToInvoiceTransactionFileName({
       asset: asset,
-      filenamecustom: filenamecustom
+      filenamecustom: filenamecustom,
+      accountID: accountID
     });
     return response;
   }

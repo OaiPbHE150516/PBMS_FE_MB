@@ -5,7 +5,6 @@ import datedisplay from "../redux/datedisplaySlice";
 import transactionSlice from "../redux/transactionSlice";
 import categorySlice from "../redux/categorySlice";
 import modalSlice from "../redux/modalSlice";
-import mediaLibrarySlice from "../redux/mediaLibrarySlice";
 import fileSlice from "../redux/fileSlice";
 import collabFundSlice from "../redux/collabFundSlice";
 
@@ -16,7 +15,6 @@ const rootReducer = combineReducers({
     transaction: transactionSlice.reducer,
     category: categorySlice.reducer,
     modal: modalSlice.reducer,
-    mediaLibrary: mediaLibrarySlice.reducer,
     file: fileSlice.reducer,
     collabFund: collabFundSlice.reducer
 });

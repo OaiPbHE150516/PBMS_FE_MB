@@ -18,29 +18,44 @@ const ModalCategoryComponent = ({ onDataFromChild }) => {
     }
   }, [account]);
 
-  function handleContinue() {
-    onDataFromChild({
-      isCategoryVisible: false
-    });
-  }
+  // function handleContinue() {
+  //   onDataFromChild({
+  //     isCategoryVisible: false
+  //   });
+  // }
 
-  function handleCancel() {
+  // function handleCancel() {
+  //   onDataFromChild({
+  //     isCategoryVisible: false,
+  //     category: null
+  //   });
+  // }
+
+  function onCallback(data) {
+    console.log("data onCallback TabCategoryInModalComponent: ", data);
     onDataFromChild({
-      isCategoryVisible: false
+      isCategoryVisible: false,
+      category: data
     });
   }
 
   const Tab1 = () => {
     return categories !== null ? (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <TabCategoryInModalComponent props={{ category: categories[0] }} />
+      <View style={styles.view_ATabCategory}>
+        <TabCategoryInModalComponent
+          props={{ category: categories[0] }}
+          callback={onCallback}
+        />
       </View>
     ) : null;
   };
   const Tab2 = () => {
     return categories !== null ? (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <TabCategoryInModalComponent props={{ category: categories[1] }} />
+      <View style={styles.view_ATabCategory}>
+        <TabCategoryInModalComponent
+          props={{ category: categories[1] }}
+          callback={onCallback}
+        />
       </View>
     ) : null;
   };
@@ -57,7 +72,7 @@ const ModalCategoryComponent = ({ onDataFromChild }) => {
             flexDirection: "row",
             // width: "100%",
             // flex: 1,
-            width: Dimensions.get("window").width * 0.90
+            width: Dimensions.get("window").width * 0.9
             // backgroundColor: "tomato"
           },
           tabBarItemStyle: {
@@ -84,29 +99,19 @@ const ModalCategoryComponent = ({ onDataFromChild }) => {
         <TabCategory.Screen name="Khoản thu" component={Tab1} />
         <TabCategory.Screen name="Khoản chi" component={Tab2} />
       </TabCategory.Navigator>
-      <View style={styles.viewActionModal}>
-        <Pressable
-          style={[styles.buttonCloseModal, styles.buttonActionModal]}
-          onPress={() => {
-            handleCancel();
-          }}
-        >
-          <Text style={styles.textButtonCloseModal}>{"< Hủy"}</Text>
-        </Pressable>
-        <Pressable
-          style={[styles.buttonContinueModal, styles.buttonActionModal]}
-          onPress={() => {
-            handleContinue();
-          }}
-        >
-          <Text style={styles.textButtonCloseModal}>{"Thời gian >"}</Text>
-        </Pressable>
-      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  view_ATabCategory: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    // borderWidth: 1,
+    // borderColor: "red",
+    padding: 10
+  },
   viewActionModal: {
     flexDirection: "row",
     justifyContent: "center",
@@ -158,7 +163,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     height: "100%",
-    width: "100%",
+    width: "100%"
     // bottom: -20
   }
 });

@@ -8,7 +8,8 @@ import {
   FlatList,
   Dimensions,
   TouchableOpacity,
-  RefreshControl
+  RefreshControl,
+  Pressable
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome6";
 import { useSelector, useDispatch } from "react-redux";
@@ -23,7 +24,7 @@ import { getCategories } from "../../redux/categorySlice";
 
 import { setModalAddTransactionVisible } from "../../redux/modalSlice";
 
-const TabCategoryInModalComponent = ({ props }) => {
+const TabCategoryInModalComponent = ({ props, callback }) => {
   const account = useSelector((state) => state.authen.account);
   const [isShouldSelectToAddTransaction, setIsShouldSelectToAddTransaction] =
     useState(props?.action);
@@ -63,6 +64,7 @@ const TabCategoryInModalComponent = ({ props }) => {
         dispatch(setCategoryToAddTransaction(category));
         dispatch(setModalCategoryVisible(false));
         dispatch(setModalAddTransactionVisible(false));
+        callback(category);
       } else if (action === false) {
         console.log("action", action);
         console.log("category", category);
@@ -70,12 +72,14 @@ const TabCategoryInModalComponent = ({ props }) => {
     };
     return (
       <View style={styles.viewCateItem}>
-        <TouchableOpacity
-          style={[
+        <Pressable
+          style={({ pressed }) => [
             styles.touchableCateItem,
             {
               marginLeft: 20 * depth,
-              width: Dimensions.get("window").width * 0.75 - 20 * depth
+              width: Dimensions.get("window").width * 0.75 - 30 * depth,
+              height: 30,
+              backgroundColor: pressed ? "lightgray" : null
             }
           ]}
           onPress={() => {
@@ -101,7 +105,7 @@ const TabCategoryInModalComponent = ({ props }) => {
               color="black"
             />
           ) : null}
-        </TouchableOpacity>
+        </Pressable>
         {category.children &&
           category.children.map((child) => (
             <CategoryItem
@@ -174,9 +178,10 @@ const styles = StyleSheet.create({
     alignContent: "flex-start",
     marginVertical: 10,
     flexDirection: "column",
-    // borderWidth: 1,
+    // borderWidth: 10,
     // borderColor: "blue",
     width: "100%"
+    // height: "50%"
   },
   textItem: {
     fontSize: 20,

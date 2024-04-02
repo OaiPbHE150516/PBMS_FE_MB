@@ -208,7 +208,7 @@ export function ModalCalendarComponent({ onDataFromChild }) {
             handleCancel();
           }}
         >
-          <Text style={styles.textButtonCloseModal}>{"< Hủy"}</Text>
+          <Text style={styles.textButtonCloseModal}>{"Hủy"}</Text>
         </Pressable>
         <Pressable
           style={[styles.buttonContinueModal, styles.buttonActionModal]}
@@ -216,7 +216,7 @@ export function ModalCalendarComponent({ onDataFromChild }) {
             handleContinue();
           }}
         >
-          <Text style={styles.textButtonCloseModal}>{"Tiếp tục >"}</Text>
+          <Text style={styles.textButtonCloseModal}>{"Tiếp tục"}</Text>
         </Pressable>
       </View>
     </View>

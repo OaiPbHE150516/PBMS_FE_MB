@@ -174,11 +174,12 @@ const CfActivitiesComponent = ({ route }) => {
     }, 1000);
   };
 
-  function onCallbackAddTransaction({ data }) {
-    console.log("data: ", data);
-    setIsModalAddTransactionVisible(!isModalAddTransactionVisible);
-    setTransactionToAddCollabFundActivity(data);
-    setIsAddTransactionViewsVisible(true);
+  function onCallbackAddTransaction({ data, isModalVisible }) {
+    setIsModalAddTransactionVisible(false);
+    if (data !== undefined && data !== null) {
+      setTransactionToAddCollabFundActivity(data);
+    }
+    setIsAddTransactionViewsVisible(isModalVisible);
   }
 
   function onPressRemoveTransactionSelected() {

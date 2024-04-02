@@ -67,17 +67,16 @@ const FlatListTransactionToAddCF = ({ callback }) => {
     }
   }, [account]);
 
-  const onHandlePress = () => {
-    callback({ data: "data" });
-  };
+  const navigation = useNavigation();
 
   function onHandleATransactionInDayPress({ aTransaction }) {
     // console.log("aTransaction: ", aTransaction);
-    callback({ data: aTransaction });
+    callback({ data: aTransaction, isModalVisible: true });
   }
 
   function onHandleNewTransactionPress() {
-    console.log("onHandleNewTransactionPress");
+    navigation.navigate("AddTransaction");
+    callback({ data: null, isModalVisible: false });
   }
 
   const ADayHasTransaction = ({ aDay }) => {
@@ -191,7 +190,7 @@ const styles = StyleSheet.create({
     alignContent: "center",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 10,
+    marginTop: 10
     // borderWidth: 1,
     // borderColor: "red"
   },

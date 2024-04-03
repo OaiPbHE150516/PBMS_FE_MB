@@ -11,7 +11,7 @@ const fileServices = {
       const header = {
         "Content-Type": "multipart/form-data"
       };
-      const urlapi = API.INVOICE.SCAN;
+      const urlapi = API.INVOICE.SCAN_V4;
       // const urlapi = API.INVOICE.SCAN;
       const formData = new FormData();
       const filename = asset?.uri.split("/").pop();

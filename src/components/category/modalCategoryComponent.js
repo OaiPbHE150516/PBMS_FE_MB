@@ -96,8 +96,8 @@ const ModalCategoryComponent = ({ onDataFromChild }) => {
           swipeEnabled: true
         }}
       >
-        <TabCategory.Screen name="Khoản thu" component={Tab1} />
         <TabCategory.Screen name="Khoản chi" component={Tab2} />
+        <TabCategory.Screen name="Khoản thu" component={Tab1} />
       </TabCategory.Navigator>
     </View>
   );

@@ -90,21 +90,21 @@ const AddTransactionScreen = () => {
     (state) => state.transaction.addTransactionWallet
   );
 
-  const invoiceScanning = useSelector((state) => state.file?.invoiceScanning);
+  // const invoiceScanning = useSelector((state) => state.file?.invoiceScanning);
   // const invoiceImageURL = useSelector((state) => state.file?.invoiceImageURL);
   const [invoiceResult, setInvoiceResult] = useState(null);
 
   const dispatch = useDispatch();
   useEffect(() => {
-    if (invoiceScanning) {
-      setInvoiceResult(invoiceScanning);
-      setunInputInvoiceScanning(invoiceScanning);
-    }
+    // if (invoiceScanning) {
+    //   setInvoiceResult(invoiceScanning);
+    //   setunInputInvoiceScanning(invoiceScanning);
+    // }
     setCurrentTime(datetimeLibrary.getCurrentTime().datetimestr);
   }, [account, dispatch]);
 
   const setunInputInvoiceScanning = (invoiceScanning) => {
-    setTransAmount(invoiceScanning.totalAmount.toString());
+    setTransAmount(invoiceScanning?.totalAmount?.toString());
   };
 
   const handleDataFromCalendar = (data) => {
@@ -123,11 +123,11 @@ const AddTransactionScreen = () => {
     setMWalletVisible(data.isWalletVisible);
   };
 
-  const handleDataFromTakeCamera = (data) => {
-    setMTakeCamera(data.isCameraVisible);
-    dispatch(setModalAddTransactionVisible(false));
-    console.log("AddTransactionScreen data: ", data);
-  };
+  // const handleDataFromTakeCamera = (data) => {
+  //   setMTakeCamera(data.isCameraVisible);
+  //   dispatch(setModalAddTransactionVisible(false));
+  //   console.log("AddTransactionScreen data: ", data);
+  // };
 
   async function handleAddTransaction() {
     console.log("handleAddTransaction");
@@ -315,7 +315,7 @@ const AddTransactionScreen = () => {
     console.log(result);
     if (!result.canceled) {
       setMTakeCamera(false);
-      handleSaveAndUploadInvoice(result.assets[0]);
+      handleUploadToScanInvoice(result.assets[0]);
     }
   }
 
@@ -327,7 +327,7 @@ const AddTransactionScreen = () => {
     console.log(result);
     if (!result.canceled) {
       setMTakeCamera(false);
-      handleSaveAndUploadInvoice(result.assets[0]);
+      handleUploadToScanInvoice(result.assets[0]);
     }
   }
 
@@ -365,11 +365,11 @@ const AddTransactionScreen = () => {
     }
   }
 
-  async function handleSaveAndUploadInvoice(asset) {
+  async function handleUploadToScanInvoice(asset) {
     console.log("asset: ", asset);
     setMIsProcessing(true);
     setNewAssetShowing({ asset: asset, isShowingAsset: "true" });
-    setProcessingContent("Đang xử lý hóa đơn ...");
+    setProcessingContent("Đang quét hóa đơn ...");
     await fileServices.upToScanInvoice(asset).then((response) => {
       console.log("response: ", response);
       setProcessingContent("Đã xử lý hóa đơn");
@@ -443,7 +443,7 @@ const AddTransactionScreen = () => {
             }}
           />
         </View>
-        <View style={styles.viewChildIS}>
+        {/* <View style={styles.viewChildIS}>
           <Text style={styles.textHeaderViewChildIS}>{"Người nhận"}</Text>
           <AnInputInvoiceScanning
             textLabelTop="Tên"
@@ -459,7 +459,7 @@ const AddTransactionScreen = () => {
               setInvoiceResult({ ...invoiceResult, receiverAddress: text });
             }}
           />
-        </View>
+        </View> */}
         <View style={styles.viewChildIS}>
           <Text style={styles.textHeaderViewChildIS}>{"Sản phẩm"}</Text>
           <FlatList
@@ -496,6 +496,32 @@ const AddTransactionScreen = () => {
               />
             )}
           />
+        </View>
+      </View>
+    );
+  };
+
+  const ViewMoreDetail = () => {
+    return (
+      <View style={styles.viewMoreDetail}>
+        <View style={styles.viewAmount}>
+          <View style={styles.viewAmountIcon}>
+            <Icon name="arrow-right-from-bracket" size={30} color="darkgrey" />
+          </View>
+          <View style={styles.viewInputAmount}>
+            <TextInput style={styles.textInputPerson} placeholder="Người gửi" />
+          </View>
+        </View>
+        <View style={styles.viewAmount}>
+          <View style={styles.viewAmountIcon}>
+            <Icon name="arrow-right-to-bracket" size={30} color="darkgrey" />
+          </View>
+          <View style={styles.viewInputAmount}>
+            <TextInput
+              style={styles.textInputPerson}
+              placeholder="Người nhận"
+            />
+          </View>
         </View>
       </View>
     );
@@ -606,6 +632,40 @@ const AddTransactionScreen = () => {
               />
             </View>
           </View>
+          <View style={styles.view_AddTransaction_Note}>
+            {/* <View style={styles.view_AddTransaction_Note_Icon}>
+              <Icon name="note-sticky" size={30} color="darkgrey" />
+            </View> */}
+            <TextInput
+              style={[styles.textinput_AddTransaction_Note]}
+              placeholder="Ghi chú"
+              editable={true}
+              multiline={true}
+              numberOfLines={5}
+              textAlign="left"
+              textAlignVertical="top"
+            />
+          </View>
+          {/* <View style={styles.viewAmount}>
+            <View style={styles.viewPressableMoreDetail}>
+              {isShowDetail && <ViewMoreDetail />}
+              <Pressable
+                style={styles.pressMoreDetail}
+                onPress={() => {
+                  setIsShowDetail(!isShowDetail);
+                }}
+              >
+                <Text style={styles.textMoreDetail}>
+                  {isShowDetail ? "Ẩn chi tiết" : "Thêm chi tiết"}
+                </Text>
+                <Icon
+                  name={isShowDetail ? "chevron-up" : "chevron-down"}
+                  size={20}
+                  color="darkgrey"
+                />
+              </Pressable>
+            </View>
+          </View> */}
           {/* Invoice Scan */}
           {!mIsProcessing && mIsProcessing !== null && <ViewInvoiceScanning />}
           {mIsProcessing && mIsProcessing !== null && <ViewProcessing />}
@@ -785,6 +845,37 @@ const AddTransactionScreen = () => {
 };
 // paste to view  {...panResponder.panHandlers}
 const styles = StyleSheet.create({
+  textInputPerson: {
+    width: "100%",
+    alignContent: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    fontSize: 20,
+    fontFamily: "Inconsolata_400Regular",
+    // borderWidth: 1,
+    // borderColor: "darkgray",
+    height: "100%",
+  },
+  textinput_AddTransaction_Note: {
+    width: "100%",
+    height: 150,
+    borderColor: "darkgray",
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 5,
+    fontSize: 20,
+    fontFamily: "Inconsolata_400Regular",
+  },
+  view_AddTransaction_Note_Icon: {
+    width: "10%",
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center"
+  },
+  view_AddTransaction_Note: {
+    flexDirection: "row",
+    padding: 5
+  },
   text_ModalAddingTransaction: {
     fontSize: 20,
     fontFamily: "Inconsolata_400Regular",
@@ -806,9 +897,18 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "20%",
     flex: 1,
-    backgroundColor: "red",
-    borderWidth: 10,
-    borderColor: "yellow"
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center",
+    borderWidth: 1,
+    borderColor: "darkgray",
+    borderRadius: 10,
+    padding: 10,
+    marginVertical: 10,
+    marginHorizontal: 10,
+    // backgroundColor: "red",
+    // borderWidth: 10,
+    // borderColor: "yellow"
   },
   textLabelActionable: {
     fontSize: 20,
@@ -989,15 +1089,15 @@ const styles = StyleSheet.create({
     // marginHorizontal: 10
   },
   viewMoreDetail: {
-    flexDirection: "column",
+    flexDirection: "column"
     // justifyContent: "space-between",
     // alignItems: "center",
-    marginVertical: 5,
-    marginHorizontal: 5,
-    borderColor: "green",
-    borderWidth: 1,
+    // marginVertical: 5,
+    // marginHorizontal: 5,
+    // borderColor: "green",
+    // borderWidth: 1,
     // padding: 0,
-    height: Dimensions.get("screen").height * 0.3
+    // height: Dimensions.get("screen").height * 0.2,
     // flex: 1,
   },
 

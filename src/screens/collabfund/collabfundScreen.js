@@ -17,7 +17,8 @@ import {
   PanResponder,
   ScrollView,
   Image,
-  Switch
+  Switch,
+  RefreshControl
 } from "react-native";
 // node_modules library
 import { useNavigation } from "@react-navigation/native";
@@ -33,7 +34,8 @@ import currencyLibrary from "../../library/currencyLIbrary";
 
 // redux
 import { useSelector, useDispatch } from "react-redux";
-import { getAllCollabFund } from "../../redux/collabFundSlice";
+// import { getAllCollabFund } from "../../redux/collabFundSlice";
+import collabFundServices from "../../services/collabFundServices";
 
 // components
 import CollabFundDetail from "./collabFundDetail";
@@ -43,18 +45,55 @@ const Stack = createStackNavigator();
 const CollabFundScreen = () => {
   const account = useSelector((state) => state.authen?.account);
   const [tempCollabFundList, setTempCollabFundList] = useState([]);
-  const collabFunds = useSelector((state) => state.collabFund?.collabFunds);
-
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
 
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
+  function handleError(error) {
+    console.error("Error fetching data:", error);
+    Alert.alert(
+      "Lối khi lấy dữ liệu quỹ hợp tác từ server",
+      "Vui lòng thử lại sau",
+      [
+        {
+          text: "OK",
+          onPress: () => console.log("OK Pressed")
+        }
+      ]
+    );
+  }
+
+  async function fetchCollabFundsData() {
+    try {
+      await collabFundServices
+        .getAllCollabFund(account?.accountID)
+        .then((response) => {
+          setTempCollabFundList(response);
+        })
+        .catch((error) => {
+          handleError(error);
+        })
+        .finally(() => {
+          setTimeout(() => {
+            setIsRefreshing(false);
+          }, 2000);
+        });
+    } catch (error) {
+      handleError(error);
+    }
+  }
+
+  const onRefresh = () => {
+    setIsRefreshing(true);
+    fetchCollabFundsData();
+  };
+
   useEffect(() => {
     if (account) {
-      dispatch(getAllCollabFund(account.accountID));
-      setTempCollabFundList(collabFunds);
+      fetchCollabFundsData();
     }
   }, [account]);
 
@@ -144,9 +183,16 @@ const CollabFundScreen = () => {
           {"Ngân sách hợp tác"}
         </Text>
         <FlatList
-          data={tempCollabFundList || collabFunds}
+          style={styles.flatlist_collabfund}
+          scrollEnabled={true}
+          showsVerticalScrollIndicator={true}
+          extraData={tempCollabFundList}
+          data={tempCollabFundList}
           keyExtractor={(item) => item?.collabFundID}
           renderItem={({ item }) => <AnCollabFundItem collabFund={item} />}
+          refreshControl={
+            <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+          }
         />
       </View>
     );
@@ -168,10 +214,18 @@ const CollabFundScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  flatlist_collabfund: {
+    width: "100%"
+    // height: "100%",
+    // flex: 1,
+    // backgroundColor: "rgba(0,0,0,0.5)"
+  },
   textCollabFundListHeader: {
     fontSize: 30,
     fontFamily: "Inconsolata_500Medium",
-    color: "black"
+    color: "black",
+    textAlign: "center",
+    marginVertical: 10
   },
   textAnCollabFundItemStatus: {
     fontSize: 15,
@@ -273,10 +327,10 @@ const styles = StyleSheet.create({
   containerCollabFundList: {
     flex: 1,
     backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-    height: "100%",
+    // alignItems: "center",
+    // justifyContent: "center",
+    // width: "100%",
+    // height: "100%",
     padding: 10
     // borderWidth: 10,
     // borderColor: "red"
@@ -286,7 +340,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     maxHeight: "90%",
-    backgroundColor: "#fff",
+    backgroundColor: "#fff"
     // alignItems: "center",
     // justifyContent: "center",
     // borderWidth: 1,

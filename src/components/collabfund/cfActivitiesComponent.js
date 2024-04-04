@@ -80,14 +80,12 @@ const CfActivitiesComponent = ({ route }) => {
         data.append("file", null);
       }
       // transactionid
-      if (transactionToAddCollabFundActivity) {
-        data.append(
-          "transactionID",
-          transactionToAddCollabFundActivity?.transactionID
-        );
-      }
+      data.append(
+        "transactionID",
+        transactionToAddCollabFundActivity?.transactionID ?? ""
+      );
       console.log("handleOnSendChat data: ", data);
-      const response = await collabFundServices
+      await collabFundServices
         .createActivity(data)
         .then((res) => {
           // console.log("res: ", res);
@@ -113,7 +111,7 @@ const CfActivitiesComponent = ({ route }) => {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1
     });
-    console.log(result);
+    // console.log(result);
     if (!result.canceled) {
       setImage(result.assets[0]);
       setIsModalMediaCameraVisible(!isModalMediaCameraVisible);
@@ -126,7 +124,7 @@ const CfActivitiesComponent = ({ route }) => {
       quality: 1
     });
 
-    console.log(result);
+    // console.log(result);
 
     if (!result.canceled) {
       setImage(result.assets[0]);
@@ -152,8 +150,12 @@ const CfActivitiesComponent = ({ route }) => {
           }
         })
         .then((response) => {
-          console.log(response);
+          // console.log(response);
           setNowCollabFundActivities(response);
+        })
+        .catch((error) => {
+          console.error("Error fetching collab fund activities:", error);
+          Alert.alert("Lỗi", "Không thể lấy dữ liệu, vui lòng thử lại!");
         });
     } catch (error) {
       console.error("Error fetching collab fund activities:", error);
@@ -192,7 +194,14 @@ const CfActivitiesComponent = ({ route }) => {
       <View
         style={[
           styles.viewAnActivityItem,
-          { height: item?.filename === "" ? 50 : 300 }
+          {
+            height:
+              item?.cfDividingMoneyVMDTO !== null
+                ? 500
+                : item?.filename === ""
+                  ? 50
+                  : 300
+          }
         ]}
       >
         <View style={styles.viewAnPaticianAvatar}>
@@ -209,18 +218,30 @@ const CfActivitiesComponent = ({ route }) => {
           <Text style={styles.textActivityAccountName}>
             {item?.account?.accountName}
           </Text>
-          <Text style={styles.textActivityNote}>{item?.note}</Text>
-
+          <Text style={styles.textActivityNote}>
+            {item?.note && item?.note}
+          </Text>
           {item?.filename === "" ? null : (
             <Image
               source={{
                 uri: item?.filename
               }}
               style={{ width: "auto", height: 250 }}
-              // defaultSource={require("../../../assets/images/placeholder.png")}
-              // loadingIndicatorSource={require("../../../assets/images/placeholder.png")}
             />
           )}
+          {item?.cfDividingMoneyVMDTO ? (
+            <FlatList
+              scrollEnabled={false}
+              data={item?.cfDividingMoneyVMDTO?.cF_DividingMoneyDetails}
+              keyExtractor={(item) => item?.cF_DividingMoneyDetailID}
+              renderItem={({ item }) => (
+                <View>
+                  <Text>{item?.fromAccount?.accountName}</Text>
+                  <Text>{item?.dividingAmount}</Text>
+                </View>
+              )}
+            />
+          ) : null}
         </View>
         <View style={styles.viewAnActivityItemTimeAmount}>
           <Text style={styles.textActivityTime}>{item?.createTimeString}</Text>
@@ -228,6 +249,10 @@ const CfActivitiesComponent = ({ route }) => {
             <Text style={styles.textActivityAmount}>
               {"-"}
               {item?.transaction?.totalAmountStr}
+            </Text>
+          ) : item?.cfDividingMoneyVMDTO ? (
+            <Text style={styles.text_CFDividingMoneyVMDTO_TotalAmount}>
+              {item?.cfDividingMoneyVMDTO?.totalAmountStr}
             </Text>
           ) : null}
         </View>
@@ -559,7 +584,11 @@ const styles = StyleSheet.create({
     color: "firebrick",
     textAlign: "right"
   },
-
+  text_CFDividingMoneyVMDTO_TotalAmount: {
+    fontSize: 20,
+    fontFamily: "OpenSans_500Medium",
+    textAlign: "right"
+  },
   textActivityAccountName: {
     fontSize: 20,
     fontFamily: "Inconsolata_500Medium",

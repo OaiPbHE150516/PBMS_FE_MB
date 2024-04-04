@@ -8,6 +8,7 @@ export const API = {
   COLLABFUND: {
     GET_ALL_COLLABFUND: `${Base_URL}/api/collabfund/get/all/`,
     GET_COLLABFUND_ACTIVITIES: `${Base_URL}/api/collabfund/get/activity/`,
+    GET_COLLABFUND_ACTIVITIES_V2: `${Base_URL}/api/collabfund/get/activity/v2/`,
     GET_ACTIVE_COLLABFUND_PARTICIPANTS: `${Base_URL}/api/collabfund/get/member/`,
     GET_ALL_COLLABFUND_PARTICIPANTS: `${Base_URL}/api/collabfund/get/member/typebytype/`,
     GET_DIVIDI_MONEY_INFOR: `${Base_URL}/api/collabfund/get/divide-money-info/`,

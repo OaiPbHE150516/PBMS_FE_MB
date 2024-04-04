@@ -90,14 +90,15 @@ const CollabFundDetail = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <Modal visible={modalVisible} transparent animationType="fade">
-        <View style={{ flex: 1, backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+        <View style={styles.view_Modal_DivideMoney}>
           <Pressable
-            style={{ flex: 1 }}
+            style={{ height: "30%"}}
             onPressOut={() => setModalVisible(!modalVisible)}
           >
-            {/* <Text>{"This is your modal content"}</Text> */}
           </Pressable>
-          <DevideMoneyInfor collabFund={collabFund} />
+          <View style={styles.view_Modal_DivideMoney_Content}>
+            <DevideMoneyInfor collabFund={collabFund} />
+          </View>
         </View>
       </Modal>
       <View style={styles.viewHeaderDetail}>
@@ -168,6 +169,27 @@ const CollabFundDetail = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  view_Modal_DivideMoney: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    // justifyContent: "flex-end",
+    // alignItems: "flex-end",
+    // alignContent: "flex-end",
+    // borderWidth: 10,
+    // borderColor: "red"
+  },
+  view_Modal_DivideMoney_Content: {
+    // flex: 2,
+    // position: "absolute",
+    width: "100%",
+    bottom: 0,
+    // height: "auto",
+    // flex: 1,
+    height: "80%",
+    // alignSelf: "flex-end",
+    // alignContent: "flex-end",
+    // alignItems: "flex-end"
+  },
   viewModalMoreDetailDivideMoneyContent: {
     borderWidth: 0.5,
     borderColor: "darkgray",

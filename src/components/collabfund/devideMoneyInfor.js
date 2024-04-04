@@ -34,6 +34,8 @@ const DevideMoneyInfor = ({ collabFund }) => {
   const [nowDivideMoneyInfor, setNowDivideMoneyInfor] = useState([]);
   const [isFetchingData, setIsFetchingData] = useState(false);
 
+  const [isMoreDetailVisible, setIsMoreDetailVisible] = useState(true);
+
   async function fetchDivideMoneyInfor() {
     try {
       const data = {
@@ -122,28 +124,10 @@ const DevideMoneyInfor = ({ collabFund }) => {
     );
   };
 
-  return (
-    <View style={styles.viewModalMoreDetail}>
-      {/* <View style={styles.viewModalHeader}>
-        <Text>{"Chia tiền cho các bên tham gia"}</Text>
-      </View> */}
-      <View style={styles.viewModalMoreDetailDivideMoneyContent}>
+  const ViewMoreDetail = () => {
+    return (
+      <View>
         <View style={styles.viewTableHeader}>
-          {/* <View style={styles.viewAnAccountDMInfor}>
-        <Image
-          source={{ uri: " " }}
-          style={{ width: 30, height: 30, borderRadius: 30 }}
-        />
-        <View style={styles.viewAnAccountRightInfor}>
-          <View style={styles.viewAnAccountDMInforFirst}>
-            <Text style={styles.textAccountName}>{"Người tham gia"}</Text>
-            <Text style={styles.textTotalAmount}>{"Số tiền đã đóng"}</Text>
-            <Text style={styles.textTransactionCount}>
-              {"Số lần giao dịch"}
-            </Text>
-          </View>
-        </View>
-      </View> */}
           <Text style={styles.textLabelHeaderChildInContent}>
             {"Danh sách đóng góp"}
           </Text>
@@ -153,13 +137,37 @@ const DevideMoneyInfor = ({ collabFund }) => {
             data={nowDivideMoneyInfor?.listDVMI}
             keyExtractor={(item) => item?.account?.accountID}
             renderItem={({ item }) => <AnAccountDMInfor item={item} />}
+            scrollEnabled={false}
           />
         </View>
-        {/* <View style={styles.viewTableHeader}>
+        <View style={styles.viewTableHeader}>
           <Text style={styles.textLabelHeaderChildInContent}>
-            {"Chi tiết"}
+            {"Thông tin chuyển tiền"}
           </Text>
-        </View> */}
+        </View>
+        <View style={styles.viewCFDM_Result}>
+          <FlatList
+            data={nowDivideMoneyInfor?.cfdm_detail_result}
+            keyExtractor={(item) => item?.cF_DividingMoneyDetailID}
+            renderItem={({ item }) => <An_CFDM_Result item={item} />}
+            scrollEnabled={false}
+          />
+        </View>
+      </View>
+    );
+  };
+
+  return (
+    <View style={styles.viewModalMoreDetail}>
+      {/* <View style={styles.viewModalHeader}>
+        <Text>{"Chia tiền cho các bên tham gia"}</Text>
+      </View> */}
+      <ScrollView style={styles.viewModalMoreDetailDivideMoneyContent}>
+        <View style={styles.viewTableHeader}>
+          <Text style={styles.textLabelHeaderChildInContent}>
+            {"Chi tiết quỹ hợp tác"}
+          </Text>
+        </View>
         {isFetchingData ? (
           // <ActivityIndicator size="large" color="#0000ff" />
           <View style={styles.viewCenter}>
@@ -203,20 +211,23 @@ const DevideMoneyInfor = ({ collabFund }) => {
             </View>
           </View>
         )}
-
-        {/* <View style={styles.viewTableHeader}>
-          <Text style={styles.textLabelHeaderChildInContent}>
-            {"Chi tiết chuyển tiền"}
+        {isMoreDetailVisible ? <ViewMoreDetail /> : null}
+        <Pressable
+          onPress={() => {
+            setIsMoreDetailVisible(!isMoreDetailVisible);
+          }}
+          style={styles.pressable_SeeMoreDetail}
+        >
+          <Text style={styles.text_SeeMoreDetail}>
+            {isMoreDetailVisible ? "Ẩn" : "Chi tiết"}
           </Text>
-        </View> */}
-        <View style={styles.viewCFDM_Result}>
-          <FlatList
-            data={nowDivideMoneyInfor?.cfdm_detail_result}
-            keyExtractor={(item) => item?.cF_DividingMoneyDetailID}
-            renderItem={({ item }) => <An_CFDM_Result item={item} />}
+          <Icon
+            name={isMoreDetailVisible ? "chevron-up" : "chevron-down"}
+            size={15}
+            color="#74b9ff"
           />
-        </View>
-      </View>
+        </Pressable>
+      </ScrollView>
       <View style={styles.viewModalMoreDetailAction}>
         <Pressable
           style={styles.pressableDivideMoneyAction}
@@ -234,6 +245,20 @@ const DevideMoneyInfor = ({ collabFund }) => {
 };
 
 const styles = StyleSheet.create({
+  text_SeeMoreDetail: {
+    fontSize: 20,
+    fontFamily: "Inconsolata_500Medium",
+    color: "#74b9ff",
+    marginHorizontal: 5
+  },
+  pressable_SeeMoreDetail: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center",
+    alignSelf: "center",
+    width: "40%"
+  },
   viewCenter: {
     flex: 1,
     justifyContent: "center",
@@ -247,7 +272,7 @@ const styles = StyleSheet.create({
     color: "white"
   },
   pressableDivideMoneyAction: {
-    backgroundColor: "#63ADF2",
+    backgroundColor: "#74b9ff",
     borderWidth: 1,
     borderColor: "darkgray",
     height: 40,
@@ -321,9 +346,9 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    alignContent: "center",
-    borderWidth: 0.5,
-    borderColor: "red"
+    alignContent: "center"
+    // borderWidth: 0.5,
+    // borderColor: "red"
   },
   viewTableHeader: {
     alignContent: "center",
@@ -331,7 +356,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
     borderBottomColor: "darkgray",
     marginTop: 10,
-    marginBottom: 2
+    marginBottom: 5
   },
   textMoneyActionLabel: {
     flex: 1,
@@ -405,8 +430,8 @@ const styles = StyleSheet.create({
   viewModalMoreDetailDivideMoneyContent: {
     // borderWidth: 10,
     // borderColor: "darkgray",
-    flex: 5,
-    justifyContent: "flex-start"
+    flex: 5
+    // justifyContent: "flex-start"
   },
   viewModalMoreDetailAction: {
     flexDirection: "row",
@@ -415,21 +440,23 @@ const styles = StyleSheet.create({
     alignContent: "center",
     alignSelf: "center",
     width: "100%",
-    padding: 10,
+    padding: 10
     // backgroundColor: "lightblue",
-    flex: 1
+    // flex: 1
   },
   viewModalMoreDetail: {
     backgroundColor: "white",
     width: "100%",
     minHeight: "10%",
+    // height: 600,
     height: "auto",
-    maxHeight: "70%",
+    maxHeight: "90%",
     zIndex: 10,
     flex: 1,
     borderRadius: 10,
     borderWidth: 0.5,
-    borderColor: "darkgray"
+    borderColor: "red",
+    paddingBottom: 20
   }
 });
 

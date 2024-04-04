@@ -22,7 +22,7 @@ const collabFundServices = {
   getCollabFundActivities: async (data) => {
     try {
       const response = await axios.get(
-        API.COLLABFUND.GET_COLLABFUND_ACTIVITIES +
+        API.COLLABFUND.GET_COLLABFUND_ACTIVITIES_V2 +
           data?.data?.collabFundID +
           "/" +
           data?.data?.accountID,

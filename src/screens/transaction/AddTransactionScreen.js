@@ -182,70 +182,38 @@ const AddTransactionScreen = () => {
             totalAmount: totalOfInvoice,
             transactionDate: time,
             note: "has invoice",
-            fromPerson: invoiceResult.supplierName
-              ? invoiceResult.supplierName
-              : "",
-            toPerson: invoiceResult.receiverName
-              ? invoiceResult.receiverName
-              : "",
+            fromPerson: invoiceResult.supplierName ?? "",
+            toPerson: invoiceResult.receiverName ?? "",
             imageURL: response,
             invoice: {
-              supplierAddress: invoiceResult.supplierAddress
-                ? invoiceResult.supplierAddress
-                : "",
-              supplierEmail: invoiceResult.supplierEmail
-                ? invoiceResult.supplierEmail
-                : "",
-              supplierName: invoiceResult.supplierName
-                ? invoiceResult.supplierName
-                : "",
-              supplierPhone: invoiceResult.supplierPhone
-                ? invoiceResult.supplierPhone
-                : "",
-              receiverAddress: invoiceResult.receiverAddress
-                ? invoiceResult.receiverAddress
-                : "",
-              receiverEmail: invoiceResult.receiverEmail
-                ? invoiceResult.receiverEmail
-                : "",
-              receiverName: invoiceResult.receiverName
-                ? invoiceResult.receiverName
-                : "",
-              idOfInvoice: invoiceResult.idOfInvoice
-                ? invoiceResult.idOfInvoice
-                : "",
-              invoiceDate: invoiceResult.invoiceDate
-                ? invoiceResult.invoiceDate
-                : "",
-              invoiceType: invoiceResult.invoiceType
-                ? invoiceResult.invoiceType
-                : "",
-              paymentTerms: invoiceResult.paymentTerms
-                ? invoiceResult.paymentTerms
-                : "",
-              netAmount: invoiceResult.netAmount ? invoiceResult.netAmount : 0,
+              supplierAddress: invoiceResult.supplierAddress ?? "",
+              supplierEmail: invoiceResult.supplierEmail ?? "",
+              supplierName: invoiceResult.supplierName ?? "",
+              supplierPhone: invoiceResult.supplierPhone ?? "",
+              idOfInvoice: invoiceResult.idOfInvoice ?? "",
+              invoiceDate: invoiceResult.invoiceDate ?? "",
+              netAmount: invoiceResult.netAmount ?? 0,
               totalAmount: totalOfInvoice,
-              taxAmount: invoiceResult.taxAmount ? invoiceResult.taxAmount : 0,
-              discount: invoiceResult.discount ? invoiceResult.discount : 0,
-              invoiceImageURL: filename,
-              note: invoiceResult.note ? invoiceResult.note : "",
+              taxAmount: invoiceResult.taxAmount ?? 0,
+              invoiceImageURL: response,
+              note: invoiceResult.note ?? "",
               products: [
                 ...invoiceResult.productInInvoices.map((it) => {
                   return {
-                    productName: it.productName ? it.productName : "",
-                    quanity: it.quanity ? it.quanity : 0,
-                    unitPrice: it.unitPrice ? it.unitPrice : 0,
-                    totalAmount: it.totalAmount ? it.totalAmount : 0,
+                    productName: it.productName ?? "",
+                    quanity: it.quanity ?? 0,
+                    unitPrice: it.unitPrice ?? 0,
+                    totalAmount: it.totalAmount ?? 0,
                     note: it.note ? it.note : "",
-                    tagID: it.tagID ? it.tagID : 1
+                    tag: it.tag ?? ""
                   };
                 })
               ],
-              invoiceRawDatalog: invoiceResult.invoiceRawDatalog
-                ? invoiceResult.invoiceRawDatalog
-                : ""
             }
           };
+          console.log("transactionWithInvoice: ", transactionWithInvoice);
+          console.log("invoice: ", transactionWithInvoice.invoice);
+          // console.log("products: ", transactionWithInvoice.invoice.products);
           dispatch(addTransactionWithInvoice(transactionWithInvoice));
         });
       // const imageURL = dispatch(getInvoiceImageURL);
@@ -854,7 +822,7 @@ const styles = StyleSheet.create({
     fontFamily: "Inconsolata_400Regular",
     // borderWidth: 1,
     // borderColor: "darkgray",
-    height: "100%",
+    height: "100%"
   },
   textinput_AddTransaction_Note: {
     width: "100%",
@@ -864,7 +832,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 5,
     fontSize: 20,
-    fontFamily: "Inconsolata_400Regular",
+    fontFamily: "Inconsolata_400Regular"
   },
   view_AddTransaction_Note_Icon: {
     width: "10%",
@@ -905,7 +873,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     marginVertical: 10,
-    marginHorizontal: 10,
+    marginHorizontal: 10
     // backgroundColor: "red",
     // borderWidth: 10,
     // borderColor: "yellow"

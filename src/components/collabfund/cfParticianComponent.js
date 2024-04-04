@@ -15,7 +15,8 @@ import {
   Switch,
   RefreshControl,
   Modal,
-  Platform
+  Platform,
+  ScrollView
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome6";
 
@@ -104,7 +105,8 @@ const CfPaticianComponent = ({ route }) => {
           <Text style={styles.textNoData}>{"..."}</Text>
         ) : (
           <FlatList
-            data={data}
+            data={data || []}
+            scrollEnabled={false}
             renderItem={({ item }) => <AnParticipantItem item={item} />}
             keyExtractor={(item) => item?.accountID}
             refreshControl={
@@ -117,7 +119,7 @@ const CfPaticianComponent = ({ route }) => {
   };
 
   return (
-    <View>
+    <ScrollView>
       <FlatListParticipants
         data={nowParticipants?.active}
         title={"Đang hoạt động"}
@@ -130,7 +132,7 @@ const CfPaticianComponent = ({ route }) => {
         data={nowParticipants?.inactive}
         title={"Không hoạt động"}
       />
-    </View>
+    </ScrollView>
   );
 };
 

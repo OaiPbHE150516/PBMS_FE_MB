@@ -20,12 +20,12 @@ import { BlurView } from "expo-blur";
 
 import { signin, signout } from "../redux/authenSlice";
 
-// import {
-//   GoogleSignin,
-//   GoogleSigninButton,
-//   statusCodes,
-//   isErrorWithCode
-// } from "@react-native-google-signin/google-signin";
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+  statusCodes,
+  isErrorWithCode
+} from "@react-native-google-signin/google-signin";
 
 const imageBackground = { uri: "https://picsum.photos/1080/1920" };
 
@@ -36,16 +36,16 @@ const SigninScreen = () => {
   const dispatch = useDispatch();
 
   const configureGoogleSignIn = () => {
-    // GoogleSignin.configure({
-    //   webClientId:
-    //     "461985987390-sb848ug9vlln2lemncolefu15ckc7ljg.apps.googleusercontent.com",
-    //   androidClientId:
-    //     "461985987390-p2vekcu9quj88910pqiftjctqegp5rl1.apps.googleusercontent.com",
-    //   offlineAccess: true,
-    //   // scopes: ["profile", "email"],
-    //   requestIdToken:
-    //     "461985987390-sb848ug9vlln2lemncolefu15ckc7ljg.apps.googleusercontent.com"
-    // });
+    GoogleSignin.configure({
+      webClientId:
+        "461985987390-sb848ug9vlln2lemncolefu15ckc7ljg.apps.googleusercontent.com",
+      androidClientId:
+        "461985987390-p2vekcu9quj88910pqiftjctqegp5rl1.apps.googleusercontent.com",
+      offlineAccess: true,
+      // scopes: ["profile", "email"],
+      requestIdToken:
+        "461985987390-sb848ug9vlln2lemncolefu15ckc7ljg.apps.googleusercontent.com"
+    });
   };
 
   // async function lastAccount() {
@@ -92,18 +92,19 @@ const SigninScreen = () => {
   };
 
   const signInWithGoogle = async () => {
+    console.log("signInWithGoogle");
     try {
-      // setIsLoading(true);
-      // await GoogleSignin.hasPlayServices();
-      // const userInfo = await GoogleSignin.signIn();
-      // // Handle successful sign in here
-      // //alert("Signed in successfully");
-      // // Alert.alert("Signed in successfully: ", userInfo.user.email);
-      // // console.log("userInfo: ", userInfo);
-      // saveData("userInfo", JSON.stringify(userInfo));
-      // dispatch(signin(userInfo.idToken));
-      // setIsLoading(false);
-      // navigation.navigate("Home");
+      setIsLoading(true);
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      // Handle successful sign in here
+      //alert("Signed in successfully");
+      // Alert.alert("Signed in successfully: ", userInfo.user.email);
+      // console.log("userInfo: ", userInfo);
+      saveData("userInfo", JSON.stringify(userInfo));
+      dispatch(signin(userInfo.idToken));
+      setIsLoading(false);
+      navigation.navigate("Home");
     } catch (error) {
       switch (error.code) {
         case statusCodes.SIGN_IN_CANCELLED:
@@ -155,11 +156,18 @@ const SigninScreen = () => {
         />
 
         <Pressable
-          // onPressIn={() => {
-          //   setIsLoading(true);
-          // }}
+          onPressIn={() => {
+            setIsLoading(true);
+          }}
           onPress={signInWithGoogle}
-          style={styles.pressableSigninWithGoogle}
+          style={(pressed) => {
+            return [
+              styles.pressableSigninWithGoogle,
+              {
+                backgroundColor: pressed ? "rgba(0, 0, 0, 0.1)" : "white"
+              }
+            ];
+          }}
           disabled={isLoading}
         >
           <Image
@@ -168,6 +176,7 @@ const SigninScreen = () => {
           />
           <Text style={styles.textSigninWithGoogle}>
             {isLoading ? "Signing in..." : "Sign in with Google"}
+            {/* {"Sign in with Google"} */}
           </Text>
         </Pressable>
         <Pressable

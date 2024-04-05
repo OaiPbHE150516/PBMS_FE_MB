@@ -1,6 +1,8 @@
 import axios from "axios";
 import { API } from "../constants/api.constant";
 
+import { Platform } from "react-native";
+
 // const headers = {
 //   "Content-Type": "multipart/form-data"
 // };
@@ -17,11 +19,23 @@ const fileServices = {
       const filename = asset?.uri.split("/").pop();
       const match = /\.(\w+)$/.exec(filename);
       let type = match ? `image/${match[1]}` : `image`;
-      const filedata = {
-        uri: asset?.uri,
-        name: filename,
-        type: type
-      };
+      let filedata = null;
+      if (Platform.OS === "android") {
+        // change uri 'file://' to 'content://' for android
+        const androidUri = asset?.uri.replace("file:///", "content://");
+        filedata = {
+          uri: androidUri,
+          name: filename,
+          type: type
+        };
+      } else {
+        filedata = {
+          uri: asset?.uri,
+          name: filename,
+          type: type
+        };
+      }
+      console.log("filedata: ", filedata);
       formData.append("file", filedata);
       //   formData.append("file", {
       //     uri: file.uri,

@@ -51,7 +51,7 @@ import TestScreen from "./src/screens/TestScreen";
 import SigninScreen from "./src/screens/SigninScreen";
 import SignInIOS from "./src/screens/SignInIOS";
 import MyAccount from "./src/screens/MyAccount";
-import CollabFundScreen from "./src/screens/collabfund/collabfundScreen";
+import CollabFundScreen from "./src/screens/collabfund/collabFundScreenv2";
 
 const Tab = createBottomTabNavigator();
 
@@ -190,7 +190,8 @@ export default function App() {
               {Platform.OS === "ios" ? (
                 <Tab.Screen name="Signin" component={SignInIOS} />
               ) : (
-                <Tab.Screen name="Signin" component={SigninScreen} />
+                // <Tab.Screen name="Signin" component={SigninScreen} />
+                <Tab.Screen name="Signin" component={SignInIOS} />
               )}
               <Tab.Screen name="Home" component={HomeScreen} />
               <Tab.Screen name="Transaction" component={TransactionScreen} />

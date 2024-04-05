@@ -208,7 +208,7 @@ const AddTransactionScreen = () => {
                     tag: it.tag ?? ""
                   };
                 })
-              ],
+              ]
             }
           };
           console.log("transactionWithInvoice: ", transactionWithInvoice);
@@ -280,7 +280,7 @@ const AddTransactionScreen = () => {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1
     });
-    console.log(result);
+    // console.log("result: ", result);
     if (!result.canceled) {
       setMTakeCamera(false);
       handleUploadToScanInvoice(result.assets[0]);
@@ -292,7 +292,7 @@ const AddTransactionScreen = () => {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1
     });
-    console.log(result);
+    // console.log(result);
     if (!result.canceled) {
       setMTakeCamera(false);
       handleUploadToScanInvoice(result.assets[0]);
@@ -914,22 +914,15 @@ const styles = StyleSheet.create({
   },
   viewPressableAction: {
     width: "98%",
-    // borderColor: "red",
-    // borderWidth: 1,
+    borderColor: "red",
+    borderWidth: 1,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     alignSelf: "center",
+    position: "absolute",
     paddingHorizontal: "5%",
-    top: "-14%"
-    // backgroundColor: "white",
-    // zIndex: 3
-    // flexDirection: "column",
-    // alignContent: "center",
-    // justifyContent: "center",
-    // flexDirection: "column",
-    // alignContent: "center",
-    // justifyContent: "center",
+    bottom: "11%",
   },
   pressableReset: {
     borderRadius: 10,
@@ -1141,12 +1134,14 @@ const styles = StyleSheet.create({
     // marginHorizontal: 2
   },
   viewStyle: {
-    flex: 1,
+    // flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
     flexDirection: "column",
     alignContent: "center",
-    width: "100%"
+    width: "100%",
+    height: "100%"
+    // backgroundColor: "red"
   },
   viewAmountIcon: {
     width: 50,

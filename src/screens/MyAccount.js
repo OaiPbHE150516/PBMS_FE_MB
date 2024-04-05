@@ -328,11 +328,11 @@ const MyAccount = () => {
   function MainScreen({ navigation }) {
     return (
       <ScrollView
-        overScrollMode={"never"}
-        disableIntervalMomentum={true}
+        // overScrollMode={"never"}
+        // disableIntervalMomentum={true}
         style={styles.viewMainScreen}
         showsVerticalScrollIndicator={false}
-        pagingEnabled={true}
+        // pagingEnabled={true}
       >
         <AccountManagerPressable navigation={navigation} />
         <SimpleGridFeature navigation={navigation} />

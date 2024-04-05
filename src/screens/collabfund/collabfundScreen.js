@@ -144,7 +144,7 @@ const CollabFundScreen = () => {
                 {"Note: "}
                 {collabFund?.description}
               </Text>
-              <View style={styles.viewCollabFundItemStatus}>
+              {/* <View style={styles.viewCollabFundItemStatus}>
                 <Switch
                   trackColor={{ false: "#767577", true: "#81b0ff" }}
                   thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
@@ -156,7 +156,7 @@ const CollabFundScreen = () => {
                 <Text style={styles.textAnCollabFundItemStatus}>
                   {"Trạng thái"}
                 </Text>
-              </View>
+              </View> */}
             </View>
             {/* Action */}
             <View style={styles.viewCollabFundItemAction}>
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
   },
   pressableAnCollabFundItem: {
     width: "100%",
-    height: "100%"
+    height: "100%",
     // alignItems: "center",
     // justifyContent: "flex-start",
     // borderRadius: 10,

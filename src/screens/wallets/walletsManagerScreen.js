@@ -220,7 +220,6 @@ const WalletsManagerScreen = () => {
           console.log("Modal Add Wallet is shown");
           setIsShouldDarkModalBackground(true);
         }}
-
       >
         <BlurView
           intensity={0}
@@ -234,32 +233,28 @@ const WalletsManagerScreen = () => {
             }
           ]}
         >
-          <View style={[styles.blurviewAddWalletModal, styles.shadowCard]}>
+          <View style={[styles.shadowCard, styles.viewAddWalletModalContent]}>
             <Text>{"Thêm ví mới"}</Text>
-            <View style={styles.viewAddWalletModalContent}>
-              <View style={styles.viewAddWalletName}>
-                <Text style={styles.textLabelAddWallet}>{"Tên ví"}</Text>
-                <TextInput
-                  style={[styles.textInput, styles.textInputStyle]}
-                  value={newWallet?.name}
-                  onChangeText={(text) =>
-                    setNewWallet({ ...newWallet, name: text })
-                  }
-                />
-              </View>
-              <View style={styles.viewAddWalletName}>
-                <Text style={styles.textLabelAddWallet}>
-                  {"Số dư ban đầu( VND - đ )"}
-                </Text>
-                <TextInput
-                  style={[styles.textInputNumber, styles.textInputStyle]}
-                  value={newWallet?.balance}
-                  onChangeText={(text) => handleOnChangeTextBalance(text)}
-                  keyboardType={
-                    Platform.OS === "ios" ? "numeric" : "number-pad"
-                  }
-                />
-              </View>
+            <View style={styles.viewAddWalletName}>
+              <Text style={styles.textLabelAddWallet}>{"Tên ví"}</Text>
+              <TextInput
+                style={[styles.textInput, styles.textInputStyle]}
+                value={newWallet?.name}
+                onChangeText={(text) =>
+                  setNewWallet({ ...newWallet, name: text })
+                }
+              />
+            </View>
+            <View style={styles.viewAddWalletName}>
+              <Text style={styles.textLabelAddWallet}>
+                {"Số dư ban đầu( VND - đ )"}
+              </Text>
+              <TextInput
+                style={[styles.textInputNumber, styles.textInputStyle]}
+                value={newWallet?.balance}
+                onChangeText={(text) => handleOnChangeTextBalance(text)}
+                keyboardType={Platform.OS === "ios" ? "numeric" : "number-pad"}
+              />
             </View>
             <View style={styles.viewAddWalletModalAction}>
               <Pressable
@@ -327,10 +322,11 @@ const styles = StyleSheet.create({
   },
   viewAddWalletModalContent: {
     flexDirection: "column",
-    width: "100%",
+    width: "90%",
+    minHeight: "40%",
     height: "auto",
     maxHeight: "100%",
-    flex: 1,
+    // flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
     alignContent: "center",
@@ -348,13 +344,13 @@ const styles = StyleSheet.create({
     alignContent: "center"
   },
   blurviewAddWalletModal: {
-    width: "95%",
-    height: "auto",
-    minHeight: "30%",
-    maxHeight: "70%",
-    justifyContent: "space-between",
-    alignItems: "center",
-    alignContent: "center"
+    // width: "95%",
+    // height: "auto",
+    // minHeight: "50%",
+    // maxHeight: "70%",
+    // justifyContent: "space-between",
+    // alignItems: "center",
+    // alignContent: "center"
     // bottom: "5%"
   },
   viewAddWalletModal: {

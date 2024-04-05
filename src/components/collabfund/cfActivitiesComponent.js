@@ -199,8 +199,8 @@ const CfActivitiesComponent = ({ route }) => {
               item?.cfDividingMoneyVMDTO !== null
                 ? 500
                 : item?.filename === ""
-                  ? 50
-                  : 300
+                  ? "auto"
+                  : "auto"
           }
         ]}
       >

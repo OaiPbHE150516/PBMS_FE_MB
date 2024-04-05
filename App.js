@@ -90,14 +90,15 @@ export default function App() {
 
   async function checkUserSignedIn() {
     try {
-      const userInfo = await AsyncStorage.getItem("userInfo");
-      if (userInfo === null || userInfo === "") {
-        // console.log("false: ", userInfo);
-        setIsSignin(false);
-      } else {
-        // console.log("true: ", userInfo);
-        setIsSignin(true);
-      }
+      setIsSignin(true);
+      // const userInfo = await AsyncStorage.getItem("userInfo");
+      // if (userInfo === null || userInfo === "") {
+      //   // console.log("false: ", userInfo);
+      //   setIsSignin(false);
+      // } else {
+      //   // console.log("true: ", userInfo);
+      //   setIsSignin(true);
+      // }
     } catch (error) {
       console.error("Error checking user signed in:", error);
     }

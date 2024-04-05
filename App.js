@@ -17,12 +17,12 @@ import { Provider } from "react-redux";
 import store from "./src/store/store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import {
-  GoogleSignin,
-  GoogleSigninButton,
-  statusCodes,
-  isErrorWithCode
-} from "@react-native-google-signin/google-signin";
+// import {
+//   GoogleSignin,
+//   GoogleSigninButton,
+//   statusCodes,
+//   isErrorWithCode
+// } from "@react-native-google-signin/google-signin";
 
 import {
   useFonts,
@@ -59,7 +59,12 @@ import TestScreen from "./src/screens/TestScreen";
 import SignInIOS from "./src/screens/SignInIOS";
 import MyAccount from "./src/screens/MyAccount";
 import CollabFundScreen from "./src/screens/collabfund/collabFundScreenv2";
-import SignInAndroid from "./src/screens/SignInAndroid";
+
+// //remove comment below import statement to enable SignInAndroid in Android platform
+let SignInAndroid;
+if (Platform.OS === "android") {
+  SignInAndroid = require("./src/screens/SignInAndroid").default;
+}
 
 const Tab = createBottomTabNavigator();
 
@@ -99,8 +104,9 @@ export default function App() {
 
   const handleSignOut = async () => {
     try {
-      await GoogleSignin.revokeAccess();
-      await GoogleSignin.signOut();
+      //// remove code below to enable sign out
+      // await GoogleSignin.revokeAccess();
+      // await GoogleSignin.signOut();
     } catch (error) {
       console.error("Error signing out: ", error);
       Alert.alert("Error signing out: ");
@@ -150,9 +156,9 @@ export default function App() {
             {!isSignin ? (
               Platform.OS === "ios" ? (
                 <SignInIOS callback={callBackSignIn} />
-              ) : (
-                <SignInAndroid callback={callBackSignIn} />
-              )
+              ) :
+              <SignInAndroid callback={callBackSignIn} />
+              // null
             ) : (
               <Tab.Navigator
                 screenOptions={({ route }) => ({

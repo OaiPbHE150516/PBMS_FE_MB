@@ -19,10 +19,18 @@ export const signinHardcode = createAsyncThunk(
   }
 );
 
+export const setIsNeedSignOutNow = createAsyncThunk(
+  "setIsNeedSignOutNow",
+  async (data) => {
+    return data;
+  }
+);
+
 const authenSlice = createSlice({
   name: "authen",
   initialState: {
-    account: null
+    account: null,
+    isNeedSignOutNow: false
   },
   reducers: {
     // setAccount: (state, action) => {
@@ -62,6 +70,17 @@ const authenSlice = createSlice({
       })
       .addCase(signinHardcode.pending, (state, action) => {
         state.account = null;
+      });
+
+    builder
+      .addCase(setIsNeedSignOutNow.fulfilled, (state, action) => {
+        state.isNeedSignOutNow = action.payload;
+      })
+      .addCase(setIsNeedSignOutNow.rejected, (state, action) => {
+        state.isNeedSignOutNow = false;
+      })
+      .addCase(setIsNeedSignOutNow.pending, (state, action) => {
+        state.isNeedSignOutNow = false;
       });
   }
 });

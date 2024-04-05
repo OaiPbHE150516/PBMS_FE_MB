@@ -47,6 +47,7 @@ import {
   getAllWallet,
   getTotalBalanceEachWallet
 } from "../redux/walletSlice";
+import { setIsNeedSignOutNow } from "../redux/authenSlice";
 
 function NotificationsScreen({ navigation }) {
   return (
@@ -363,6 +364,9 @@ const MyAccount = ({ callback }) => {
         ]}
         onPress={() => {
           callback(false);
+          if (Platform.OS === "android") {
+            dispatch(setIsNeedSignOutNow(true));
+          }
           // navigation.navigate("Login");
         }}
       >

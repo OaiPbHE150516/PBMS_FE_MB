@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { BlurView } from "expo-blur";
 
 import { signin, signout } from "../redux/authenSlice";
+import { setIsNeedSignOutNow } from "../redux/authenSlice";
 
 import {
   GoogleSignin,
@@ -31,6 +32,9 @@ const imageBackground = { uri: "https://picsum.photos/1080/1920" };
 
 const SignInAndroid = ({ callback }) => {
   // const navigation = useNavigation();
+  const isNeedSignOutNow = useSelector(
+    (state) => state.authen?.isNeedSignOutNow
+  );
   const dispatch = useDispatch();
   useEffect(() => {
     configureGoogleSignIn();
@@ -51,7 +55,21 @@ const SignInAndroid = ({ callback }) => {
     });
   };
 
+  const handleIsSignOutBefore = async () => {
+    try {
+      if (isNeedSignOutNow) {
+        await GoogleSignin.revokeAccess();
+        await GoogleSignin.signOut().finally(() => {
+          setIsNeedSignOutNow(false);
+        });
+      }
+    } catch (error) {
+      console.log("error: ", error);
+    }
+  };
+
   const signInWithGoogle = async () => {
+    handleIsSignOutBefore();
     console.log("signInWithGoogle");
     try {
       // setIsLoading(true);

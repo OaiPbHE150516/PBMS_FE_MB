@@ -163,7 +163,11 @@ export default function App() {
                     return (
                       <Ionicons
                         name={iconName}
-                        size={route.name == "AddTransaction" ? size * 2.6 : size * 1.2}
+                        size={
+                          route.name == "AddTransaction"
+                            ? size * 2.2
+                            : size * 1.1
+                        }
                         color={color}
                         style={{
                           position: "absolute",

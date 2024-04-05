@@ -18,6 +18,13 @@ import store from "./src/store/store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import {
+  GoogleSignin,
+  GoogleSigninButton,
+  statusCodes,
+  isErrorWithCode
+} from "@react-native-google-signin/google-signin";
+
+import {
   useFonts,
   Inconsolata_200ExtraLight,
   Inconsolata_300Light,
@@ -48,10 +55,11 @@ import HomeScreen from "./src/screens/HomeScreen";
 import TransactionScreen from "./src/screens/transaction/TransactionScreen";
 import AddTransactionScreen from "./src/screens/transaction/AddTransactionScreen";
 import TestScreen from "./src/screens/TestScreen";
-import SigninScreen from "./src/screens/SigninScreen";
+// import SigninScreen from "./src/screens/SigninScreen";
 import SignInIOS from "./src/screens/SignInIOS";
 import MyAccount from "./src/screens/MyAccount";
 import CollabFundScreen from "./src/screens/collabfund/collabFundScreenv2";
+import SignInAndroid from "./src/screens/SignInAndroid";
 
 const Tab = createBottomTabNavigator();
 
@@ -86,6 +94,17 @@ export default function App() {
   const callBackSignOut = (isSignOut) => {
     console.log("isSignOut: ", isSignOut);
     setIsSignin(isSignOut);
+    handleSignOut();
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await GoogleSignin.revokeAccess();
+      await GoogleSignin.signOut();
+    } catch (error) {
+      console.error("Error signing out: ", error);
+      Alert.alert("Error signing out: ");
+    }
   };
 
   const [fontsLoaded] = useFonts({
@@ -129,7 +148,11 @@ export default function App() {
           <NavigationContainer>
             {/* if the user is not signed in then show SigninIOS*/}
             {!isSignin ? (
-              <SignInIOS callback={callBackSignIn} />
+              Platform.OS === "ios" ? (
+                <SignInIOS callback={callBackSignIn} />
+              ) : (
+                <SignInAndroid callback={callBackSignIn} />
+              )
             ) : (
               <Tab.Navigator
                 screenOptions={({ route }) => ({

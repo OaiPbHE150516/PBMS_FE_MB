@@ -419,7 +419,7 @@ const MyAccount = ({ callback }) => {
 const styles = StyleSheet.create({
   pressable_Signout: {
     // backgroundColor: "white",
-    borderWidth: 0.25,
+    borderWidth: 0.5,
     borderColor: "#d63031",
     flexDirection: "row",
     justifyContent: "center",

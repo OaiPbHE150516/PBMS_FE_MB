@@ -18,7 +18,7 @@ import pbms from "../api/pbms";
 import { API } from "../constants/api.constant";
 import { signinHardcode } from "../redux/authenSlice";
 
-const SignInIOS = () => {
+const SignInIOS = ({callback}) => {
   const navigation = useNavigation();
 
   const [accounts, setAccounts] = useState([]);
@@ -40,7 +40,8 @@ const SignInIOS = () => {
     dispatch(signinHardcode(account));
     saveData("userInfo", JSON.stringify(account));
     setTimeout(() => {
-      navigation.navigate("Home");
+      // navigation.navigate("Home");
+      callback(true);
     }, 100);
   };
 
@@ -55,7 +56,12 @@ const SignInIOS = () => {
   const AnAccountItem = ({ account }) => {
     return (
       <Pressable
-        style={styles.viewAnAccountItem}
+        style={({pressed}) => [
+          {
+            backgroundColor: pressed ? "#b2bec3" : "white"
+          },
+          styles.viewAnAccountItem
+        ]}
         onPress={() => handleAnAccountItemClicked(account)}
       >
         <Text>{account.accountID}</Text>
@@ -79,8 +85,7 @@ const SignInIOS = () => {
           renderItem={({ item }) => <AnAccountItem account={item} />}
         />
       </View>
-
-      <Button title="Go to Home" onPress={() => navigation.navigate("Home")} />
+      {/* <Button title="Go to Home" onPress={() => navigation.navigate("Home")} /> */}
     </View>
   );
 };

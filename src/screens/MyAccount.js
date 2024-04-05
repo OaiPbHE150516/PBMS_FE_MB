@@ -304,7 +304,9 @@ const ListSettings = ({ navigation }) => {
 
 const Stack = createStackNavigator();
 
-const MyAccount = () => {
+const MyAccount = ({ callback }) => {
+  // const callback = route.params?.callback;
+  // console.log("callbackSignout: ", callbackSignout);
   const account = useSelector((state) => state.authen?.account);
   const categories = useSelector((state) => state.category?.categories);
   const wallets = useSelector((state) => state.wallet?.wallets);
@@ -321,7 +323,6 @@ const MyAccount = () => {
         console.log("dispatch getCategories");
         dispatch(getCategories(account?.accountID));
       }
-
     }
   }, [account, categories]);
 
@@ -346,9 +347,29 @@ const MyAccount = () => {
           />
         </View> */}
         <ListSettings navigation={navigation} />
+        <PressableSignOut navigation={navigation} />
       </ScrollView>
     );
   }
+
+  const PressableSignOut = ({ navigation }) => {
+    return (
+      <Pressable
+        style={({ pressed }) => [
+          {
+            backgroundColor: pressed ? "#fab1a0" : "white"
+          },
+          styles.pressable_Signout
+        ]}
+        onPress={() => {
+          callback(false);
+          // navigation.navigate("Login");
+        }}
+      >
+        <Text style={styles.text_Signout}>{"Đăng xuất"}</Text>
+      </Pressable>
+    );
+  };
 
   return (
     <View style={styles.viewStyle}>
@@ -396,6 +417,33 @@ const MyAccount = () => {
 };
 
 const styles = StyleSheet.create({
+  pressable_Signout: {
+    // backgroundColor: "white",
+    borderWidth: 0.25,
+    borderColor: "#d63031",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center",
+    padding: 10,
+    marginVertical: 10,
+    borderRadius: 15,
+    shadowColor: "darkgray",
+    shadowOffset: {
+      width: 5,
+      height: 5
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.5,
+    elevation: 5,
+    height: 50,
+    marginHorizontal: 10
+  },
+  text_Signout: {
+    fontSize: 20,
+    fontFamily: "Inconsolata_400Regular",
+    color: "#d63031"
+  },
   textAnItemNameInList: {
     fontSize: 22,
     fontFamily: "Inconsolata_400Regular"

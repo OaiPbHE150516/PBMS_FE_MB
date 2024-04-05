@@ -57,9 +57,36 @@ const Tab = createBottomTabNavigator();
 
 export default function App() {
   const [isSignin, setIsSignin] = useState(false);
+
   useEffect(() => {
     checkUserSignedIn();
   });
+
+  async function checkUserSignedIn() {
+    try {
+      //setIsSignin(false);
+      // const userInfo = await AsyncStorage.getItem("userInfo");
+      // if (userInfo === null || userInfo === "") {
+      //   // console.log("false: ", userInfo);
+      //   setIsSignin(false);
+      // } else {
+      //   // console.log("true: ", userInfo);
+      //   setIsSignin(true);
+      // }
+    } catch (error) {
+      console.error("Error checking user signed in:", error);
+    }
+  }
+
+  const callBackSignIn = (isSignIn) => {
+    console.log("isSignIn: ", isSignIn);
+    setIsSignin(isSignIn);
+  };
+
+  const callBackSignOut = (isSignOut) => {
+    console.log("isSignOut: ", isSignOut);
+    setIsSignin(isSignOut);
+  };
 
   const [fontsLoaded] = useFonts({
     Inconsolata_200ExtraLight,
@@ -88,26 +115,9 @@ export default function App() {
     return <Text>Loading...</Text>;
   }
 
-  async function checkUserSignedIn() {
-    try {
-      setIsSignin(true);
-      // const userInfo = await AsyncStorage.getItem("userInfo");
-      // if (userInfo === null || userInfo === "") {
-      //   // console.log("false: ", userInfo);
-      //   setIsSignin(false);
-      // } else {
-      //   // console.log("true: ", userInfo);
-      //   setIsSignin(true);
-      // }
-    } catch (error) {
-      console.error("Error checking user signed in:", error);
-    }
-  }
-  // check that the user is signed in or not by checking the token of the user in the AsyncStorage
-  // if the token is not null then the user is signed in
-  // if the token is null then the user is not signed in
-  // if the user is not signed in then navigate to the SigninScreen
-  // if the user is signed in then navigate to the HomeScreen
+  const MyAccountScreen = ({ navigation }) => {
+    return <MyAccount navigation={navigation} callback={callBackSignOut} />;
+  };
 
   return (
     <SafeAreaProvider style={styles.container}>
@@ -117,95 +127,106 @@ export default function App() {
       >
         <Provider store={store}>
           <NavigationContainer>
-            <Tab.Navigator
-              screenOptions={({ route }) => ({
-                tabBarIcon: ({ focused, color, size }) => {
-                  let iconName;
-                  switch (route.name) {
-                    case "Home":
-                      iconName = focused ? "home" : "home-outline";
-                      break;
-                    case "Settings":
-                      iconName = focused ? "settings" : "settings-outline";
-                      break;
-                    case "Signin":
-                      iconName = focused ? "log-in" : "log-in-outline";
-                      break;
-                    case "Transaction":
-                      iconName = focused ? "cash" : "cash-outline";
-                      break;
-                    case "AddTransaction":
-                      iconName = focused ? "add-circle" : "add-circle-outline";
-                      break;
-                    case "MyAccount":
-                      iconName = focused ? "grid" : "grid-outline";
-                      break;
-                    case "CollabFund":
-                      iconName = focused ? "people" : "people-outline";
-                      break;
-                  }
-                  return (
-                    <Ionicons
-                      name={iconName}
-                      size={route.name == "AddTransaction" ? size * 2 : size}
-                      color={color}
-                      style={{
-                        position: "absolute",
-                        bottom: -10,
-                        top: route.name == "AddTransaction" ? -12 : 15,
-                        borderRadius: 50,
-                        padding: route.name == "AddTransaction" ? 5 : 0
-                      }}
-                    />
-                  );
-                },
-                tabBarActiveTintColor: "tomato",
-                tabBarInactiveTintColor: "gray",
-                headerShown: false,
-                tabBarShowLabel: false,
-                tabBarStyle: {
-                  backgroundColor: "white",
-                  borderTopWidth: 0,
-                  shadowColor: "darkgray",
-                  shadowOffset: {
-                    width: 0,
-                    height: 10
+            {/* if the user is not signed in then show SigninIOS*/}
+            {!isSignin ? (
+              <SignInIOS callback={callBackSignIn} />
+            ) : (
+              <Tab.Navigator
+                screenOptions={({ route }) => ({
+                  tabBarIcon: ({ focused, color, size }) => {
+                    let iconName;
+                    switch (route.name) {
+                      case "Home":
+                        iconName = focused ? "home" : "home-outline";
+                        break;
+                      case "Settings":
+                        iconName = focused ? "settings" : "settings-outline";
+                        break;
+                      // case "Signin":
+                      //   iconName = focused ? "log-in" : "log-in-outline";
+                      //   break;
+                      case "Transaction":
+                        iconName = focused ? "cash" : "cash-outline";
+                        break;
+                      case "AddTransaction":
+                        iconName = focused
+                          ? "add-circle"
+                          : "add-circle-outline";
+                        break;
+                      case "MyAccount":
+                        iconName = focused ? "grid" : "grid-outline";
+                        break;
+                      case "CollabFund":
+                        iconName = focused ? "people" : "people-outline";
+                        break;
+                    }
+                    return (
+                      <Ionicons
+                        name={iconName}
+                        size={route.name == "AddTransaction" ? size * 2.6 : size * 1.2}
+                        color={color}
+                        style={{
+                          position: "absolute",
+                          bottom: -30,
+                          top: route.name == "AddTransaction" ? -12 : 15,
+                          borderRadius: 50,
+                          padding: route.name == "AddTransaction" ? 5 : 0
+                        }}
+                      />
+                    );
                   },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 3.5,
-                  elevation: 5,
-                  position: "absolute",
-                  bottom: 20,
-                  left: 10,
-                  right: 10,
-                  borderRadius: 20,
-                  height: 60,
-                  borderWidth: 1,
-                  borderColor: "lightgray",
-                  display: route.name == "Signin" ? "none" : "flex"
-                }
-              })}
-            >
-              {/* if platform is IOS then add SignInIOS, if Android add SignInScreen */}
-              {Platform.OS === "ios" ? (
-                <Tab.Screen name="Signin" component={SignInIOS} />
-              ) : (
-                // <Tab.Screen name="Signin" component={SigninScreen} />
-                <Tab.Screen name="Signin" component={SignInIOS} />
-              )}
-              <Tab.Screen name="Home" component={HomeScreen} />
-              <Tab.Screen name="Transaction" component={TransactionScreen} />
-              <Tab.Screen
-                name="AddTransaction"
-                component={AddTransactionScreen}
-              />
-              <Tab.Screen name="CollabFund" component={CollabFundScreen} />
-              {/* <Tab.Screen name="Settings" component={TestScreen} /> */}
-              {/* if the user is signed in then add MyAccount screen */}
-              {isSignin ? (
-                <Tab.Screen name="MyAccount" component={MyAccount} />
-              ) : null}
-            </Tab.Navigator>
+                  tabBarActiveTintColor: "tomato",
+                  tabBarInactiveTintColor: "gray",
+                  headerShown: false,
+                  tabBarShowLabel: false,
+                  tabBarStyle: {
+                    backgroundColor: "white",
+                    borderTopWidth: 0,
+                    shadowColor: "darkgray",
+                    shadowOffset: {
+                      width: 0,
+                      height: 10
+                    },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 3.5,
+                    elevation: 5,
+                    position: "absolute",
+                    bottom: 20,
+                    left: 10,
+                    right: 10,
+                    borderRadius: 20,
+                    height: 60,
+                    borderWidth: 1,
+                    borderColor: "lightgray",
+                    display: route.name == "Signin" ? "none" : "flex"
+                  }
+                })}
+              >
+                {/* if platform is IOS then add SignInIOS, if Android add SignInScreen */}
+                {/* {Platform.OS === "ios" ? (
+                  <Tab.Screen name="Signin" component={SignInIOS} />
+                ) : (
+                  // <Tab.Screen name="Signin" component={SigninScreen} />
+                  <Tab.Screen name="Signin" component={SignInIOS} />
+                )} */}
+                <Tab.Screen name="Home" component={HomeScreen} />
+                <Tab.Screen name="Transaction" component={TransactionScreen} />
+                <Tab.Screen
+                  name="AddTransaction"
+                  component={AddTransactionScreen}
+                />
+                <Tab.Screen name="CollabFund" component={CollabFundScreen} />
+                {/* <Tab.Screen name="Settings" component={TestScreen} /> */}
+                {/* if the user is signed in then add MyAccount screen */}
+                {/* {isSignin ? ( */}
+                <Tab.Screen
+                  name="MyAccount"
+                  component={MyAccountScreen}
+                  // initialParams={{ callback: callBackSignOut }}
+                />
+                {/* // ) : null} */}
+              </Tab.Navigator>
+            )}
           </NavigationContainer>
         </Provider>
       </SafeAreaView>

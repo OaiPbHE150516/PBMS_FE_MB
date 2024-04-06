@@ -205,6 +205,8 @@ const CfActivitiesComponent = ({ route }) => {
         ]}
       >
         <View style={styles.viewAnPaticianAvatar}>
+          {/* {item?.account?.pictureURL !== null &&
+          item?.account?.pictureURL !== " " ? null : ( */}
           <Image
             source={{
               uri: item?.account?.pictureURL
@@ -213,6 +215,7 @@ const CfActivitiesComponent = ({ route }) => {
             // resizeMode={FastImage.resizeMode.contain}
             style={{ width: 30, height: 30, borderRadius: 30 }}
           />
+          {/* )} */}
         </View>
         <View style={styles.viewAnActivityItemContent}>
           <Text style={styles.textActivityAccountName}>
@@ -221,7 +224,10 @@ const CfActivitiesComponent = ({ route }) => {
           <Text style={styles.textActivityNote}>
             {item?.note && item?.note}
           </Text>
-          {item?.filename === "" ? null : (
+          {item?.filename === "" ||
+          item?.filename === " " ||
+          item?.filename === null ||
+          item?.filename === undefined ? null : (
             <Image
               source={{
                 uri: item?.filename
@@ -337,6 +343,8 @@ const CfActivitiesComponent = ({ route }) => {
           <Image
             source={{
               uri: account?.pictureURL
+                ? account?.pictureURL
+                : "https://picsum.photos/200/200"
             }}
             style={{ width: 40, height: 40, borderRadius: 40 }}
           />
@@ -367,7 +375,8 @@ const CfActivitiesComponent = ({ route }) => {
           />
         </View>
         <View style={styles.viewActionUserActionable}>
-          {!image ? null : (
+          {!image || image !== null || image !== undefined ? null : (
+            // null
             <View
               style={{
                 width: "auto",
@@ -380,14 +389,16 @@ const CfActivitiesComponent = ({ route }) => {
                 left: -Dimensions.get("window").width * 0.1
               }}
             >
-              <Image
-                source={{ uri: image.uri }}
-                style={{
-                  width: Dimensions.get("window").width * 0.35,
-                  height: Dimensions.get("window").height * 0.3,
-                  resizeMode: "cover"
-                }}
-              />
+              {image?.uri && (
+                <Image
+                  source={{ uri: image?.uri }}
+                  style={{
+                    width: Dimensions.get("window").width * 0.35,
+                    height: Dimensions.get("window").height * 0.3,
+                    resizeMode: "cover"
+                  }}
+                />
+              )}
               <Pressable
                 style={styles.pressableRemoveImage}
                 onPress={() => setImage(null)}
@@ -685,7 +696,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 2,
     justifyContent: "flex-end",
-    overflowY: "auto",
+    overflowY: "auto"
     // zIndex: 99
     // height: 600,
     // flex: 1

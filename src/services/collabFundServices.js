@@ -52,6 +52,24 @@ const collabFundServices = {
       console.error("Error fetching data:", error);
     }
   },
+  // get collab fund divide money history by collab fund id and account id
+  getCollabFundDivideMoneyHistory: async (data) => {
+    try {
+      const response = await axios.get(
+        API.COLLABFUND.GET_DIVIDE_MONEY_HISTORY +
+          data?.data?.collabFundID +
+          "/" +
+          data?.data?.accountID,
+        {
+          headers
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  },
+
   // get divide money information by collab fund id and account id
   getDivideMoneyInfor: async (data) => {
     try {

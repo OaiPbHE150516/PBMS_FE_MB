@@ -133,7 +133,11 @@ const CollabFundScreen = () => {
                     return (
                       <Image
                         key={accountInCollabFund?.accountID}
-                        source={{ uri: accountInCollabFund?.pictureURL }}
+                        source={{
+                          uri: accountInCollabFund?.pictureURL
+                            ? accountInCollabFund?.pictureURL
+                            : "https://picsum.photos/200/200"
+                        }}
                         style={styles.imageAccountInCollabFund}
                       />
                     );
@@ -179,9 +183,7 @@ const CollabFundScreen = () => {
   const CollabFundListScreen = () => {
     return (
       <View style={styles.containerCollabFundList}>
-        <Text style={styles.textCollabFundListHeader}>
-          {"Ngân sách hợp tác"}
-        </Text>
+        <Text style={styles.textCollabFundListHeader}>{"Chi tiêu chung"}</Text>
         <FlatList
           style={styles.flatlist_collabfund}
           scrollEnabled={true}
@@ -316,7 +318,7 @@ const styles = StyleSheet.create({
   },
   pressableAnCollabFundItem: {
     width: "100%",
-    height: "100%",
+    height: "100%"
     // alignItems: "center",
     // justifyContent: "flex-start",
     // borderRadius: 10,

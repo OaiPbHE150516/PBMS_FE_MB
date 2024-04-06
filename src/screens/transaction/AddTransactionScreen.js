@@ -217,9 +217,9 @@ const AddTransactionScreen = () => {
         totalAmount: amount,
         transactionDate: time,
         note: "",
-        fromPerson: "string",
-        toPerson: "string",
-        imageURL: "string"
+        fromPerson: "",
+        toPerson: "",
+        imageURL: ""
       };
       dispatch(addTransactionNoInvoice(data));
     }

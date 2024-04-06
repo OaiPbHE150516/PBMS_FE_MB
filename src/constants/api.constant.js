@@ -12,6 +12,7 @@ export const API = {
     GET_ACTIVE_COLLABFUND_PARTICIPANTS: `${Base_URL}/api/collabfund/get/member/`,
     GET_ALL_COLLABFUND_PARTICIPANTS: `${Base_URL}/api/collabfund/get/member/typebytype/`,
     GET_DIVIDI_MONEY_INFOR: `${Base_URL}/api/collabfund/get/divide-money-info/`,
+    GET_DIVIDE_MONEY_HISTORY: `${Base_URL}/api/collabfund/get/history/divide-money/`,
 
     CREATE_ACTIVITY_NO_TRANSACTION: `${Base_URL}/api/collabfund/create/activity/notrans/form`,
     CREATE_ACTIVITY: `${Base_URL}/api/collabfund/create/activity/withtrans/form`,

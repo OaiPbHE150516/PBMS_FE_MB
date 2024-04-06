@@ -309,9 +309,9 @@ const CfActivitiesComponent = ({ route }) => {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior={"padding"}
       style={styles.viewContainer}
-      keyboardVerticalOffset={Platform.OS === "ios" ? keyboardHeight : 0}
+      keyboardVerticalOffset={keyboardHeight}
     >
       <View style={styles.viewActivitiesContent}>
         <FlatList
@@ -685,7 +685,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 2,
     justifyContent: "flex-end",
-    overflowY: "auto"
+    overflowY: "auto",
+    // zIndex: 99
     // height: 600,
     // flex: 1
   },

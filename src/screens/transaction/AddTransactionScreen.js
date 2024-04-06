@@ -226,7 +226,7 @@ const AddTransactionScreen = () => {
     saveAssetToMediaLibrary(newAssetShowing?.asset);
     setIsAddingTransaction(false);
 
-    // handleResetAddTransaction();
+    handleResetAddTransaction();
   }
 
   async function uploadInvoiceToAPI({ asset, filenamecustom, accountID }) {

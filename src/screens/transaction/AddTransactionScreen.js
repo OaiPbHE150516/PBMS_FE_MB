@@ -29,7 +29,8 @@ import * as MediaLibrary from "expo-media-library";
 import datetimeLibrary from "../../library/datetimeLibrary";
 import currencyLibrary from "../../library/currencyLIbrary";
 import { VAR } from "../../constants/var.constant";
-
+import axios from "axios";
+import { API } from "../../constants/api.constant";
 // slice
 import { setModalAddTransactionVisible } from "../../redux/modalSlice";
 import {
@@ -74,7 +75,7 @@ const AddTransactionScreen = () => {
   const [transAmount, setTransAmount] = useState("");
   const [isInvoiceScanning, setIsInvoiceScanning] = useState(false);
   const [currentTime, setCurrentTime] = useState("");
-
+  const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
   const modalAddTransactionVisible = useSelector(
     (state) => state.modal.modalAddTransactionVisible
   );
@@ -157,68 +158,58 @@ const AddTransactionScreen = () => {
       const filename =
         account.accountID + "_" + datetimeLibrary.getCurrentTimeStr();
       console.log("assetsShowing?.asset: ", newAssetShowing?.asset);
-      dispatch(
-        uploadToInvoiceTransactionFileName({
-          asset: newAssetShowing?.asset,
-          filenamecustom: filename,
-          accountID: account?.accountID
-        })
-      );
-      await fileServices
-        .uploadToInvoiceTransactionFileName({
-          asset: newAssetShowing?.asset,
-          filenamecustom: filename,
-          accountID: account?.accountID
-        })
-        .then((response) => {
-          console.log("response: ", response);
-          const totalOfInvoice =
-            currencyLibrary.removeCurrencyFormat(transAmount);
-          const transactionWithInvoice = {
-            accountID: account.accountID,
-            walletID: addTransactionWallet.walletID,
-            categoryID: categoryToAddTransaction.categoryID,
-            // totalAmount: amount,
+      await uploadInvoiceToAPI({
+        asset: newAssetShowing?.asset,
+        filenamecustom: filename,
+        accountID: account?.accountID
+      }).then((response) => {
+        console.log("fileURL: ", response);
+        const totalOfInvoice =
+          currencyLibrary.removeCurrencyFormat(transAmount);
+        const transactionWithInvoice = {
+          accountID: account.accountID,
+          walletID: addTransactionWallet.walletID,
+          categoryID: categoryToAddTransaction.categoryID,
+          // totalAmount: amount,
+          totalAmount: totalOfInvoice,
+          transactionDate: time,
+          note: "has invoice",
+          fromPerson: invoiceResult.supplierName ?? "",
+          toPerson: invoiceResult.receiverName ?? "",
+          imageURL: response,
+          invoice: {
+            supplierAddress: invoiceResult.supplierAddress ?? "",
+            supplierEmail: invoiceResult.supplierEmail ?? "",
+            supplierName: invoiceResult.supplierName ?? "",
+            supplierPhone: invoiceResult.supplierPhone ?? "",
+            idOfInvoice: invoiceResult.idOfInvoice ?? "",
+            invoiceDate: invoiceResult.invoiceDate ?? "",
+            netAmount: invoiceResult.netAmount ?? 0,
             totalAmount: totalOfInvoice,
-            transactionDate: time,
-            note: "has invoice",
-            fromPerson: invoiceResult.supplierName ?? "",
-            toPerson: invoiceResult.receiverName ?? "",
-            imageURL: response,
-            invoice: {
-              supplierAddress: invoiceResult.supplierAddress ?? "",
-              supplierEmail: invoiceResult.supplierEmail ?? "",
-              supplierName: invoiceResult.supplierName ?? "",
-              supplierPhone: invoiceResult.supplierPhone ?? "",
-              idOfInvoice: invoiceResult.idOfInvoice ?? "",
-              invoiceDate: invoiceResult.invoiceDate ?? "",
-              netAmount: invoiceResult.netAmount ?? 0,
-              totalAmount: totalOfInvoice,
-              taxAmount: invoiceResult.taxAmount ?? 0,
-              invoiceImageURL: response,
-              note: invoiceResult.note ?? "",
-              products: [
-                ...invoiceResult.productInInvoices.map((it) => {
-                  return {
-                    productName: it.productName ?? "",
-                    quanity: it.quanity ?? 0,
-                    unitPrice: it.unitPrice ?? 0,
-                    totalAmount: it.totalAmount ?? 0,
-                    note: it.note ? it.note : "",
-                    tag: it.tag ?? ""
-                  };
-                })
-              ]
-            }
-          };
-          console.log("transactionWithInvoice: ", transactionWithInvoice);
-          console.log("invoice: ", transactionWithInvoice.invoice);
-          // console.log("products: ", transactionWithInvoice.invoice.products);
-          dispatch(addTransactionWithInvoice(transactionWithInvoice));
-        });
-      // const imageURL = dispatch(getInvoiceImageURL);
+            taxAmount: invoiceResult.taxAmount ?? 0,
+            invoiceImageURL: response,
+            note: invoiceResult.note ?? "",
+            products: [
+              ...invoiceResult.productInInvoices.map((it) => {
+                return {
+                  productName: it.productName ?? "",
+                  quanity: it.quanity ?? 0,
+                  unitPrice: it.unitPrice ?? 0,
+                  totalAmount: it.totalAmount ?? 0,
+                  note: it.note ? it.note : "",
+                  tag: it.tag ?? ""
+                };
+              })
+            ]
+          }
+        };
+        console.log("transactionWithInvoice: ", transactionWithInvoice);
+        console.log("invoice: ", transactionWithInvoice.invoice);
+        // console.log("products: ", transactionWithInvoice.invoice.products);
+
+        dispatch(addTransactionWithInvoice(transactionWithInvoice));
+      });
     } else {
-      // console.log("invoiceResult: ", invoiceResult);
       const data = {
         accountID: account.accountID,
         walletID: addTransactionWallet.walletID,
@@ -234,8 +225,49 @@ const AddTransactionScreen = () => {
     }
     saveAssetToMediaLibrary(newAssetShowing?.asset);
     setIsAddingTransaction(false);
-    Alert.alert("Thêm giao dịch thành công");
-    handleResetAddTransaction();
+
+    // handleResetAddTransaction();
+  }
+
+  async function uploadInvoiceToAPI({ asset, filenamecustom, accountID }) {
+    let fileURL = "";
+    const urlapi = API.FILE.UPLOAD_INVOICE_OF_TRANSACTION_FILE_NAME;
+    const formData = new FormData();
+    const filename = asset?.uri.split("/").pop();
+    const match = /\.(\w+)$/.exec(filename);
+    let type = match ? `image/${match[1]}` : `image`;
+    const filedata = {
+      uri: asset?.uri,
+      name: filename,
+      type: type
+    };
+    formData.append("file", filedata);
+    formData.append("filename", filenamecustom);
+    formData.append("accountID", accountID);
+    await axios({
+      method: "post",
+      url: urlapi,
+      data: formData,
+      headers: {
+        "Content-Type": "multipart/form-data"
+      },
+      onUploadProgress: (progressEvent) => {
+        console.log(
+          "Upload Progress: " +
+            Math.round((progressEvent.loaded / progressEvent.total) * 100) +
+            "%"
+        );
+      }
+    })
+      .then((response) => {
+        if (response) {
+          fileURL = response.data;
+        }
+      })
+      .catch((error) => {
+        console.log("error: ", error);
+      });
+    return fileURL;
   }
 
   function handleResetAddTransaction() {
@@ -300,36 +332,56 @@ const AddTransactionScreen = () => {
   }
 
   async function saveAssetToMediaLibrary(asset) {
-    const album = await MediaLibrary.getAlbumAsync(
-      VAR.MEDIALIBRARY.DEFAULT_ALBUM_NAME
-    );
-    if (album === null) {
-      console.log("album is null");
-      setProcessingContent(
-        "Đang tạo album " + VAR.MEDIALIBRARY.DEFAULT_ALBUM_NAME + " mới ..."
-      );
-      await MediaLibrary.createAlbumAsync(
-        VAR.MEDIALIBRARY.DEFAULT_ALBUM_NAME,
-        asset
-      ).finally(() => {
-        setProcessingContent(
-          "Đã tạo album " + VAR.MEDIALIBRARY.DEFAULT_ALBUM_NAME
-        );
-      });
-      // console.log("albumCreated", albumCreated);
-    } else {
-      const assetSaved = await MediaLibrary.createAssetAsync(asset.uri).finally(
-        () => {
-          setProcessingContent("Đang xử lý hình ảnh ...");
+    console.log("saveAssetToMediaLibrary: ", asset);
+    // check permission, if not granted, request permission
+    if (permissionResponse?.status !== "granted") {
+      MediaLibrary.requestPermissionsAsync().then((response) => {
+        if (response.status === "granted") {
+          saveAssetToMediaLibrary(asset);
         }
-      );
-      const assetAdded = await MediaLibrary.addAssetsToAlbumAsync(
-        [assetSaved],
-        album,
-        false
-      ).finally(() => {
-        setProcessingContent("Đã lưu hình ảnh vào album " + album.title);
       });
+    }
+    if (permissionResponse?.status === "granted") {
+      // check if album exists, if not create album
+      const album = await MediaLibrary.getAlbumAsync(
+        VAR.MEDIALIBRARY.DEFAULT_ALBUM_NAME
+      );
+      if (album === null) {
+        console.log("album is null");
+        setProcessingContent(
+          "Đang tạo album " + VAR.MEDIALIBRARY.DEFAULT_ALBUM_NAME + " mới ..."
+        );
+        const albumName = VAR.MEDIALIBRARY.DEFAULT_ALBUM_NAME;
+        if (Platform.OS === "android") {
+          const copyAsset = false;
+          await MediaLibrary.createAlbumAsync(
+            albumName,
+            asset,
+            copyAsset
+          ).finally(() => {
+            setProcessingContent("Đã tạo album " + albumName);
+          });
+        } else {
+          await MediaLibrary.createAlbumAsync(albumName, asset).finally(() => {
+            setProcessingContent("Đã tạo album " + albumName);
+          });
+        }
+        // console.log("albumCreated", albumCreated);
+      } else {
+        const assetSaved = await MediaLibrary.createAssetAsync(
+          asset.uri
+        ).finally(() => {
+          setProcessingContent("Đang xử lý hình ảnh ...");
+        });
+        const assetAdded = await MediaLibrary.addAssetsToAlbumAsync(
+          [assetSaved],
+          album,
+          false
+        ).finally(() => {
+          setProcessingContent("Đã lưu hình ảnh vào album " + album.title);
+          handleResetAddTransaction();
+        });
+      }
     }
   }
 
@@ -338,17 +390,78 @@ const AddTransactionScreen = () => {
     setMIsProcessing(true);
     setNewAssetShowing({ asset: asset, isShowingAsset: "true" });
     setProcessingContent("Đang quét hóa đơn ...");
-    await fileServices.upToScanInvoice(asset).then((response) => {
-      console.log("response: ", response);
-      setProcessingContent("Đã xử lý hóa đơn");
-      if (response) {
-        setInvoiceResult(response);
-        setunInputInvoiceScanning(response);
-        setMIsProcessing(false);
-      }
-      // setMIsProcessing(false);
-      // dispatch(setAssetsShowing({ asset: asset, isShowingAsset: "true" }));
-    });
+    if (Platform.OS === "android") {
+      console.log("android");
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      };
+      const urlapi = API.INVOICE.SCAN_V4;
+      const formData = new FormData();
+      const filename = asset?.uri.split("/").pop();
+      const match = /\.(\w+)$/.exec(filename);
+      let type = match ? `image/${match[1]}` : `image`;
+      let filedata = null;
+      filedata = {
+        uri: asset?.uri,
+        name: filename,
+        type: type
+      };
+      console.log("api: ", urlapi);
+      console.log("filedata: ", filedata);
+      console.log("config: ", config);
+      formData.append("file", filedata);
+      await axios({
+        method: "post",
+        url: urlapi,
+        data: formData,
+        headers: {
+          "Content-Type": "multipart/form-data"
+        },
+        onUploadProgress: (progressEvent) => {
+          console.log(
+            "Upload Progress: " +
+              Math.round((progressEvent.loaded / progressEvent.total) * 100) +
+              "%"
+          );
+        }
+      })
+        .then((response) => {
+          if (response) {
+            console.log("response: ", response?.data);
+            setProcessingContent("Đã xử lý hóa đơn");
+            setInvoiceResult(response?.data);
+            setunInputInvoiceScanning(response?.data);
+            setMIsProcessing(false);
+          }
+        })
+        .catch((error) => {
+          console.log("error: ", error);
+          setProcessingContent("Có lỗi xảy ra khi quét hóa đơn");
+        });
+    } else {
+      await fileServices
+        .upToScanInvoice(asset)
+        .then((response) => {
+          if (response) {
+            console.log("response: ", response);
+            setProcessingContent("Đã xử lý hóa đơn");
+            setInvoiceResult(response);
+            setunInputInvoiceScanning(response);
+            setMIsProcessing(false);
+          } else if (response === undefined) {
+            setProcessingContent("Lỗi xảy ra khi quét hóa đơn");
+          }
+          // setMIsProcessing(false);
+          // dispatch(setAssetsShowing({ asset: asset, isShowingAsset: "true" }));
+        })
+        .catch((error) => {
+          console.log("error: ", error);
+          setProcessingContent("Có lỗi xảy ra khi quét hóa đơn");
+          setMIsProcessing(false);
+        });
+    }
   }
 
   const ViewProcessing = () => {
@@ -668,19 +781,19 @@ const AddTransactionScreen = () => {
         </Pressable>
         <View style={styles.viewTakeCamera}>
           <Pressable
-            style={styles.pressableTakeCamera}
+            style={[styles.pressableTakeCamera, { borderColor: "#74b9ff" }]}
             onPress={() => {
               setMTakeCamera(true);
               // dispatch(setModalAddTransactionVisible(true));
             }}
           >
-            <Icon name="camera" size={30} color="black" />
+            <Icon name="camera" size={30} color="#0984e3" />
           </Pressable>
         </View>
         {/* Button Save */}
         <View style={styles.viewAddTransaction}>
           <Pressable
-            style={styles.buttonCloseModal}
+            style={styles.pressable_SaveTransaction}
             onPress={() => {
               handleAddTransaction();
             }}
@@ -914,20 +1027,20 @@ const styles = StyleSheet.create({
   },
   viewPressableAction: {
     width: "98%",
-    borderColor: "red",
-    borderWidth: 1,
+    // borderColor: "red",
+    // borderWidth: 1,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     alignSelf: "center",
     position: "absolute",
     paddingHorizontal: "5%",
-    bottom: "11%",
+    bottom: "11%"
   },
   pressableReset: {
     borderRadius: 10,
     padding: 10,
-    elevation: 2,
+    // elevation: 2,
     // backgroundColor: "lightgray",
     borderColor: "darkgray",
     borderWidth: 1,
@@ -944,30 +1057,30 @@ const styles = StyleSheet.create({
     width: 100,
     height: 50,
     borderRadius: 20,
-    // backgroundColor: "lightgray",
+    // backgroundColor: "#fab1a0",
     justifyContent: "center",
     alignItems: "center",
-    borderColor: "darkgray",
-    borderWidth: 1,
+    // borderColor: "#74b9ff",
+    borderWidth: 1
     // shadow
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 2,
-    elevation: 5
+    // shadowColor: "#000",
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 2
+    // },
+    // shadowOpacity: 0.25,
+    // shadowRadius: 2,
+    // elevation: 5
   },
   viewAddTransaction: {
     // width: "100%"
     // marginVertical: 15
   },
-  buttonCloseModal: {
+  pressable_SaveTransaction: {
     borderRadius: 10,
     padding: 10,
-    elevation: 2,
-    backgroundColor: "lightgray",
+    // elevation: 2,
+    // backgroundColor: "lightgray",
     borderColor: "darkgray",
     borderWidth: 1,
     width: "auto",

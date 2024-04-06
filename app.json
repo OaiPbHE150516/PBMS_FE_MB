@@ -69,6 +69,15 @@
           "iosUrlScheme": "com.oaipb.pbms_fe_mb"
         }
       ]
+      // ,
+      // [
+      //   "expo-build-properties",
+      //   {
+      //     "android": {
+      //       "usesCleartextTraffic": true
+      //     }
+      //   }
+      // ]
     ],
     "extra": {
       "eas": {

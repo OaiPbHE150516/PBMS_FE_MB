@@ -45,11 +45,11 @@ const SignInAndroid = ({ callback }) => {
       webClientId:
         "461985987390-sb848ug9vlln2lemncolefu15ckc7ljg.apps.googleusercontent.com",
       // preview androidClientId:
-      // androidClientId:
-      //   "461985987390-v47dreoeqkfsgh6fn513dgokstu8i8gf.apps.googleusercontent.com",
-      // production androidClientId:
       androidClientId:
-        "461985987390-p2vekcu9quj88910pqiftjctqegp5rl1.apps.googleusercontent.com",
+        "461985987390-v47dreoeqkfsgh6fn513dgokstu8i8gf.apps.googleusercontent.com",
+      // production androidClientId:
+      // androidClientId:
+      //   "461985987390-p2vekcu9quj88910pqiftjctqegp5rl1.apps.googleusercontent.com",
       offlineAccess: true,
       // scopes: ["profile", "email"],
       requestIdToken:

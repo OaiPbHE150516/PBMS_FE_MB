@@ -13,7 +13,7 @@ const authenServices = {
       // console.log("response: ", response.data);
       return response.data;
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error authenServices:", error);
     }
   }
 };

@@ -29,7 +29,7 @@ const HomeScreen = () => {
   useEffect(() => {
     if (account === null) {
       // navigation.navigate("Signin");
-      console.log("account: ", account);
+      console.log("HomeScreen account: ", account);
     }
   }, [account, dispatch]);
 

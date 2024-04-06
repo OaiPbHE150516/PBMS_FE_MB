@@ -44,7 +44,8 @@ const transactionServices = {
       console.log("response: ", response.data);
       return response.data;
     } catch (error) {
-      console.error("Error fetching data:", error);
+
+      console.error("Error addTransactionWithInvoice:", error);
     }
   },
   getLastNumberExpensesTransaction: async (accountid, numberOfLastDay) => {

@@ -32,8 +32,10 @@ import currencyLibrary from "../../library/currencyLIbrary";
 import { VAR } from "../../constants/var.constant";
 import axios from "axios";
 import { API } from "../../constants/api.constant";
+
 // slice
 import { setModalAddTransactionVisible } from "../../redux/modalSlice";
+import { fetchAllData } from "../../redux/dataSlice";
 import {
   addTransactionNoInvoice,
   addTransactionWithInvoice,
@@ -234,6 +236,7 @@ const AddTransactionScreen = () => {
     // saveAssetToMediaLibrary(newAssetShowing?.asset);
     setIsAddingTransaction(false);
     handleResetAddTransaction();
+    dispatch(fetchAllData(new Date().toISOString()));
   }
 
   async function uploadInvoiceToAPI({ asset, filenamecustom, accountID }) {

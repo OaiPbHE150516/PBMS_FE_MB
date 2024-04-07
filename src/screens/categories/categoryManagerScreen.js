@@ -81,12 +81,16 @@ const CategoryManagerScreen = () => {
     //     </View>
     //   );
     // }
-    return nowCategories[0] && (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <TabCategoryInModalComponent
-          props={{ category: nowCategories[0], action: false }}
-        />
-      </View>
+    return (
+      nowCategories[0] && (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <TabCategoryInModalComponent
+            props={{ category: nowCategories[0], action: false }}
+          />
+        </View>
+      )
     );
   };
   const Tab2 = () => {
@@ -99,12 +103,16 @@ const CategoryManagerScreen = () => {
     //     </View>
     //   );
     // }
-    return nowCategories[1] && (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <TabCategoryInModalComponent
-          props={{ category: nowCategories[1], action: false }}
-        />
-      </View>
+    return (
+      nowCategories[1] && (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <TabCategoryInModalComponent
+            props={{ category: nowCategories[1], action: false }}
+          />
+        </View>
+      )
     );
   };
 
@@ -141,7 +149,10 @@ const CategoryManagerScreen = () => {
 
   function handleFocusScreen(index) {
     if (nowCategories && nowCategories[index]) {
-      const listParent = [nowCategories[index], ...nowCategories[index]?.children];
+      const listParent = [
+        nowCategories[index],
+        ...nowCategories[index]?.children
+      ];
       // console.log("listParent: ", listParent);
       setCateParentList(listParent);
       setNewCate({
@@ -217,20 +228,20 @@ const CategoryManagerScreen = () => {
         }}
       >
         <TabCategory.Screen
-          name="Khoản thu"
-          component={Tab1}
-          listeners={{
-            focus: () => {
-              handleFocusScreen(0);
-            }
-          }}
-        />
-        <TabCategory.Screen
           name="Khoản chi"
           component={Tab2}
           listeners={{
             focus: () => {
               handleFocusScreen(1);
+            }
+          }}
+        />
+        <TabCategory.Screen
+          name="Khoản thu"
+          component={Tab1}
+          listeners={{
+            focus: () => {
+              handleFocusScreen(0);
             }
           }}
         />

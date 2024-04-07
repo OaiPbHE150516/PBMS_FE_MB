@@ -7,6 +7,7 @@ import categorySlice from "../redux/categorySlice";
 import modalSlice from "../redux/modalSlice";
 import fileSlice from "../redux/fileSlice";
 import collabFundSlice from "../redux/collabFundSlice";
+import dataSlice from "../redux/dataSlice";
 
 const rootReducer = combineReducers({
     authen: authenSlice.reducer,
@@ -16,7 +17,8 @@ const rootReducer = combineReducers({
     category: categorySlice.reducer,
     modal: modalSlice.reducer,
     file: fileSlice.reducer,
-    collabFund: collabFundSlice.reducer
+    collabFund: collabFundSlice.reducer,
+    data: dataSlice.reducer
 });
 
 const store = configureStore({

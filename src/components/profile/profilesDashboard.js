@@ -4,17 +4,31 @@ import { useDispatch, useSelector } from "react-redux";
 import useProfile from "../../hooks/useProfile";
 import { getTotalBalance } from "../../redux/walletSlice";
 
+// services
+import walletServices from "../../services/walletServices";
+
 const ProfileDashboard = () => {
-
   const account = useSelector((state) => state.authen.account);
-  const totalBalance = useSelector((state) => state.wallet.totalBalance);
-
+  const shouldFetchData = useSelector((state) => state.data.shouldFetchData);
+  // const totalBalance = useSelector((state) => state.wallet.totalBalance);
   const dispatch = useDispatch();
-  useEffect(() => {
-    if (account !== null) {
-      dispatch(getTotalBalance(account.accountID));
+
+  const [totalBalance, setTotalBalance] = useState(0);
+
+  async function fetchTotalBalance(accountID) {
+    console.log("fetchTotalBalance accountID: ", accountID);
+    try {
+      await walletServices.getTotalBalance(accountID).then((response) => {
+        setTotalBalance(response);
+      });
+    } catch (error) {
+      console.error("Error fetchTotalBalance data:", error);
     }
-  }, [account, dispatch]);
+  }
+
+  useEffect(() => {
+    fetchTotalBalance(account?.accountID);
+  }, [shouldFetchData]);
 
   return (
     <View style={styles.viewStyle}>
@@ -22,7 +36,7 @@ const ProfileDashboard = () => {
         source={{
           uri: account?.pictureURL
             ? account?.pictureURL
-            : "https://reactjs.org/logo-og.png",
+            : "https://reactjs.org/logo-og.png"
         }}
         style={styles.avatar}
       />
@@ -37,25 +51,26 @@ const ProfileDashboard = () => {
 
 const styles = StyleSheet.create({
   viewStyle: {
-    borderBlockColor: "black",
-    borderWidth: 1,
+    borderBlockColor: "darkgray",
+    borderWidth: 0.5,
     justifyContent: "space-between",
     alignItems: "center",
     flexDirection: "row",
     marginTop: 0,
     height: 55,
     marginVertical: 5,
-    borderColor: '#ccc',
-    borderRadius: 5,
+    marginHorizontal: 1,
+    borderColor: "#ccc",
+    borderRadius: 5
   },
   viewInfor: {
     flexDirection: "column",
     flex: 1,
-    marginLeft: 10,
+    marginLeft: 10
   },
   accountName: {
     fontSize: 20,
-    includeFontPadding: false,
+    includeFontPadding: false
   },
   avatar: {
     left: 2,
@@ -63,12 +78,12 @@ const styles = StyleSheet.create({
     height: 40,
     resizeMode: "cover",
     borderRadius: 30,
-    overflow: "hidden",
+    overflow: "hidden"
   },
   emailAddress: {
     fontSize: 10,
     fontStyle: "italic",
-    textAlign: "left",
+    textAlign: "left"
   },
   totalMoney: {
     fontSize: 20,
@@ -76,8 +91,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "green",
     textAlign: "right",
-    margin: 5,
-  },
+    margin: 5
+  }
 });
 
 export default ProfileDashboard;

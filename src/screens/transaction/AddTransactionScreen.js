@@ -227,7 +227,6 @@ const AddTransactionScreen = () => {
     }
     saveAssetToMediaLibrary(newAssetShowing?.asset);
     setIsAddingTransaction(false);
-
     handleResetAddTransaction();
   }
 
@@ -310,6 +309,14 @@ const AddTransactionScreen = () => {
   }
 
   async function handleOnPickMedia() {
+    // check permission, if not granted, request permission
+    if (permissionResponse?.status !== "granted") {
+      MediaLibrary.requestPermissionsAsync().then((response) => {
+        if (response.status === "granted") {
+          handleOnPickMedia();
+        }
+      });
+    }
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1
@@ -322,6 +329,14 @@ const AddTransactionScreen = () => {
   }
 
   async function handleOnLaunchCamera() {
+    // check permission, if not granted, request permission
+    if (permissionResponse?.status !== "granted") {
+      MediaLibrary.requestPermissionsAsync().then((response) => {
+        if (response.status === "granted") {
+          handleOnLaunchCamera();
+        }
+      });
+    }
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1

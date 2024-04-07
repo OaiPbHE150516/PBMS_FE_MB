@@ -77,7 +77,10 @@ const AddTransactionScreen = () => {
   const [transAmount, setTransAmount] = useState("");
   const [isInvoiceScanning, setIsInvoiceScanning] = useState(false);
   const [currentTime, setCurrentTime] = useState("");
-  const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
+  const [permissionResponseMediaLibrary, requestPermissionMediaLibrary] =
+    MediaLibrary.usePermissions();
+  const [permissionResponseCamera, requestPermissionCamera] =
+    ImagePicker.useCameraPermissions();
   const modalAddTransactionVisible = useSelector(
     (state) => state.modal.modalAddTransactionVisible
   );
@@ -310,10 +313,13 @@ const AddTransactionScreen = () => {
 
   async function handleOnPickMedia() {
     // check permission, if not granted, request permission
-    if (permissionResponse?.status !== "granted") {
+    if (permissionResponseMediaLibrary?.status !== "granted") {
       MediaLibrary.requestPermissionsAsync().then((response) => {
         if (response.status === "granted") {
           handleOnPickMedia();
+        } else {
+          console.log("permission not granted");
+          Alert.alert("Permission not granted");
         }
       });
     }
@@ -330,10 +336,13 @@ const AddTransactionScreen = () => {
 
   async function handleOnLaunchCamera() {
     // check permission, if not granted, request permission
-    if (permissionResponse?.status !== "granted") {
-      MediaLibrary.requestPermissionsAsync().then((response) => {
+    if (permissionResponseCamera?.status !== "granted") {
+      ImagePicker.requestPermissionCamera().then((response) => {
         if (response.status === "granted") {
           handleOnLaunchCamera();
+        } else {
+          console.log("permission not granted");
+          Alert.alert("Permission not granted");
         }
       });
     }
@@ -351,14 +360,14 @@ const AddTransactionScreen = () => {
   async function saveAssetToMediaLibrary(asset) {
     console.log("saveAssetToMediaLibrary: ", asset);
     // check permission, if not granted, request permission
-    if (permissionResponse?.status !== "granted") {
+    if (permissionResponseMediaLibrary?.status !== "granted") {
       MediaLibrary.requestPermissionsAsync().then((response) => {
         if (response.status === "granted") {
           saveAssetToMediaLibrary(asset);
         }
       });
     }
-    if (permissionResponse?.status === "granted") {
+    if (permissionResponseMediaLibrary?.status === "granted") {
       // check if album exists, if not create album
       const album = await MediaLibrary.getAlbumAsync(
         VAR.MEDIALIBRARY.DEFAULT_ALBUM_NAME

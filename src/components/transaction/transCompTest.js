@@ -7,18 +7,27 @@ import {
   Alert,
   FlatList,
   RefreshControl,
-  Dimensions
+  Dimensions,
+  Modal,
+  Pressable
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import pbms from "../../api/pbms";
 import { API } from "../../constants/api.constant";
-import TransactionByDayList from "./transactionByDayList";
+// import TransactionByDayList from "./transactionByDayList";
+
+// components
+import TransactionByDayItem from "./transactionByDayItem";
+import ModalTransactionDetail from "./modalTransactionDetail";
 
 const TransCompTest = ({ route }) => {
   const account = useSelector((state) => state.authen.account);
   const [transactions, setTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isModalDetailVisible, setIsModalDetailVisible] = useState(false);
+  const [transactionDetail, setTransactionDetail] = useState(null);
+
   const data = route.params;
   const fetchTransactionData = async ({ accountID, time }) => {
     try {
@@ -30,6 +39,17 @@ const TransCompTest = ({ route }) => {
     } catch (error) {
       console.error("Error fetching transaction data:", error);
     }
+  };
+
+  const onCallback = (data) => {
+    console.log("TransactionComponent: ", data);
+    setTransactionDetail(data);
+    setIsModalDetailVisible(true);
+  };
+
+  const onCallbackModalDetail = (data) => {
+    console.log("onCallbackModalDetail: ", data);
+    setIsModalDetailVisible(data);
   };
 
   const onRefresh = () => {
@@ -119,18 +139,59 @@ const TransCompTest = ({ route }) => {
                   </View>
                 </View>
                 <View>
-                  <TransactionByDayList props={item?.transactions} />
+                  {/* <TransactionByDayList props={item?.transactions} /> */}
+                  <FlatList
+                    scrollEnabled={true}
+                    showsVerticalScrollIndicator={true}
+                    data={item?.transactions}
+                    keyExtractor={(item) => item.transactionID}
+                    renderItem={({ item }) => {
+                      return (
+                        <View style={styles.view_Item_TransactionByDayList}>
+                          <TransactionByDayItem
+                            props={item}
+                            callback={onCallback}
+                          />
+                        </View>
+                      );
+                    }}
+                  />
                 </View>
               </View>
             );
           }}
         />
       </View>
+      <Modal
+        visible={isModalDetailVisible}
+        animationType="fade"
+        transparent={true}
+      >
+        <View style={styles.view_BackgroudModal}>
+          <Pressable
+            style={styles.pressable_closeModalDetail}
+            onPress={() => setIsModalDetailVisible(false)}
+          />
+          <ModalTransactionDetail
+            props={transactionDetail}
+            callback={onCallbackModalDetail}
+          />
+        </View>
+      </Modal>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  view_BackgroudModal: {
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0, 0, 0, 0.25)",
+    flexDirection: "column"
+  },
+  pressable_closeModalDetail: {
+    flex: 1
+  },
   textDayInWeek: {
     fontSize: 20,
     fontFamily: "Inconsolata_500Medium"
@@ -207,7 +268,7 @@ const styles = StyleSheet.create({
     elevation: 1
   },
   viewL: {
-    height: Dimensions.get("window").height * 0.65,
+    height: Dimensions.get("window").height * 0.65
     // borderColor: "black",
     // borderWidth: 1
   },

@@ -6,44 +6,69 @@ import {
   Button,
   Alert,
   Image,
-  FlatList
+  FlatList,
+  Pressable,
+  TextInput,
+  ImageBackground,
+  ActivityIndicator,
+  Switch,
+  RefreshControl,
+  Modal,
+  Platform,
+  KeyboardAvoidingView,
+  Keyboard
 } from "react-native";
 
-const TransactionByDayItem = ({ props }) => {
+const TransactionByDayItem = ({ props, callback }) => {
+  async function onPressATransaction() {
+    callback(props);
+  }
+
   return (
-    <View style={styles.viewStyle}>
-      <View
-        style={[
-          styles.viewTime,
-          props.category.categoryTypeID == 2
-            ? { borderRightColor: "red" }
-            : { borderRightColor: "green" }
+    <View>
+      <Pressable
+        style={({ pressed }) => [
+          styles.viewStyle,
+          {
+            backgroundColor: pressed ? "#dfe6e9" : null
+          }
         ]}
+        onPress={onPressATransaction}
       >
-        <Text style={styles.textTime}>{props.timeStr}</Text>
-      </View>
-      <View style={styles.viewCate}>
-        <Text style={styles.textCateName}>{props.category.nameVN}</Text>
-        <Text style={styles.textWalletName}>{props.wallet.name}</Text>
-      </View>
-      <View style={styles.viewNote}>
-        <Text numberOfLines={1} ellipsizeMode="tail" style={styles.textNote}>
-          {props.transactionID}/{props.note}
-        </Text>
-      </View>
-      <View style={styles.viewBalance}>
-        <Text
+        <View
           style={[
-            styles.textTotalAmount,
+            styles.viewTime,
             props.category.categoryTypeID == 2
-              ? { color: "red" }
-              : { color: "green" }
+              ? { borderRightColor: "red" }
+              : { borderRightColor: "green" }
           ]}
         >
-          {props.category.categoryTypeID == 2 ? "-" : ""}
-          {props.totalAmountStr}
-        </Text>
-      </View>
+          <Text style={styles.textTime}>{props.timeStr}</Text>
+        </View>
+        <View style={styles.viewCate}>
+          <Text style={styles.textCateName}>{props.category.nameVN}</Text>
+          <Text style={styles.textWalletName}>{props.wallet.name}</Text>
+        </View>
+        <View style={styles.viewNote}>
+          <Text numberOfLines={1} ellipsizeMode="tail" style={styles.textNote}>
+            {/* {props.transactionID}/ */}
+            {props.note}
+          </Text>
+        </View>
+        <View style={styles.viewBalance}>
+          <Text
+            style={[
+              styles.textTotalAmount,
+              props.category.categoryTypeID == 2
+                ? { color: "red" }
+                : { color: "green" }
+            ]}
+          >
+            {props.category.categoryTypeID == 2 ? "-" : ""}
+            {props.totalAmountStr}
+          </Text>
+        </View>
+      </Pressable>
     </View>
   );
 };
@@ -51,7 +76,7 @@ const TransactionByDayItem = ({ props }) => {
 const styles = StyleSheet.create({
   viewCate: {
     width: "25%",
-    justifyContent: "center",
+    justifyContent: "space-around",
     flexDirection: "column",
     marginHorizontal: 5
   },
@@ -64,15 +89,19 @@ const styles = StyleSheet.create({
     alignContent: "space-between",
     // backgroundColor: "white",
     borderBottomColor: "lightgrey",
-    borderBottomWidth: 1
+    borderBottomWidth: 1,
+    borderRadius: 10,
+    height: 50,
+    marginVertical: 2
   },
   viewTime: {
     // borderRightColor: "red",
     borderRightWidth: 1.5,
-    flexDirection: "row"
+    flexDirection: "row",
+    // width: "18%",
   },
   textTime: {
-    fontFamily: "Inconsolata_500Medium",
+    fontFamily: "OpenSans_500Medium",
     fontSize: 15,
     alignSelf: "center",
     marginHorizontal: 5
@@ -89,7 +118,7 @@ const styles = StyleSheet.create({
   textTotalAmount: {
     fontSize: 15,
     // fontWeight: "bold",
-    fontFamily: "Inconsolata_400Regular",
+    fontFamily: "OpenSans_500Medium",
     textAlign: "right"
   },
   viewBalance: {

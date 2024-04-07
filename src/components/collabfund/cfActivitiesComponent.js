@@ -315,7 +315,7 @@ const CfActivitiesComponent = ({ route }) => {
 
   return (
     <KeyboardAvoidingView
-      behavior={"padding"}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.viewContainer}
       keyboardVerticalOffset={keyboardHeight}
     >
@@ -710,7 +710,8 @@ const styles = StyleSheet.create({
     padding: 2,
     width: "100%",
     height: 50,
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+    zIndex: 99,
     // flex: 1
   },
   textInputActionUserChat: {
@@ -726,7 +727,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "darkgray",
     borderRadius: 10,
-    marginHorizontal: 2
+    marginHorizontal: 2,
   },
   textUserInforName: {
     fontSize: 15,
@@ -739,11 +740,11 @@ const styles = StyleSheet.create({
     // borderWidth: 1,
     // borderColor: "blue",
     flexDirection: "row",
-    marginHorizontal: 2
+    marginHorizontal: 2,
   },
 
   viewContainer: {
-    // flex: 1,
+    flex: 1,
     // justifyContent: "center",
     // alignItems: "center",
     paddingVertical: 5

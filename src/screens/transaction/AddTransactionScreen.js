@@ -16,7 +16,8 @@ import {
   TouchableWithoutFeedback,
   PanResponder,
   ScrollView,
-  Image
+  Image,
+  KeyboardAvoidingView
 } from "react-native";
 // node_modules library
 import { useSelector, useDispatch } from "react-redux";
@@ -63,6 +64,7 @@ const AddTransactionScreen = () => {
   const [mCalendarVisible, setMCalendarVisible] = useState(false);
   const [mWalletVisible, setMWalletVisible] = useState(false);
   const [mTakeCamera, setMTakeCamera] = useState(false);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const [newAssetShowing, setNewAssetShowing] = useState(null);
   const [mIsProcessing, setMIsProcessing] = useState(null);
@@ -472,116 +474,6 @@ const AddTransactionScreen = () => {
     );
   };
 
-  const ViewInvoiceScanning = () => {
-    return (
-      <View style={styles.viewInvoiceScanning}>
-        <View style={styles.viewChildIS}>
-          <Text style={styles.textHeaderViewChildIS}>{"Hóa đơn"}</Text>
-          <AnInputInvoiceScanning
-            textLabelTop="Tổng tiền"
-            value={invoiceResult?.totalAmount.toString()}
-            onChangeText={(text) => {
-              setInvoiceResult({ ...invoiceResult, totalAmount: text });
-            }}
-            keyboardType={Platform.OS === "ios" ? "numeric" : "number-pad"}
-          />
-          <AnInputInvoiceScanning
-            textLabelTop="Số"
-            value={invoiceResult?.idOfInvoice}
-            onChangeText={(text) => {
-              setInvoiceResult({ ...invoiceResult, idOfInvoice: text });
-            }}
-          />
-          <AnInputInvoiceScanning
-            textLabelTop="Ngày"
-            value={invoiceResult?.invoiceDate}
-            onChangeText={(text) => {
-              setInvoiceResult({ ...invoiceResult, invoiceDate: text });
-            }}
-          />
-        </View>
-        <View style={styles.viewChildIS}>
-          <Text style={styles.textHeaderViewChildIS}>{"Đơn vị cung cấp"}</Text>
-          <AnInputInvoiceScanning
-            textLabelTop="Tên"
-            value={invoiceResult?.supplierName}
-            onChangeText={(text) => {
-              setInvoiceResult({ ...invoiceResult, supplierName: text });
-            }}
-          />
-          <AnInputInvoiceScanning
-            textLabelTop="Địa chỉ"
-            value={invoiceResult?.supplierAddress}
-            onChangeText={(text) => {
-              setInvoiceResult({ ...invoiceResult, supplierAddress: text });
-            }}
-          />
-          <AnInputInvoiceScanning
-            textLabelTop="Số điện thoại"
-            value={invoiceResult?.supplierPhone}
-            onChangeText={(text) => {
-              setInvoiceResult({ ...invoiceResult, supplierPhone: text });
-            }}
-          />
-        </View>
-        {/* <View style={styles.viewChildIS}>
-          <Text style={styles.textHeaderViewChildIS}>{"Người nhận"}</Text>
-          <AnInputInvoiceScanning
-            textLabelTop="Tên"
-            value={invoiceResult?.receiverName}
-            onChangeText={(text) => {
-              setInvoiceResult({ ...invoiceResult, receiverName: text });
-            }}
-          />
-          <AnInputInvoiceScanning
-            textLabelTop="Địa chỉ"
-            value={invoiceResult?.receiverAddress}
-            onChangeText={(text) => {
-              setInvoiceResult({ ...invoiceResult, receiverAddress: text });
-            }}
-          />
-        </View> */}
-        <View style={styles.viewChildIS}>
-          <Text style={styles.textHeaderViewChildIS}>{"Sản phẩm"}</Text>
-          <FlatList
-            nestedScrollEnabled={true}
-            scrollEnabled={false}
-            data={invoiceResult?.productInInvoices}
-            keyExtractor={(item) => item.productID}
-            renderItem={({ item }) => (
-              <AnInputProductInIS
-                name={item.productName}
-                unitprice={item.unitPrice.toString()}
-                quanity={item.quanity.toString()}
-                amount={item.totalAmount.toString()}
-                onChangeTextName={(text) => {
-                  let newItem = item;
-                  newItem.productName = text;
-                  handleChangeProductInInvoice({ newItem });
-                }}
-                onChangeTextQuanity={(text) => {
-                  let newItem = item;
-                  newItem.quanity = text;
-                  handleChangeProductInInvoice({ newItem });
-                }}
-                onChangeTextUnitPrice={(text) => {
-                  let newItem = item;
-                  newItem.unitPrice = text;
-                  handleChangeProductInInvoice({ newItem });
-                }}
-                onChangeTextAmount={(text) => {
-                  let newItem = item;
-                  newItem.totalAmount = text;
-                  handleChangeProductInInvoice({ newItem });
-                }}
-              />
-            )}
-          />
-        </View>
-      </View>
-    );
-  };
-
   const ViewMoreDetail = () => {
     return (
       <View style={styles.viewMoreDetail}>
@@ -609,7 +501,11 @@ const AddTransactionScreen = () => {
   };
 
   return (
-    <View style={styles.viewStyle}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.viewStyle}
+      keyboardVerticalOffset={keyboardHeight}
+    >
       <View style={styles.viewTopHeader}>
         <Text style={styles.textTopHeader}>Thêm giao dịch mới</Text>
       </View>
@@ -714,9 +610,6 @@ const AddTransactionScreen = () => {
             </View>
           </View>
           <View style={styles.view_AddTransaction_Note}>
-            {/* <View style={styles.view_AddTransaction_Note_Icon}>
-              <Icon name="note-sticky" size={30} color="darkgrey" />
-            </View> */}
             <TextInput
               style={[styles.textinput_AddTransaction_Note]}
               placeholder="Ghi chú"
@@ -727,28 +620,121 @@ const AddTransactionScreen = () => {
               textAlignVertical="top"
             />
           </View>
-          {/* <View style={styles.viewAmount}>
-            <View style={styles.viewPressableMoreDetail}>
-              {isShowDetail && <ViewMoreDetail />}
-              <Pressable
-                style={styles.pressMoreDetail}
-                onPress={() => {
-                  setIsShowDetail(!isShowDetail);
-                }}
-              >
-                <Text style={styles.textMoreDetail}>
-                  {isShowDetail ? "Ẩn chi tiết" : "Thêm chi tiết"}
-                </Text>
-                <Icon
-                  name={isShowDetail ? "chevron-up" : "chevron-down"}
-                  size={20}
-                  color="darkgrey"
-                />
-              </Pressable>
-            </View>
-          </View> */}
           {/* Invoice Scan */}
-          {!mIsProcessing && mIsProcessing !== null && <ViewInvoiceScanning />}
+          {!mIsProcessing && mIsProcessing !== null && (
+            <View style={styles.viewInvoiceScanning}>
+              <View style={styles.viewChildIS}>
+                <Text style={styles.textHeaderViewChildIS}>{"Hóa đơn"}</Text>
+                <AnInputInvoiceScanning
+                  textLabelTop="Tổng tiền"
+                  value={invoiceResult?.totalAmount.toString()}
+                  onChangeText={(text) => {
+                    setInvoiceResult({ ...invoiceResult, totalAmount: text });
+                  }}
+                  keyboardType={
+                    Platform.OS === "ios" ? "numeric" : "number-pad"
+                  }
+                />
+                <AnInputInvoiceScanning
+                  textLabelTop="Số"
+                  value={invoiceResult?.idOfInvoice}
+                  onChangeText={(text) => {
+                    setInvoiceResult({ ...invoiceResult, idOfInvoice: text });
+                  }}
+                />
+                <AnInputInvoiceScanning
+                  textLabelTop="Ngày"
+                  value={invoiceResult?.invoiceDate}
+                  onChangeText={(text) => {
+                    setInvoiceResult({ ...invoiceResult, invoiceDate: text });
+                  }}
+                />
+              </View>
+              <View style={styles.viewChildIS}>
+                <Text style={styles.textHeaderViewChildIS}>
+                  {"Đơn vị cung cấp"}
+                </Text>
+                <AnInputInvoiceScanning
+                  textLabelTop="Tên"
+                  value={invoiceResult?.supplierName}
+                  onChangeText={(text) => {
+                    setInvoiceResult({ ...invoiceResult, supplierName: text });
+                  }}
+                />
+                <AnInputInvoiceScanning
+                  textLabelTop="Địa chỉ"
+                  value={invoiceResult?.supplierAddress}
+                  onChangeText={(text) => {
+                    setInvoiceResult({
+                      ...invoiceResult,
+                      supplierAddress: text
+                    });
+                  }}
+                />
+                <AnInputInvoiceScanning
+                  textLabelTop="Số điện thoại"
+                  value={invoiceResult?.supplierPhone}
+                  onChangeText={(text) => {
+                    setInvoiceResult({ ...invoiceResult, supplierPhone: text });
+                  }}
+                />
+              </View>
+              {/* <View style={styles.viewChildIS}>
+          <Text style={styles.textHeaderViewChildIS}>{"Người nhận"}</Text>
+          <AnInputInvoiceScanning
+            textLabelTop="Tên"
+            value={invoiceResult?.receiverName}
+            onChangeText={(text) => {
+              setInvoiceResult({ ...invoiceResult, receiverName: text });
+            }}
+          />
+          <AnInputInvoiceScanning
+            textLabelTop="Địa chỉ"
+            value={invoiceResult?.receiverAddress}
+            onChangeText={(text) => {
+              setInvoiceResult({ ...invoiceResult, receiverAddress: text });
+            }}
+          />
+        </View> */}
+              <View style={styles.viewChildIS}>
+                <Text style={styles.textHeaderViewChildIS}>{"Sản phẩm"}</Text>
+                <FlatList
+                  nestedScrollEnabled={true}
+                  scrollEnabled={false}
+                  data={invoiceResult?.productInInvoices}
+                  keyExtractor={(item) => item.productID}
+                  renderItem={({ item }) => (
+                    <AnInputProductInIS
+                      name={item.productName}
+                      unitprice={item.unitPrice.toString()}
+                      quanity={item.quanity.toString()}
+                      amount={item.totalAmount.toString()}
+                      onChangeTextName={(text) => {
+                        let newItem = item;
+                        newItem.productName = text;
+                        handleChangeProductInInvoice({ newItem });
+                      }}
+                      onChangeTextQuanity={(text) => {
+                        let newItem = item;
+                        newItem.quanity = text;
+                        handleChangeProductInInvoice({ newItem });
+                      }}
+                      onChangeTextUnitPrice={(text) => {
+                        let newItem = item;
+                        newItem.unitPrice = text;
+                        handleChangeProductInInvoice({ newItem });
+                      }}
+                      onChangeTextAmount={(text) => {
+                        let newItem = item;
+                        newItem.totalAmount = text;
+                        handleChangeProductInInvoice({ newItem });
+                      }}
+                    />
+                  )}
+                />
+              </View>
+            </View>
+          )}
           {mIsProcessing && mIsProcessing !== null && <ViewProcessing />}
           <View style={[styles.viewAssetShowing, {}]}>
             {newAssetShowing?.asset && (
@@ -921,7 +907,7 @@ const AddTransactionScreen = () => {
         </Modal>
         {/* End Modal Compnent */}
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 // paste to view  {...panResponder.panHandlers}

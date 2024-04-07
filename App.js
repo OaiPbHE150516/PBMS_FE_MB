@@ -1,6 +1,13 @@
 import * as React from "react";
 import { useState, useEffect, useRef } from "react";
-import { Text, View, Button, StyleSheet, Platform } from "react-native";
+import {
+  Text,
+  View,
+  Button,
+  StyleSheet,
+  Platform,
+  Dimensions
+} from "react-native";
 import {
   NavigationContainer,
   getFocusedRouteNameFromRoute
@@ -59,6 +66,8 @@ import TestScreen from "./src/screens/TestScreen";
 import SignInIOS from "./src/screens/SignInIOS";
 import MyAccount from "./src/screens/MyAccount";
 import CollabFundScreen from "./src/screens/collabfund/collabFundScreenv2";
+
+const { width, height } = Dimensions.get("window");
 
 // //remove comment below import statement to enable SignInAndroid in Android platform
 let SignInAndroid;
@@ -147,7 +156,7 @@ export default function App() {
   return (
     <SafeAreaProvider style={styles.container}>
       <SafeAreaView
-        style={[styles.container, { backgroundColor: "#eee" }]}
+        style={[styles.container, { backgroundColor: "#eee", width, height }]}
         edges={["right", "top", "left"]}
       >
         <Provider store={store}>
@@ -156,12 +165,14 @@ export default function App() {
             {!isSignin ? (
               Platform.OS === "ios" ? (
                 <SignInIOS callback={callBackSignIn} />
-              ) :
-              <SignInAndroid callback={callBackSignIn} />
-              // null
+              ) : (
+                <SignInAndroid callback={callBackSignIn} />
+              )
             ) : (
+              // null
               <Tab.Navigator
                 screenOptions={({ route }) => ({
+                  tabBarHideOnKeyboard: Platform.OS !== "ios",
                   tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
                     switch (route.name) {

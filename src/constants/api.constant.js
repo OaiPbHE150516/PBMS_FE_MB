@@ -28,6 +28,7 @@ export const API = {
   },
   TRANSACTION: {
     GET_TRANSACTION: `${Base_URL}/api/transaction/get/`,
+    GET_TRANSACTION_DETAIL: `${Base_URL}/api/transaction/get/detail/`,
     GET_TRANSACTION_BY_WALLET: `${Base_URL}/api/transaction/get/wallet/`,
     GET_TRANSACTION_BY_ACCOUNT: `${Base_URL}/api/transaction/get/account/`,
     GET_RECENTLY_TRANSACTION: `${Base_URL}/api/transaction/get/recently/`,

@@ -11,7 +11,7 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 
-import TransactionComponent from "../../components/transaction/transactionComponent";
+// import TransactionComponent from "../../components/transaction/transactionComponent";
 import datetimeLibrary from "../../library/datetimeLibrary";
 
 import { setDatenow } from "../../redux/datedisplaySlice";

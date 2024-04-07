@@ -24,13 +24,17 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 // components
 import ModalCategoryComponent from "../../components/category/modalCategoryComponent";
 import TabCategoryInModalComponent from "../../components/category/tabCategoryInModalComponent";
+
 // redux
 import { getCategories, createCategory } from "../../redux/categorySlice";
+
+// services
+import categoryServices from "../../services/categoryServices";
 
 const TabCategory = createMaterialTopTabNavigator();
 
 const CategoryManagerScreen = () => {
-  const categories = useSelector((state) => state.category?.categories);
+  // const categories = useSelector((state) => state.category?.categories);
   const account = useSelector((state) => state.authen?.account);
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -43,46 +47,62 @@ const CategoryManagerScreen = () => {
     accountID: account?.accountID
   });
 
+  const [nowCategories, setNowCategories] = useState([]);
+
+  // async function fetchDataCategories
+  async function fetchDataCategories() {
+    try {
+      await categoryServices.getCategories(account?.accountID).then((res) => {
+        console.log("fetchDataCategories res: ", res);
+        setNowCategories(res);
+      });
+    } catch (error) {
+      console.log("fetchDataCategories error: ", error);
+      Alert.alert("Thông báo", "Lỗi khi lấy dữ liệu hạng mục");
+    }
+  }
+
   useEffect(() => {
-    // if (account !== null) {
-    //   if (categories === null) {
-    //     dispatch(getCategories(account?.accountID));
-    //   }
-    // }
-  }, []);
+    if (account !== null) {
+      fetchDataCategories();
+      // if (categories === null) {
+      //   dispatch(getCategories(account?.accountID));
+      // }
+    }
+  }, [account]);
 
   const Tab1 = () => {
-    if (categories === null) {
-      return (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <ActivityIndicator size="large" color="tomato" />
-        </View>
-      );
-    }
-    return categories[0] === null ? null : (
+    // if (nowCategories === null) {
+    //   return (
+    //     <View
+    //       style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+    //     >
+    //       <ActivityIndicator size="large" color="tomato" />
+    //     </View>
+    //   );
+    // }
+    return nowCategories[0] && (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <TabCategoryInModalComponent
-          props={{ category: categories[0], action: false }}
+          props={{ category: nowCategories[0], action: false }}
         />
       </View>
     );
   };
   const Tab2 = () => {
-    if (categories === null) {
-      return (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <ActivityIndicator size="large" color="tomato" />
-        </View>
-      );
-    }
-    return categories[1] === null ? null : (
+    // if (nowCategories === null) {
+    //   return (
+    //     <View
+    //       style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+    //     >
+    //       <ActivityIndicator size="large" color="tomato" />
+    //     </View>
+    //   );
+    // }
+    return nowCategories[1] && (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <TabCategoryInModalComponent
-          props={{ category: categories[1], action: false }}
+          props={{ category: nowCategories[1], action: false }}
         />
       </View>
     );
@@ -120,11 +140,13 @@ const CategoryManagerScreen = () => {
   }
 
   function handleFocusScreen(index) {
-    if (categories) {
-      setCateParentList([categories[index], ...categories[index]?.children]);
+    if (nowCategories && nowCategories[index]) {
+      const listParent = [nowCategories[index], ...nowCategories[index]?.children];
+      // console.log("listParent: ", listParent);
+      setCateParentList(listParent);
       setNewCate({
         ...newCate,
-        parentID: categories[index]?.categoryID,
+        parentID: nowCategories[index]?.categoryID,
         type: index + 1
       });
     }

@@ -22,41 +22,12 @@ import transactionServices from "../../services/transactionServices";
 
 // components
 import AnInputInvoiceScanning from "../transaction/anInputInvoiceScanning";
+import AnInputProductInIS from "../transaction/anInputProductInIS";
 
 const ModalTransactionDetail = ({ props, callback }) => {
   const [width, setWidth] = useState(Dimensions.get("window").width);
   const [height, setHeight] = useState(Dimensions.get("window").height);
   const account = useSelector((state) => state.authen.account);
-  // const [invoiceResult, setInvoiceResult] = useState({});
-
-  // async function fetchTransactionDetailData() {
-  //   try {
-  //     // console.log("fetchTransactionData props: ", props);
-  //     // console.log("transactionID: ", props?.transactionID);
-  //     // console.log("accountID: ", accountID);
-  //     if (props) {
-  //       await transactionServices
-  //         .getTransactionDetail({
-  //           transactionID: props?.transactionID,
-  //           accountID: account?.accountID
-  //         })
-  //         .then((response) => {
-  //           // console.log("fetchTransactionData response: ", response);
-  //           console.log("fetchTransactionData response: ", response);
-  //           setInvoiceResult(response);
-  //         })
-  //         .catch((error) => {
-  //           console.error("fetchTransactionData error: ", error);
-  //         });
-  //     }
-  //   } catch (error) {
-  //     // console.error("Error fetching transaction data:", error);
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   fetchTransactionDetailData();
-  // }, [props]);
 
   const category = props?.category;
   const wallet = props?.wallet;
@@ -127,46 +98,115 @@ const ModalTransactionDetail = ({ props, callback }) => {
             {props?.note}
           </TextInput>
         </View>
-        <View style={styles.viewChildIS}>
-          <Text style={styles.textHeaderViewChildIS}>{"Đơn vị cung cấp"}</Text>
-          <AnInputInvoiceScanning
-            isHasIcon={false}
-            textLabelTop="Tên"
-            value={invoiceResult?.supplierName}
-            onChangeText={(text) => {
-              // setInvoiceResult({ ...invoiceResult, supplierName: text });
-            }}
-          />
-          <AnInputInvoiceScanning
-            isHasIcon={false}
-            textLabelTop="Địa chỉ"
-            value={invoiceResult?.supplierAddress}
-            onChangeText={(text) => {
-              // setInvoiceResult({ ...invoiceResult, supplierName: text });
-            }}
-          />
-          {/* <AnInputInvoiceScanning
-            isHasIcon={false}
-            textLabelTop="Từ"
-            value={invoiceResult?.fromPerson}
-            onChangeText={(text) => {
-              // setInvoiceResult({ ...invoiceResult, supplierName: text });
-            }}
-          /> */}
-        </View>
-        {/* <View style={styles.view_Header}>
-          <Text style={styles.textStyle}>{"Hóa đơn"}</Text>
-        </View> */}
-        <View></View>
-        <View>
-          {props?.imageURL != null && (
-            <Image
-              source={{ uri: props?.imageURL }}
-              style={{ width: width, height: height }}
-              resizeMode="contain"
-            />
+        {invoiceResult && (
+          <View>
+            <View style={styles.viewChildIS}>
+              <Text style={styles.textHeaderViewChildIS}>{"Hóa đơn"}</Text>
+              <AnInputInvoiceScanning
+                isHasIcon={false}
+                textLabelTop="Tổng tiền"
+                value={invoiceResult?.totalAmountStr}
+                onChangeText={(text) => {
+                  // setInvoiceResult({ ...invoiceResult, supplierName: text });
+                }}
+              />
+              <AnInputInvoiceScanning
+                isHasIcon={false}
+                textLabelTop="Số"
+                value={invoiceResult?.idOfInvoice}
+                onChangeText={(text) => {
+                  // setInvoiceResult({ ...invoiceResult, supplierName: text });
+                }}
+              />
+              <AnInputInvoiceScanning
+                isHasIcon={false}
+                textLabelTop="Ngày"
+                value={invoiceResult?.invoiceDate}
+                onChangeText={(text) => {
+                  // setInvoiceResult({ ...invoiceResult, supplierName: text });
+                }}
+              />
+            </View>
+            <View style={styles.viewChildIS}>
+              <Text style={styles.textHeaderViewChildIS}>
+                {"Đơn vị cung cấp"}
+              </Text>
+              <AnInputInvoiceScanning
+                isHasIcon={false}
+                textLabelTop="Tên"
+                value={invoiceResult?.supplierName}
+                onChangeText={(text) => {
+                  // setInvoiceResult({ ...invoiceResult, supplierName: text });
+                }}
+              />
+              <AnInputInvoiceScanning
+                isHasIcon={false}
+                textLabelTop="Địa chỉ"
+                value={invoiceResult?.supplierAddress}
+                onChangeText={(text) => {
+                  // setInvoiceResult({ ...invoiceResult, supplierName: text });
+                }}
+              />
+              <AnInputInvoiceScanning
+                isHasIcon={false}
+                textLabelTop="Số điện thoại"
+                value={invoiceResult?.supplierPhone}
+                onChangeText={(text) => {
+                  // setInvoiceResult({ ...invoiceResult, supplierName: text });
+                }}
+              />
+            </View>
+            <View style={styles.viewChildIS}>
+              <Text style={styles.textHeaderViewChildIS}>{"Sản phẩm"}</Text>
+              <FlatList
+                nestedScrollEnabled={true}
+                scrollEnabled={false}
+                data={invoiceResult?.products}
+                keyExtractor={(item) => item.productID}
+                renderItem={({ item }) => (
+                  <AnInputProductInIS
+                    name={item.productName}
+                    unitprice={item.unitPrice.toString()}
+                    quanity={item.quanity.toString()}
+                    amount={item.totalAmount.toString()}
+                    onChangeTextName={(text) => {
+                      let newItem = item;
+                      newItem.productName = text;
+                      // handleChangeProductInInvoice({ newItem });
+                    }}
+                    onChangeTextQuanity={(text) => {
+                      let newItem = item;
+                      newItem.quanity = text;
+                      // handleChangeProductInInvoice({ newItem });
+                    }}
+                    onChangeTextUnitPrice={(text) => {
+                      let newItem = item;
+                      newItem.unitPrice = text;
+                      // handleChangeProductInInvoice({ newItem });
+                    }}
+                    onChangeTextAmount={(text) => {
+                      let newItem = item;
+                      newItem.totalAmount = text;
+                      // handleChangeProductInInvoice({ newItem });
+                    }}
+                  />
+                )}
+              />
+            </View>
+          </View>
+        )}
+
+        {props?.imageURL != null &&
+          props?.imageURL != " " &&
+          props?.imageURL != "" && (
+            <View>
+              <Image
+                source={{ uri: props?.imageURL }}
+                style={{ width: width, height: height }}
+                resizeMode="contain"
+              />
+            </View>
           )}
-        </View>
       </View>
       {/* <Pressable
         style={[styles.button, styles.buttonClose]}
@@ -179,6 +219,25 @@ const ModalTransactionDetail = ({ props, callback }) => {
 };
 
 const styles = StyleSheet.create({
+  textHeaderViewChildIS: {
+    fontSize: 20,
+    fontFamily: "Inconsolata_500Medium",
+    alignSelf: "flex-start",
+    top: -10,
+    backgroundColor: "white",
+    paddingHorizontal: 5
+  },
+  viewChildIS: {
+    minWidth: "100%",
+    maxWidth: "100%",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    borderColor: "darkgray",
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingLeft: 10,
+    marginVertical: 8
+  },
   text_Time: {
     fontSize: 15,
     fontFamily: "OpenSans_400Regular"

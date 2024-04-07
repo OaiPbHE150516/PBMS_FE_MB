@@ -33,16 +33,18 @@ import {
   createWallet
 } from "../../redux/walletSlice";
 
+// services
+import walletServices from "../../services/walletServices";
+
 const WalletsManagerScreen = () => {
   const account = useSelector((state) => state.authen?.account);
   const navigation = useNavigation();
-  const wallets = useSelector((state) => state.wallet?.wallets);
-  const totalBalance = useSelector((state) => state.wallet?.totalBalance);
-  const totalBalanceEachWallet = useSelector(
-    (state) => state.wallet?.totalBalanceEachWallet
-  );
 
-  const [currentWallets, setCurrentWallets] = useState(wallets);
+  const wallets = useSelector((state) => state.wallet?.wallets);
+  // const totalBalance = useSelector((state) => state.wallet?.totalBalance);
+
+  const [currentWallets, setCurrentWallets] = useState([]);
+  const [totalBalance, setTotalBalance] = useState(null);
 
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
@@ -70,12 +72,30 @@ const WalletsManagerScreen = () => {
 
   async function fetchWalletData() {
     try {
-      dispatch(getTotalBalance(account?.accountID));
-      dispatch(getAllWallet(account?.accountID));
-      dispatch(getTotalBalanceEachWallet(account?.accountID));
+      // get all wallet
+      await walletServices
+        .getAllWallet(account?.accountID)
+        .then((response) => {
+          setCurrentWallets(response);
+        })
+        .catch((error) => {
+          console.error("Error fetching wallet data:", error);
+          Alert.alert("Lỗi khi lấy dữ liệu ví:", error);
+        });
+
+      // get total balance
+      await walletServices
+        .getTotalBalance(account?.accountID)
+        .then((response) => {
+          setTotalBalance(response);
+        })
+        .catch((error) => {
+          console.error("Error fetching total balance:", error);
+          Alert.alert("Lỗi khi lấy tổng số dư:", error);
+        });
     } catch (error) {
-      Alert.alert("Error fetching wallet data:", error);
       console.error("Error fetching wallet data:", error);
+      Alert.alert("Lỗi khi lấy dữ liệu ví:", error);
     }
   }
 

@@ -320,12 +320,12 @@ const MyAccount = ({ callback }) => {
 
   useEffect(() => {
     if (account !== null) {
-      if (categories === null) {
-        console.log("dispatch getCategories");
-        dispatch(getCategories(account?.accountID));
-      }
+      // if (categories === null) {
+      //   console.log("dispatch getCategories");
+      //   dispatch(getCategories(account?.accountID));
+      // }
     }
-  }, [account, categories]);
+  }, [account]);
 
   function MainScreen({ navigation }) {
     return (

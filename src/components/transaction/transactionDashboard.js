@@ -12,25 +12,37 @@ import pbms from "../../api/pbms";
 import { API } from "../../constants/api.constant";
 import { useSelector, useDispatch } from "react-redux";
 
+// services
+import transactionServices from "../../services/transactionServices";
+
 const TransactionDashboard = () => {
   const account = useSelector((state) => state.authen?.account);
+  const shouldFetchData = useSelector((state) => state.data.shouldFetchData);
   const [transactions, setTransactions] = useState([]);
-  const fetchData = async (accountID) => {
+
+  async function fetchTransactionsData(accountID) {
     try {
-      const transactions = await pbms.get(
-        API.TRANSACTION.GET_RECENTLY_TRANSACTION + accountID + "/30"
-      );
-      setTransactions(transactions.data);
+      await transactionServices
+        .getRecentlyTransaction({
+          accountID: accountID,
+          limit: 10
+        })
+        .then((response) => {
+          setTransactions(response);
+        })
+        .catch((error) => {
+          console.error("Error fetchTransactionsData Dashboard data:", error);
+          Alert.alert("Lỗi", "Không thể lấy dữ liệu giao dịch gần đây");
+        });
     } catch (error) {
-      console.error("Error fetching transaction data:", error);
+      console.error("Error fetchTransactionsData data:", error);
+      Alert.alert("Lỗi", "Không thể lấy dữ liệu giao dịch gần đây");
     }
-  };
+  }
 
   useEffect(() => {
-    if (account !== null) {
-      fetchData(account.accountID);
-    }
-  }, [account]);
+    fetchTransactionsData(account?.accountID);
+  }, [shouldFetchData]);
 
   return transactions && transactions.length > 0 ? (
     <View style={{ width: "100%", justifyContent: "center", flex: 1 }}>
@@ -91,8 +103,8 @@ const styles = StyleSheet.create({
     fontFamily: "Inconsolata_400Regular"
   },
   viewStyle: {
-    borderBlockColor: "dimgray",
-    borderWidth: 1,
+    // borderBlockColor: "dimgray",
+    borderWidth: 0.5,
     flexDirection: "row",
     borderRadius: 5,
     borderColor: "darkgrey",

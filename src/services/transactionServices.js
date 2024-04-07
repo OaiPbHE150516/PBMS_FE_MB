@@ -55,6 +55,21 @@ const transactionServices = {
     }
   },
 
+  // get recently transaction by accountID
+  getRecentlyTransaction: async (data) => {
+    try {
+      const response = await axios.get(
+        API.TRANSACTION.GET_RECENTLY_TRANSACTION + data.accountID + "/" + data.limit,
+        {
+          headers
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  },
+
   addTransactionNoInvoice: async (data) => {
     try {
       const response = await axios.post(

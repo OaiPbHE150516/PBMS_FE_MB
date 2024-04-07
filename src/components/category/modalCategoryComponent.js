@@ -1,38 +1,44 @@
 import React, { useState, useEffect, useRef, Component } from "react";
-import { View, Text, StyleSheet, Dimensions, Pressable } from "react-native";
+import { View, Text, StyleSheet, Dimensions, Pressable, Alert } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { getCategories } from "../../redux/categorySlice";
-
+import categoryServices from "../../services/categoryServices";
 import TabCategoryInModalComponent from "./tabCategoryInModalComponent";
 
 const TabCategory = createMaterialTopTabNavigator();
 
-const ModalCategoryComponent = ({ onDataFromChild }) => {
-  const categories = useSelector((state) => state.category.categories);
+const ModalCategoryComponent = ({ onDataFromChild, selectedCategory }) => {
+  // const categories = useSelector((state) => state.category.categories);
   const account = useSelector((state) => state.authen.account);
   const dispatch = useDispatch();
+
+  const [nowCategories, setNowCategories] = useState([]);
+
+  async function fetchCategoryData() {
+    try {
+      await categoryServices
+        .getCategories(account?.accountID)
+        .then((response) => {
+          setNowCategories(response);
+        })
+        .catch((error) => {
+          console.error("Error fetching category data:", error);
+          Alert.alert("Lỗi khi lấy dữ liệu hạng mục: ", error);
+        });
+    } catch (error) {
+      console.error("Error fetching category data:", error);
+      Alert.alert("Lỗi khi lấy dữ liệu hạng mục: ", error);
+    }
+  }
+
   useEffect(() => {
     if (account !== null) {
-      if (categories === null) dispatch(getCategories(account?.accountID));
+      fetchCategoryData();
     }
   }, [account]);
 
-  // function handleContinue() {
-  //   onDataFromChild({
-  //     isCategoryVisible: false
-  //   });
-  // }
-
-  // function handleCancel() {
-  //   onDataFromChild({
-  //     isCategoryVisible: false,
-  //     category: null
-  //   });
-  // }
-
   function onCallback(data) {
-    console.log("data onCallback TabCategoryInModalComponent: ", data);
     onDataFromChild({
       isCategoryVisible: false,
       category: data
@@ -40,20 +46,20 @@ const ModalCategoryComponent = ({ onDataFromChild }) => {
   }
 
   const Tab1 = () => {
-    return categories !== null ? (
+    return nowCategories !== null ? (
       <View style={styles.view_ATabCategory}>
         <TabCategoryInModalComponent
-          props={{ category: categories[0] }}
+          props={{ category: nowCategories[0] }}
           callback={onCallback}
         />
       </View>
     ) : null;
   };
   const Tab2 = () => {
-    return categories !== null ? (
+    return nowCategories !== null ? (
       <View style={styles.view_ATabCategory}>
         <TabCategoryInModalComponent
-          props={{ category: categories[1] }}
+          props={{ category: nowCategories[1] }}
           callback={onCallback}
         />
       </View>

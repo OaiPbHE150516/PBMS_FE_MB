@@ -111,13 +111,6 @@ const AddTransactionScreen = () => {
     setCurrentTime(datetimeLibrary.getCurrentTime().datetimestr);
   }, [account, dispatch]);
 
-  useEffect(() => {
-    (async () => {
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      setPermissionGranted(status === 'granted');
-    })();
-  }, []);
-
   const setunInputInvoiceScanning = (invoiceScanning) => {
     setTransAmount(invoiceScanning?.totalAmount?.toString());
   };
@@ -130,7 +123,8 @@ const AddTransactionScreen = () => {
   };
 
   const handleDataFromCategory = (data) => {
-    setMCategoryVisible(data.isCategoryVisible);
+    setMCategoryVisible(data?.isCategoryVisible);
+    console.log("handleDataFromCategory data: ", data?.category);
     // dispatch(setModalAddTransactionVisible(false));
   };
 
@@ -237,7 +231,7 @@ const AddTransactionScreen = () => {
       };
       dispatch(addTransactionNoInvoice(data));
     }
-    saveAssetToMediaLibrary(newAssetShowing?.asset);
+    // saveAssetToMediaLibrary(newAssetShowing?.asset);
     setIsAddingTransaction(false);
     handleResetAddTransaction();
   }
@@ -321,50 +315,29 @@ const AddTransactionScreen = () => {
   }
 
   async function handleOnPickMedia() {
-    // check permission, if not granted, request permission
-    if (permissionResponseMediaLibrary?.status !== "granted") {
-      MediaLibrary.requestPermissionsAsync().then((response) => {
-        if (response.status === "granted") {
-          handleOnPickMedia();
-        } else {
-          console.log("permission not granted");
-          Alert.alert("Permission not granted");
-        }
-      });
+    // Kiểm tra quyền trước khi truy cập vào album ảnh
+    const mediaPermission = await ImagePicker.getMediaLibraryPermissionsAsync();
+    if (mediaPermission.status !== "granted") {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission not granted");
+        Alert.alert("Permission not granted");
+        return;
+      }
     }
+
+    // Truy cập vào album ảnh nếu quyền đã được cấp
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1
     });
-    // console.log("result: ", result);
+
     if (!result.canceled) {
       setMTakeCamera(false);
       handleUploadToScanInvoice(result.assets[0]);
     }
   }
-
-  // async function handleOnLaunchCamera() {
-  //   // check permission, if not granted, request permission
-  //   if (permissionResponseCamera?.granted !== true) {
-  //     ImagePicker.requestCameraPermissionsAsync().then((response) => {
-  //       if (response.status === "granted") {
-  //         handleOnLaunchCamera();
-  //       } else {
-  //         console.log("Permission not granted");
-  //         Alert.alert("Permission not granted");
-  //       }
-  //     });
-  //   }
-  //   let result = await ImagePicker.launchCameraAsync({
-  //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
-  //     quality: 1
-  //   });
-  //   // console.log(result);
-  //   if (!result.canceled) {
-  //     setMTakeCamera(false);
-  //     handleUploadToScanInvoice(result.assets[0]);
-  //   }
-  // }
 
   async function handleOnLaunchCamera() {
     // Kiểm tra quyền trước khi chụp ảnh
@@ -390,59 +363,59 @@ const AddTransactionScreen = () => {
     }
   }
 
-  async function saveAssetToMediaLibrary(asset) {
-    console.log("saveAssetToMediaLibrary: ", asset);
-    // check permission, if not granted, request permission
-    if (permissionResponseMediaLibrary?.status !== "granted") {
-      MediaLibrary.requestPermissionsAsync().then((response) => {
-        if (response.status === "granted") {
-          saveAssetToMediaLibrary(asset);
-        }
-      });
-    }
-    if (permissionResponseMediaLibrary?.status === "granted") {
-      // check if album exists, if not create album
-      const album = await MediaLibrary.getAlbumAsync(
-        VAR.MEDIALIBRARY.DEFAULT_ALBUM_NAME
-      );
-      if (album === null) {
-        console.log("album is null");
-        setProcessingContent(
-          "Đang tạo album " + VAR.MEDIALIBRARY.DEFAULT_ALBUM_NAME + " mới ..."
-        );
-        const albumName = VAR.MEDIALIBRARY.DEFAULT_ALBUM_NAME;
-        if (Platform.OS === "android") {
-          const copyAsset = false;
-          await MediaLibrary.createAlbumAsync(
-            albumName,
-            asset,
-            copyAsset
-          ).finally(() => {
-            setProcessingContent("Đã tạo album " + albumName);
-          });
-        } else {
-          await MediaLibrary.createAlbumAsync(albumName, asset).finally(() => {
-            setProcessingContent("Đã tạo album " + albumName);
-          });
-        }
-        // console.log("albumCreated", albumCreated);
-      } else {
-        const assetSaved = await MediaLibrary.createAssetAsync(
-          asset.uri
-        ).finally(() => {
-          setProcessingContent("Đang xử lý hình ảnh ...");
-        });
-        const assetAdded = await MediaLibrary.addAssetsToAlbumAsync(
-          [assetSaved],
-          album,
-          false
-        ).finally(() => {
-          setProcessingContent("Đã lưu hình ảnh vào album " + album.title);
-          handleResetAddTransaction();
-        });
-      }
-    }
-  }
+  // async function saveAssetToMediaLibrary(asset) {
+  //   console.log("saveAssetToMediaLibrary: ", asset);
+  //   // check permission, if not granted, request permission
+  //   if (permissionResponseMediaLibrary?.status !== "granted") {
+  //     MediaLibrary.requestPermissionsAsync().then((response) => {
+  //       if (response.status === "granted") {
+  //         saveAssetToMediaLibrary(asset);
+  //       }
+  //     });
+  //   }
+  //   if (permissionResponseMediaLibrary?.status === "granted") {
+  //     // check if album exists, if not create album
+  //     const album = await MediaLibrary.getAlbumAsync(
+  //       VAR.MEDIALIBRARY.DEFAULT_ALBUM_NAME
+  //     );
+  //     if (album === null) {
+  //       console.log("album is null");
+  //       setProcessingContent(
+  //         "Đang tạo album " + VAR.MEDIALIBRARY.DEFAULT_ALBUM_NAME + " mới ..."
+  //       );
+  //       const albumName = VAR.MEDIALIBRARY.DEFAULT_ALBUM_NAME;
+  //       if (Platform.OS === "android") {
+  //         const copyAsset = false;
+  //         await MediaLibrary.createAlbumAsync(
+  //           albumName,
+  //           asset,
+  //           copyAsset
+  //         ).finally(() => {
+  //           setProcessingContent("Đã tạo album " + albumName);
+  //         });
+  //       } else {
+  //         await MediaLibrary.createAlbumAsync(albumName, asset).finally(() => {
+  //           setProcessingContent("Đã tạo album " + albumName);
+  //         });
+  //       }
+  //       // console.log("albumCreated", albumCreated);
+  //     } else {
+  //       const assetSaved = await MediaLibrary.createAssetAsync(
+  //         asset.uri
+  //       ).finally(() => {
+  //         setProcessingContent("Đang xử lý hình ảnh ...");
+  //       });
+  //       const assetAdded = await MediaLibrary.addAssetsToAlbumAsync(
+  //         [assetSaved],
+  //         album,
+  //         false
+  //       ).finally(() => {
+  //         setProcessingContent("Đã lưu hình ảnh vào album " + album.title);
+  //         handleResetAddTransaction();
+  //       });
+  //     }
+  //   }
+  // }
 
   async function handleUploadToScanInvoice(asset) {
     console.log("asset: ", asset);
@@ -531,31 +504,31 @@ const AddTransactionScreen = () => {
     );
   };
 
-  const ViewMoreDetail = () => {
-    return (
-      <View style={styles.viewMoreDetail}>
-        <View style={styles.viewAmount}>
-          <View style={styles.viewAmountIcon}>
-            <Icon name="arrow-right-from-bracket" size={30} color="darkgrey" />
-          </View>
-          <View style={styles.viewInputAmount}>
-            <TextInput style={styles.textInputPerson} placeholder="Người gửi" />
-          </View>
-        </View>
-        <View style={styles.viewAmount}>
-          <View style={styles.viewAmountIcon}>
-            <Icon name="arrow-right-to-bracket" size={30} color="darkgrey" />
-          </View>
-          <View style={styles.viewInputAmount}>
-            <TextInput
-              style={styles.textInputPerson}
-              placeholder="Người nhận"
-            />
-          </View>
-        </View>
-      </View>
-    );
-  };
+  // const ViewMoreDetail = () => {
+  //   return (
+  //     <View style={styles.viewMoreDetail}>
+  //       <View style={styles.viewAmount}>
+  //         <View style={styles.viewAmountIcon}>
+  //           <Icon name="arrow-right-from-bracket" size={30} color="darkgrey" />
+  //         </View>
+  //         <View style={styles.viewInputAmount}>
+  //           <TextInput style={styles.textInputPerson} placeholder="Người gửi" />
+  //         </View>
+  //       </View>
+  //       <View style={styles.viewAmount}>
+  //         <View style={styles.viewAmountIcon}>
+  //           <Icon name="arrow-right-to-bracket" size={30} color="darkgrey" />
+  //         </View>
+  //         <View style={styles.viewInputAmount}>
+  //           <TextInput
+  //             style={styles.textInputPerson}
+  //             placeholder="Người nhận"
+  //           />
+  //         </View>
+  //       </View>
+  //     </View>
+  //   );
+  // };
 
   return (
     <KeyboardAvoidingView
@@ -742,23 +715,6 @@ const AddTransactionScreen = () => {
                   }}
                 />
               </View>
-              {/* <View style={styles.viewChildIS}>
-          <Text style={styles.textHeaderViewChildIS}>{"Người nhận"}</Text>
-          <AnInputInvoiceScanning
-            textLabelTop="Tên"
-            value={invoiceResult?.receiverName}
-            onChangeText={(text) => {
-              setInvoiceResult({ ...invoiceResult, receiverName: text });
-            }}
-          />
-          <AnInputInvoiceScanning
-            textLabelTop="Địa chỉ"
-            value={invoiceResult?.receiverAddress}
-            onChangeText={(text) => {
-              setInvoiceResult({ ...invoiceResult, receiverAddress: text });
-            }}
-          />
-        </View> */}
               <View style={styles.viewChildIS}>
                 <Text style={styles.textHeaderViewChildIS}>{"Sản phẩm"}</Text>
                 <FlatList
@@ -869,6 +825,7 @@ const AddTransactionScreen = () => {
             <View style={styles.viewCategoryInModal}>
               <ModalCategoryComponent
                 onDataFromChild={handleDataFromCategory}
+                selectedCategory={"categoryToAddTransaction"}
               />
             </View>
             <Pressable

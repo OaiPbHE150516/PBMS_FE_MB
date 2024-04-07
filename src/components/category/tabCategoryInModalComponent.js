@@ -17,6 +17,8 @@ import {
   setCategoryToAddTransaction,
   setModalCategoryVisible
 } from "../../redux/categorySlice";
+import categoryServices from "../../services/categoryServices";
+
 // import pbms from "../../api/pbms";
 // import { API } from "../../constants/api.constant";
 

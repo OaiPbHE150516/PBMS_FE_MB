@@ -7,23 +7,45 @@ import {
   Pressable,
   FlatList
 } from "react-native";
+import Icon from "react-native-vector-icons/FontAwesome6";
+
 import { useSelector, useDispatch } from "react-redux";
 import { getAllWallet } from "../../redux/walletSlice";
-import Icon from "react-native-vector-icons/FontAwesome6";
+import walletServices from "../../services/walletServices";
 
 import { setAddTransactionWallet } from "../../redux/transactionSlice";
 
 const ModalWalletComponent = ({ onDataFromChild }) => {
   const account = useSelector((state) => state.authen.account);
-  const wallets = useSelector((state) => state.wallet.wallets);
+  // const wallets = useSelector((state) => state.wallet.wallets);
   const addTransactionWallet = useSelector(
     (state) => state.transaction.addTransactionWallet
   );
+
+  const [nowWallets, setNowWallets] = useState(null);
+
   const dispatch = useDispatch();
+
+  async function fetchWalletData() {
+    try {
+      await walletServices
+        .getAllWallet(account?.accountID)
+        .then((response) => {
+          setNowWallets(response);
+        })
+        .catch((error) => {
+          console.error("Error fetching wallet data:", error);
+        });
+    } catch (error) {
+      console.error("Error fetching wallet data:", error);
+    }
+  }
+
   useEffect(() => {
     if (account) {
-      if (wallets === null) {
-        dispatch(getAllWallet(account.accountID));
+      if (nowWallets === null) {
+        fetchWalletData();
+        // dispatch(getAllWallet(account.accountID));
         //   dispatch(getTotalBalance(account.id));
         //   dispatch(getTotalBalanceEachWallet(account.id));
       }
@@ -81,7 +103,7 @@ const ModalWalletComponent = ({ onDataFromChild }) => {
       </View>
       <FlatList
         style={{ flex: 1, width: "100%" }}
-        data={wallets}
+        data={nowWallets}
         renderItem={({ item }) => <WalletItem wallet={item} />}
         keyExtractor={(item) => item.walletID}
       />

@@ -16,7 +16,7 @@ const collabFundServices = {
       );
       return response.data;
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error getAllCollabFund data:", error);
     }
   },
   getCollabFundActivities: async (data) => {
@@ -32,7 +32,7 @@ const collabFundServices = {
       );
       return response.data;
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error getCollabFundActivities data:", error);
     }
   },
   // get participant list of collab fund by collab fund id and account id
@@ -49,7 +49,7 @@ const collabFundServices = {
       );
       return response.data;
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error getCollabFundParticipants data:", error);
     }
   },
   // get collab fund divide money history by collab fund id and account id
@@ -66,7 +66,7 @@ const collabFundServices = {
       );
       return response.data;
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error getCollabFundDivideMoneyHistory data:", error);
     }
   },
 
@@ -84,7 +84,7 @@ const collabFundServices = {
       );
       return response.data;
     } catch (error) {
-      console.log("Error fetching data:", error);
+      console.log("Error getDivideMoneyInfor data:", error);
     }
   },
 
@@ -103,7 +103,7 @@ const collabFundServices = {
       );
       return response.data;
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error createActivityNoTransaction data:", error);
     }
   },
 

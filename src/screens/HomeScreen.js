@@ -17,7 +17,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import ProfileDashboard from "../components/profile/profilesDashboard";
 import WalletDashboard from "../components/wallet/walletDashboard";
 import TransactionDashboard from "../components/transaction/transactionDashboard";
-import SignInIOS from "./SignInIOS";
+import BudgetDashboard from "../components/budget/budgetDashboard";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -38,6 +38,10 @@ const HomeScreen = () => {
     {
       name: "Transaction",
       component: <TransactionDashboard style={styles.transaction} />
+    },
+    {
+      name: "Budget",
+      component: <BudgetDashboard style={styles.budget} />
     }
     // {
     //   name: "Transaction2",

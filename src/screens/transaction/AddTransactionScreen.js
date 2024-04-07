@@ -77,10 +77,12 @@ const AddTransactionScreen = () => {
   const [transAmount, setTransAmount] = useState("");
   const [isInvoiceScanning, setIsInvoiceScanning] = useState(false);
   const [currentTime, setCurrentTime] = useState("");
+
   const [permissionResponseMediaLibrary, requestPermissionMediaLibrary] =
     MediaLibrary.usePermissions();
   const [permissionResponseCamera, requestPermissionCamera] =
-    ImagePicker.useCameraPermissions();
+    ImagePicker.useMediaLibraryPermissions();
+
   const modalAddTransactionVisible = useSelector(
     (state) => state.modal.modalAddTransactionVisible
   );
@@ -108,6 +110,13 @@ const AddTransactionScreen = () => {
     // }
     setCurrentTime(datetimeLibrary.getCurrentTime().datetimestr);
   }, [account, dispatch]);
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      setPermissionGranted(status === 'granted');
+    })();
+  }, []);
 
   const setunInputInvoiceScanning = (invoiceScanning) => {
     setTransAmount(invoiceScanning?.totalAmount?.toString());
@@ -334,23 +343,47 @@ const AddTransactionScreen = () => {
     }
   }
 
+  // async function handleOnLaunchCamera() {
+  //   // check permission, if not granted, request permission
+  //   if (permissionResponseCamera?.granted !== true) {
+  //     ImagePicker.requestCameraPermissionsAsync().then((response) => {
+  //       if (response.status === "granted") {
+  //         handleOnLaunchCamera();
+  //       } else {
+  //         console.log("Permission not granted");
+  //         Alert.alert("Permission not granted");
+  //       }
+  //     });
+  //   }
+  //   let result = await ImagePicker.launchCameraAsync({
+  //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
+  //     quality: 1
+  //   });
+  //   // console.log(result);
+  //   if (!result.canceled) {
+  //     setMTakeCamera(false);
+  //     handleUploadToScanInvoice(result.assets[0]);
+  //   }
+  // }
+
   async function handleOnLaunchCamera() {
-    // check permission, if not granted, request permission
-    if (permissionResponseCamera?.status !== "granted") {
-      ImagePicker.requestPermissionCamera().then((response) => {
-        if (response.status === "granted") {
-          handleOnLaunchCamera();
-        } else {
-          console.log("permission not granted");
-          Alert.alert("Permission not granted");
-        }
-      });
+    // Kiểm tra quyền trước khi chụp ảnh
+    const cameraPermission = await ImagePicker.getCameraPermissionsAsync();
+    if (!cameraPermission.granted) {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission not granted");
+        Alert.alert("Permission not granted");
+        return;
+      }
     }
+
+    // Chụp ảnh nếu quyền đã được cấp
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1
     });
-    // console.log(result);
+
     if (!result.canceled) {
       setMTakeCamera(false);
       handleUploadToScanInvoice(result.assets[0]);

@@ -626,6 +626,7 @@ const AddTransactionScreen = () => {
               <View style={styles.viewChildIS}>
                 <Text style={styles.textHeaderViewChildIS}>{"Hóa đơn"}</Text>
                 <AnInputInvoiceScanning
+                  isHasIcon={true}
                   textLabelTop="Tổng tiền"
                   value={invoiceResult?.totalAmount.toString()}
                   onChangeText={(text) => {
@@ -636,6 +637,7 @@ const AddTransactionScreen = () => {
                   }
                 />
                 <AnInputInvoiceScanning
+                  isHasIcon={true}
                   textLabelTop="Số"
                   value={invoiceResult?.idOfInvoice}
                   onChangeText={(text) => {
@@ -643,6 +645,7 @@ const AddTransactionScreen = () => {
                   }}
                 />
                 <AnInputInvoiceScanning
+                  isHasIcon={true}
                   textLabelTop="Ngày"
                   value={invoiceResult?.invoiceDate}
                   onChangeText={(text) => {
@@ -655,6 +658,7 @@ const AddTransactionScreen = () => {
                   {"Đơn vị cung cấp"}
                 </Text>
                 <AnInputInvoiceScanning
+                  isHasIcon={true}
                   textLabelTop="Tên"
                   value={invoiceResult?.supplierName}
                   onChangeText={(text) => {
@@ -662,6 +666,7 @@ const AddTransactionScreen = () => {
                   }}
                 />
                 <AnInputInvoiceScanning
+                  isHasIcon={true}
                   textLabelTop="Địa chỉ"
                   value={invoiceResult?.supplierAddress}
                   onChangeText={(text) => {
@@ -672,6 +677,7 @@ const AddTransactionScreen = () => {
                   }}
                 />
                 <AnInputInvoiceScanning
+                  isHasIcon={true}
                   textLabelTop="Số điện thoại"
                   value={invoiceResult?.supplierPhone}
                   onChangeText={(text) => {

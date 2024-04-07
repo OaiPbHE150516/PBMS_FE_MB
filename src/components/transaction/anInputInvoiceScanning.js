@@ -27,12 +27,20 @@ const AnInputInvoiceScanning = ({
   value,
   onChangeText,
   secureTextEntry,
-  keyboardType
+  keyboardType,
+  isHasIcon
 }) => {
   return (
     <View style={styles.viewAnInputInvoice}>
-      <Icon name="grip-lines-vertical" size={35} color="darkgrey" />
-      <View style={styles.viewInsideInputInvoice}>
+      {isHasIcon && (
+        <Icon name="grip-lines-vertical" size={35} color="darkgrey" />
+      )}
+      <View
+        style={[
+          styles.viewInsideInputInvoice,
+          { width: isHasIcon ? "90%" : "100%" }
+        ]}
+      >
         <Text style={styles.textLabelInputInvoice}>{textLabelTop}</Text>
         <TextInput
           placeholder={placeholder}
@@ -60,7 +68,6 @@ const styles = StyleSheet.create({
     borderRadius: 10
   },
   viewInsideInputInvoice: {
-    width: "90%",
     height: "100%",
     borderColor: "darkgrey",
     borderWidth: 1,
@@ -71,7 +78,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     top: -7,
     paddingHorizontal: 5,
-    paddingVertical: 5,
+    paddingVertical: 5
     // borderColor: "darkgrey",
     // borderWidth: 1,
   },
@@ -83,7 +90,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     alignContent: "center",
     // marginHorizontal: 10,
-    marginVertical: 5,
+    marginVertical: 5
     // borderColor: "green",
     // borderWidth: 1,
     // paddingVertical: 5,

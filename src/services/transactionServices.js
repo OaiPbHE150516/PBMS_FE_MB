@@ -20,26 +20,38 @@ const transactionServices = {
   getLastNumberExpensesTransaction: async (accountid, numberOfLastDay) => {
     try {
       const urlapi =
-        API.TRANSACTION.GET_LASTNUMBERDAY_EXPENSES_TRANSACTION + accountid + "/" + numberOfLastDay;
+        API.TRANSACTION.GET_LASTNUMBERDAY_EXPENSES_TRANSACTION +
+        accountid +
+        "/" +
+        numberOfLastDay;
       const response = await axios.get(urlapi, { headers });
       return response.data;
     } catch (error) {
-      console.error("Error fetching data GET_LASTNUMBERDAY_EXPENSES_TRANSACTION:", error);
+      console.error(
+        "Error fetching data GET_LASTNUMBERDAY_EXPENSES_TRANSACTION:",
+        error
+      );
     }
   },
 
   // get detail of a transaction by transactionID
-  getTransactionDetail: async (transactionID) => {
+  getTransactionDetail: async (data) => {
     try {
+      // console.log("transactionID: ", data.transactionID);
+      // console.log("accountID: ", data.accountID);
       const response = await axios.get(
-        API.TRANSACTION.GET_TRANSACTION_DETAIL + transactionID,
+        API.TRANSACTION.GET_TRANSACTION_DETAIL +
+        data?.transactionID +
+          "/" +
+          data?.accountID,
         {
           headers
         }
       );
+      // console.log("response: ", response.data);
       return response.data;
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error getTransactionDetail data:", error);
     }
   },
 
@@ -69,10 +81,9 @@ const transactionServices = {
       console.log("response: ", response.data);
       return response.data;
     } catch (error) {
-
       console.error("Error addTransactionWithInvoice:", error);
     }
-  },
+  }
 };
 
 export default transactionServices;

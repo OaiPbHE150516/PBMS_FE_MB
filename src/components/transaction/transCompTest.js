@@ -15,6 +15,7 @@ import { useSelector, useDispatch } from "react-redux";
 import pbms from "../../api/pbms";
 import { API } from "../../constants/api.constant";
 // import TransactionByDayList from "./transactionByDayList";
+import transactionServices from "../../services/transactionServices";
 
 // components
 import TransactionByDayItem from "./transactionByDayItem";
@@ -28,6 +29,8 @@ const TransCompTest = ({ route }) => {
   const [isModalDetailVisible, setIsModalDetailVisible] = useState(false);
   const [transactionDetail, setTransactionDetail] = useState(null);
 
+  const [backgroundColorModal, setBackgroundColorModal] = useState(null);
+
   const data = route.params;
   const fetchTransactionData = async ({ accountID, time }) => {
     try {
@@ -37,14 +40,29 @@ const TransCompTest = ({ route }) => {
       const response = await pbms.get(apiurl);
       setTransactions(response.data);
     } catch (error) {
-      console.error("Error fetching transaction data:", error);
+      console.error("Error fetchTransactionData data:", error);
+    }
+  };
+
+  const fetchTransactionDetailData = async ({ transactionID }) => {
+    try {
+      console.log("fetchTransactionDetailData transactionID: ", transactionID);
+      await transactionServices
+        .getTransactionDetail({
+          transactionID: transactionID,
+          accountID: account?.accountID
+        })
+        .then((response) => {
+          setTransactionDetail(response);
+          setIsModalDetailVisible(true);
+        });
+    } catch (error) {
+      console.error("Error fetchTransactionDetailData data:", error);
     }
   };
 
   const onCallback = (data) => {
-    console.log("TransactionComponent: ", data);
-    setTransactionDetail(data);
-    setIsModalDetailVisible(true);
+    fetchTransactionDetailData({ transactionID: data.transactionID });
   };
 
   const onCallbackModalDetail = (data) => {
@@ -164,13 +182,26 @@ const TransCompTest = ({ route }) => {
       </View>
       <Modal
         visible={isModalDetailVisible}
-        animationType="fade"
+        animationType="slide"
         transparent={true}
+        onShow={() => {
+          setBackgroundColorModal("rgba(0, 0, 0, 0.1)");
+        }}
       >
-        <View style={styles.view_BackgroudModal}>
+        <View
+          style={[
+            styles.view_BackgroudModal,
+            {
+              backgroundColor: backgroundColorModal
+            }
+          ]}
+        >
           <Pressable
             style={styles.pressable_closeModalDetail}
-            onPress={() => setIsModalDetailVisible(false)}
+            onPress={() => {
+              setBackgroundColorModal("rgba(0, 0, 0, 0)");
+              setIsModalDetailVisible(false);
+            }}
           />
           <ModalTransactionDetail
             props={transactionDetail}
@@ -186,7 +217,6 @@ const styles = StyleSheet.create({
   view_BackgroudModal: {
     width: "100%",
     height: "100%",
-    backgroundColor: "rgba(0, 0, 0, 0.25)",
     flexDirection: "column"
   },
   pressable_closeModalDetail: {

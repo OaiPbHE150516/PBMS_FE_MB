@@ -80,7 +80,8 @@ const BalanceDashboard = () => {
           rulesType="solid"
           xAxisThickness={1}
           yAxisWidth={150}
-          focusEnabled={false}
+          hideYAxisText={true}
+          focusEnabled={true}
           animationDuration={5000}
           backgroundColor="transparent"
           data={balanceAllByDayDataValue}

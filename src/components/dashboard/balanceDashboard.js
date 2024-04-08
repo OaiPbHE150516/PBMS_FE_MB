@@ -74,14 +74,14 @@ const BalanceDashboard = () => {
         <LineChart
           areaChart
           isAnimated
-          initialSpacing={0}
-          thickness={3}
+          initialSpacing={10}
+          thickness={2}
           noOfSections={5}
           rulesType="solid"
           xAxisThickness={1}
-          yAxisWidth={50}
-          focusEnabled={true}
-          animationDuration={1000}
+          yAxisWidth={150}
+          focusEnabled={false}
+          animationDuration={5000}
           backgroundColor="transparent"
           data={balanceAllByDayDataValue}
           startFillColor="rgb(46, 217, 255)"

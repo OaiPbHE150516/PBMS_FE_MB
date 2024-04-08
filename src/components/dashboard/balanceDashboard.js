@@ -42,7 +42,7 @@ const BalanceDashboard = () => {
           valuestr: item.totalAmountStr
         }));
         // only get last 10 days of data
-        balanceAllByDayDataValue = balanceAllByDayDataValue.slice(-10);
+        // balanceAllByDayDataValue = balanceAllByDayDataValue.slice(-10);
         setBalanceAllByDayDataValue(balanceAllByDayDataValue);
       })
       .catch((error) => {

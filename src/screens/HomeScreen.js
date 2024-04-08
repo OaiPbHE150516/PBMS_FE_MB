@@ -18,6 +18,7 @@ import ProfileDashboard from "../components/profile/profilesDashboard";
 import WalletDashboard from "../components/wallet/walletDashboard";
 import TransactionDashboard from "../components/transaction/transactionDashboard";
 import BudgetDashboard from "../components/budget/budgetDashboard";
+import BalanceDashboard from "../components/dashboard/balanceDashboard";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -33,46 +34,24 @@ const HomeScreen = () => {
     }
   }, [account, dispatch]);
 
-  const components = [
-    { name: "Wallet", component: <WalletDashboard style={styles.wallet} /> },
-    {
-      name: "Transaction",
-      component: <TransactionDashboard style={styles.transaction} />
-    },
-    {
-      name: "Budget",
-      component: <BudgetDashboard style={styles.budget} />
-    }
-    // {
-    //   name: "Transaction2",
-    //   component: <TransactionDashboard style={styles.transaction} />
-    // }c
-  ];
-
   const DashBoard = () => {
     return (
-      <View style={styles.parentView}>
+      <View style={styles.view_Dashboard}>
         <ProfileDashboard style={styles.profile} />
-        <FlatList
-          scrollEnabled={true}
-          showsVerticalScrollIndicator={false}
-          data={components}
-          keyExtractor={(item) => item.name}
-          renderItem={({ item }) => {
-            return <View>{item.component}</View>;
-          }}
-        />
+        <ScrollView>
+          <WalletDashboard style={styles.wallet} />
+          <TransactionDashboard style={styles.transaction} />
+          <BudgetDashboard style={styles.budget} />
+          <BalanceDashboard style={styles.balance} />
+        </ScrollView>
       </View>
     );
   };
 
   return (
     <View style={styles.viewStyle}>
-      {/* <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Signin" component={SignInIOS} />
-        <Stack.Screen name="Dashboard" component={DashBoard} />
-      </Stack.Navigator> */}
       <DashBoard />
+
     </View>
   );
 };
@@ -81,13 +60,16 @@ const styles = StyleSheet.create({
   viewStyle: {
     // flex: 1,
     width: "100%",
-    height: "90%"
-    // borderWidth: 1,
-    // borderColor: "black"
+    // height: "98%",
+    borderWidth: 1,
+    borderColor: "black"
   },
-  parentView: {
+  view_Dashboard: {
     margin: 10,
-    justifyContent: "space-between"
+    height: "90%",
+    // justifyContent: "center",
+    // alignContent: "center",
+    // alignItems: "center"
   },
   text: {
     fontSize: 30

@@ -41,20 +41,64 @@ const BudgetDashboard = () => {
   return (
     eachBudget && (
       <View style={styles.viewStyle}>
+        <View style={styles.view_Header}>
+          <Text style={styles.text_Header}>
+            {eachBudget.length > 0
+              ? "Ngân sách hiện tại"
+              : "Không có ngân sách nào"}
+          </Text>
+        </View>
         <FlatList
           data={eachBudget}
+          scrollEnabled={false}
           keyExtractor={(item) => item.budgetID}
           renderItem={({ item }) => {
             return (
               <View style={styles.budgetItem}>
-                <Text style={styles.name}>{item.budgetName}</Text>
-                <Text style={styles.balance}>{item.remainAmountStr}</Text>
                 <View
-                  style={{
-                    width: "50%",
-                  }}
+                  style={[
+                    styles.view_ABudget_Infor,
+                    { justifyContent: "center" }
+                  ]}
                 >
-                  <ProgressBar progress={0.5} color={"red"} />
+                  <Text style={styles.text_budgetName}>{item.budgetName}</Text>
+                </View>
+                <View style={styles.view_ABudget_Infor}>
+                  <Text style={styles.text_datestr}>{item.beginDateStr}</Text>
+                  <Text style={styles.text_datestr}>{item.endDateStr}</Text>
+                </View>
+                <View style={styles.view_ABudget_Progressbar}>
+                  <ProgressBar
+                    progress={item.percentProgress / 100}
+                    // color={"red"}
+                    // use switch case to change color, base on percentProgress
+                    color={
+                      item.percentProgress < 50
+                        ? "#00b894" // green
+                        : item.percentProgress < 80
+                          ? "#fdcb6e" // yellow
+                          : "#d63031" // red
+                    }
+                  />
+                </View>
+                <View style={styles.view_ABudget_Infor}>
+                  <View
+                    style={[
+                      styles.view_CurrentAmount,
+                      {
+                        left: item.percentProgressStr
+                      }
+                    ]}
+                  >
+                    <Text style={[styles.text_datestr, {}]}>
+                      {item.currentAmountStr}
+                    </Text>
+                  </View>
+                  <View style={styles.view_TargetAmount}>
+                    <Text style={styles.text_targetAmount}>
+                      {item.targetAmountStr}
+                    </Text>
+                  </View>
                 </View>
               </View>
             );
@@ -66,16 +110,66 @@ const BudgetDashboard = () => {
 };
 
 const styles = StyleSheet.create({
-  viewStyle: {
-    justifyContent: "center",
-    flex: 1
+  text_budgetName: {
+    fontSize: 18,
+    fontFamily: "OpenSans_600SemiBold",
+    alignSelf: "center"
   },
-  budgetItem: {
+  text_Header: {
+    fontSize: 15,
+    fontFamily: "OpenSans_600SemiBold",
+    textAlign: "center"
+  },
+  view_Header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 10,
+    padding: 5,
     borderBottomWidth: 1,
     borderBottomColor: "lightgray"
+  },
+  view_CurrentAmount: {
+    position: "absolute",
+    zIndex: 1
+  },
+  view_TargetAmount: {
+    right: 0,
+    flex: 1
+  },
+  text_targetAmount: {
+    fontSize: 20,
+    fontFamily: "OpenSans_600SemiBold",
+    textAlign: "right"
+  },
+  text_datestr: {
+    fontSize: 14,
+    fontFamily: "OpenSans_300Light"
+  },
+  view_ABudget_Infor: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    // borderWidth: 0.5
+  },
+  view_ABudget_Progressbar: {
+    width: "100%",
+    marginTop: 2,
+    marginBottom: 4
+  },
+  viewStyle: {
+    justifyContent: "center",
+    flex: 1,
+    borderWidth: 0.5,
+    borderColor: "darkgray",
+    borderRadius: 5,
+    marginVertical: 10
+  },
+  budgetItem: {
+    flexDirection: "column",
+    justifyContent: "space-around",
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "lightgray",
+    width: "100%"
+    // height: 100
   },
   name: {
     fontSize: 18,

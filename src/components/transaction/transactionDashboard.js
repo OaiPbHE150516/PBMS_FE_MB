@@ -25,7 +25,7 @@ const TransactionDashboard = () => {
       await transactionServices
         .getRecentlyTransaction({
           accountID: accountID,
-          limit: 10
+          limit: 5
         })
         .then((response) => {
           setTransactions(response);
@@ -49,7 +49,7 @@ const TransactionDashboard = () => {
       <Text style={styles.textHeader}>Giao dịch gần đây</Text>
       <View style={styles.viewStyle}>
         <FlatList
-          scrollEnabled={true}
+          scrollEnabled={false}
           showsVerticalScrollIndicator={true}
           data={transactions}
           keyExtractor={(item) => item.transactionID}

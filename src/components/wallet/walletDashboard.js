@@ -43,6 +43,7 @@ const WalletDashboard = () => {
     eachWallet && (
       <View style={styles.viewStyle}>
         <FlatList
+          scrollEnabled={false}
           data={eachWallet}
           keyExtractor={(item) => item.walletID}
           renderItem={({ item }) => {

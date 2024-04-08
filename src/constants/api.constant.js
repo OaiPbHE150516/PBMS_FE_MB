@@ -21,6 +21,9 @@ export const API = {
     CREATE_ACTIVITY_NO_TRANSACTION: `${Base_URL}/api/collabfund/create/activity/notrans/form`,
     CREATE_ACTIVITY: `${Base_URL}/api/collabfund/create/activity/withtrans/form`,
   },
+  DASHBOARD:{
+    BALANCE_GET_ALL_BYDAY: `${Base_URL}/api/balanceHisLogController/get/all/byday/`,
+  },
   PROFILE: {
     GET_PROFILE: `${Base_URL}/api/profile/get/`
   },

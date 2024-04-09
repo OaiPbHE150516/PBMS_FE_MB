@@ -42,7 +42,7 @@ const HomeScreen = () => {
           <WalletDashboard style={styles.wallet} />
           <TransactionDashboard style={styles.transaction} />
           <BudgetDashboard style={styles.budget} />
-          <BalanceDashboard style={styles.balance} />
+          {/* <BalanceDashboard style={styles.balance} /> */}
         </ScrollView>
       </View>
     );

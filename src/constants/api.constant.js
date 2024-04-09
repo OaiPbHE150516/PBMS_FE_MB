@@ -23,7 +23,9 @@ export const API = {
   },
   DASHBOARD:{
     BALANCE_GET_ALL_BYDAY: `${Base_URL}/api/balanceHisLogController/get/all/byday/`,
-    BALANCE_GET_ALL_BYDAY_A_WALLET: `${Base_URL}/api/balanceHisLogController/get/each/`
+    BALANCE_GET_ALL_BYDAY_A_WALLET: `${Base_URL}/api/balanceHisLogController/get/each/`,
+    TOTAL_AMOUNT_BY_CATEGORY: `${Base_URL}/api/dashboard/get/totalamount/category/`,
+    TOTAL_AMOUNT_BY_TYPE: `${Base_URL}/api/dashboard/get/totalamount/type/`,
   },
   PROFILE: {
     GET_PROFILE: `${Base_URL}/api/profile/get/`

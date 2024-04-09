@@ -9,7 +9,6 @@ import {
   ScrollView
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { signin } from "../redux/authenSlice";
 import { useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
@@ -18,8 +17,8 @@ import ProfileDashboard from "../components/profile/profilesDashboard";
 import WalletDashboard from "../components/wallet/walletDashboard";
 import TransactionDashboard from "../components/transaction/transactionDashboard";
 import BudgetDashboard from "../components/budget/budgetDashboard";
-import BalanceDashboard from "../components/dashboard/balanceDashboard";
-import ChartDashboard from "../components/chart/chartDashboard";
+// import ChartDashboard from "../components/chart/chartDashboard";
+import PieChartDashboard from "../components/chart/pieChartDashboard";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -43,7 +42,8 @@ const HomeScreen = () => {
           <WalletDashboard style={styles.wallet} />
           <TransactionDashboard style={styles.transaction} />
           <BudgetDashboard style={styles.budget} />
-          <ChartDashboard style={styles.chart} />
+          {/* <ChartDashboard style={styles.chart} /> */}
+          <PieChartDashboard style={styles.chart} />
           {/* <BalanceDashboard style={styles.balance} /> */}
         </ScrollView>
       </View>

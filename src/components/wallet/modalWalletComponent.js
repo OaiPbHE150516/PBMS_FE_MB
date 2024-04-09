@@ -34,10 +34,10 @@ const ModalWalletComponent = ({ onDataFromChild }) => {
           setNowWallets(response);
         })
         .catch((error) => {
-          console.error("Error fetching wallet data:", error);
+          console.error("Error fetchWalletData data:", error);
         });
     } catch (error) {
-      console.error("Error fetching wallet data:", error);
+      console.error("Error fetchWalletData data:", error);
     }
   }
 

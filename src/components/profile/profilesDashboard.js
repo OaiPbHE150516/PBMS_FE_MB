@@ -27,7 +27,9 @@ const ProfileDashboard = () => {
   }
 
   useEffect(() => {
-    fetchTotalBalance(account?.accountID);
+    if (account?.accountID) {
+      fetchTotalBalance(account?.accountID);
+    }
   }, [shouldFetchData]);
 
   return (

@@ -27,7 +27,8 @@ const BudgetDashboard = () => {
     try {
       await budgetServices.getAllBudget(accountID).then((response) => {
         // set EachBudget is top 2 budget of response
-        setEachBudget(response.slice(0, 2));
+        // console.log("response fetchBudgetData: ", response);
+        setEachBudget(response?.slice(0, 2));
       });
     } catch (error) {
       console.error("Error fetchBudgetData data:", error);
@@ -35,7 +36,9 @@ const BudgetDashboard = () => {
   }
 
   useEffect(() => {
-    fetchBudgetData(account.accountID);
+    if (account?.accountID) {
+      fetchBudgetData(account?.accountID);
+    }
   }, [shouldFetchData]);
 
   return (
@@ -146,7 +149,7 @@ const styles = StyleSheet.create({
   },
   view_ABudget_Infor: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-between"
     // borderWidth: 0.5
   },
   view_ABudget_Progressbar: {

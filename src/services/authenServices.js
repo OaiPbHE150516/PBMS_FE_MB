@@ -10,7 +10,7 @@ const authenServices = {
   signin: async (data) => {
     try {
       const response = await axios.post(API.AUTHEN.SIGN_IN, data, { headers });
-      // console.log("response: ", response.data);
+      console.log("response signin: ", response.data);
       return response.data;
     } catch (error) {
       console.error("Error authenServices:", error);

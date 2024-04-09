@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import authenServices from "../services/authenServices";
 
 export const signin = createAsyncThunk("signin", async (data) => {
+  console.log("signin data: ", data);
   const response = await authenServices.signin(data);
   return response;
 });

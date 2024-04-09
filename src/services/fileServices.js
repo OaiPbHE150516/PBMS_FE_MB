@@ -50,7 +50,7 @@ const fileServices = {
       const response = await axios.post(urlapi, formData, { config });
       return response.data;
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error upToScanInvoice data:", error);
     }
   },
 
@@ -78,7 +78,7 @@ const fileServices = {
       const response = await axios.post(urlapi, formData, { header });
       return response.data;
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error uploadToInvoiceTransaction data:", error);
     }
   },
 

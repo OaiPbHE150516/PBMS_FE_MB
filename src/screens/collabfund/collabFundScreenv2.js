@@ -53,7 +53,7 @@ const CollabFundScreen = () => {
   const dispatch = useDispatch();
 
   function handleError(error) {
-    console.error("Error fetching data:", error);
+    console.error("Error CollabFundScreen data:", error);
     Alert.alert(
       "Lối khi lấy dữ liệu quỹ hợp tác từ server",
       "Vui lòng thử lại sau",

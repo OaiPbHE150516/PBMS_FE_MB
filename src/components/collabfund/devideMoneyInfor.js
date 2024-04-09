@@ -49,7 +49,7 @@ const DevideMoneyInfor = ({ collabFund }) => {
         setIsFetchingData(false);
       });
     } catch (error) {
-      console.error("Error fetching data collab fund participants:", error);
+      console.error("Error fetchDivideMoneyInfor data:", error);
     }
   }
 

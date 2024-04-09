@@ -23,6 +23,7 @@ export const API = {
   },
   DASHBOARD:{
     BALANCE_GET_ALL_BYDAY: `${Base_URL}/api/balanceHisLogController/get/all/byday/`,
+    BALANCE_GET_ALL_BYDAY_A_WALLET: `${Base_URL}/api/balanceHisLogController/get/each/`
   },
   PROFILE: {
     GET_PROFILE: `${Base_URL}/api/profile/get/`

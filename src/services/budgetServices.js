@@ -12,7 +12,7 @@ const budgetServices = {
       });
       return response.data;
     } catch (error) {
-      console.error("Error getAllBudget data:", error);
+      console.error("Error getAllBudget budgetServices data:", error);
     }
   },
   getBudgetDetail: async (data) => {
@@ -25,7 +25,7 @@ const budgetServices = {
       );
       return response.data;
     } catch (error) {
-      console.error("Error getBudgetDetail data:", error);
+      console.error("Error getBudgetDetail budgetServices data:", error);
     }
   },
 };

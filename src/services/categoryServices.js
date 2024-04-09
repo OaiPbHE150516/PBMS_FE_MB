@@ -13,7 +13,7 @@ const categoryServices = {
       const response = await axios.get(urlapi, { headers });
       return response.data;
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error getCategories data:", error);
     }
   },
   createCategory: async (category) => {
@@ -30,7 +30,7 @@ const categoryServices = {
       });
       return response.data;
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error createCategory data:", error);
     }
   },
 };

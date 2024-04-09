@@ -101,7 +101,7 @@ const CfActivitiesComponent = ({ route }) => {
         });
       // console.log("response: ", response);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error handleOnSendChat data:", error);
     }
   }
 

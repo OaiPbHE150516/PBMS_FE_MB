@@ -59,6 +59,7 @@ const SignInAndroid = ({ callback }) => {
 
   const handleIsSignOutBefore = async () => {
     try {
+      console.log("isNeedSignOutNow: ", isNeedSignOutNow);
       if (isNeedSignOutNow) {
         await GoogleSignin.revokeAccess();
         await GoogleSignin.signOut().finally(() => {

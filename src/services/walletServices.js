@@ -13,7 +13,7 @@ const walletServices = {
       });
       return response.data;
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error getAllWallet data:", error);
     }
   },
 
@@ -28,7 +28,7 @@ const walletServices = {
       );
       return response.data.totalBalance;
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error getTotalBalance data:", error);
     }
   },
   getTotalBalanceEachWallet: async (accountid) => {
@@ -41,7 +41,7 @@ const walletServices = {
       );
       return response.data;
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error getTotalBalanceEachWallet data:", error);
     }
   },
   createWallet: async (wallet) => {
@@ -52,7 +52,7 @@ const walletServices = {
       });
       return response.data;
     } catch (error) {
-      console.error("Error fetching data:", error.message);
+      console.error("Error createWallet data:", error.message);
     }
   }
 };

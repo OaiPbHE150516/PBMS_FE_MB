@@ -36,7 +36,9 @@ const WalletDashboard = () => {
   }
 
   useEffect(() => {
-    fetchWalletData(account.accountID);
+    if (account?.accountID) {
+      fetchWalletData(account?.accountID);
+    }
   }, [shouldFetchData]);
 
   return (

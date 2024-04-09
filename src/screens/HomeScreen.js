@@ -19,6 +19,7 @@ import WalletDashboard from "../components/wallet/walletDashboard";
 import TransactionDashboard from "../components/transaction/transactionDashboard";
 import BudgetDashboard from "../components/budget/budgetDashboard";
 import BalanceDashboard from "../components/dashboard/balanceDashboard";
+import ChartDashboard from "../components/chart/chartDashboard";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -42,6 +43,7 @@ const HomeScreen = () => {
           <WalletDashboard style={styles.wallet} />
           <TransactionDashboard style={styles.transaction} />
           <BudgetDashboard style={styles.budget} />
+          <ChartDashboard style={styles.chart} />
           {/* <BalanceDashboard style={styles.balance} /> */}
         </ScrollView>
       </View>
@@ -76,7 +78,9 @@ const styles = StyleSheet.create({
   },
   profile: {},
   wallet: {},
-  transaction: {}
+  transaction: {},
+  budget: {},
+  chart: {},
 });
 
 export default HomeScreen;

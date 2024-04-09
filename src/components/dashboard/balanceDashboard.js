@@ -106,7 +106,7 @@ const BalanceDashboard = () => {
     // fetchBalanceAllByDay(account.accountID);
     if (account?.accountID) {
       fetchBalanceAllByDayAWallet(account?.accountID, 3);
-      fetchAllWallet(account?.accountID);
+      // fetchAllWallet(account?.accountID);
     }
   }, [shouldFetchData]);
 
@@ -117,17 +117,12 @@ const BalanceDashboard = () => {
       </View>
       <View
         style={{
-          // width: "100%",
-          // justifyContent: "center",
-          // flex: 1,
-          // alignItems: "center",
           borderWidth: 1,
           borderColor: "black"
-          // margin: 20
         }}
       >
-        {/* <LineChart areaChart data={balanceAllByDayAWalletDataValue} /> */}
-        <LineChart
+        <LineChart areaChart data={balanceAllByDayAWalletDataValue} />
+        {/* <LineChart
           areaChart
           curved
           isAnimated
@@ -196,7 +191,7 @@ const BalanceDashboard = () => {
           //     );
           //   }
           // }}
-        />
+        /> */}
       </View>
     </View>
   );

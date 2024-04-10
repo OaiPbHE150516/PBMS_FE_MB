@@ -27,6 +27,9 @@ import { NavigationContainer } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome6";
 import { SimpleGrid } from "react-native-super-grid";
 
+// const config
+import { VAR } from "../constants/var.constant";
+
 // components
 import AccountManagerComponent from "../components/myaccount/accountManagerComponent";
 import CategoryManagerScreen from "./categories/categoryManagerScreen";
@@ -144,14 +147,14 @@ const dataGridFeature = [
     name: "Hạng mục",
     icon: "list",
     color: "mediumvioletred",
-    screen: "CategoryManagerScreen"
+    screen: VAR.SCREEN.CATEGORY_MANAGER
   },
   {
     id: 2,
     name: "Ví tiền",
     icon: "wallet",
     color: "lightgreen",
-    screen: "WalletsManagerScreen"
+    screen: VAR.SCREEN.WALLETS_MANAGER
   },
   {
     id: 3,

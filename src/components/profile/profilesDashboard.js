@@ -53,17 +53,27 @@ const ProfileDashboard = () => {
 
 const styles = StyleSheet.create({
   viewStyle: {
-    borderBlockColor: "darkgray",
-    borderWidth: 0.5,
+    backgroundColor: "white",
+    // borderWidth: 0.5,
+    // borderColor: "darkgray",
     justifyContent: "space-between",
     alignItems: "center",
     flexDirection: "row",
     marginTop: 0,
     height: 55,
-    marginVertical: 5,
-    marginHorizontal: 1,
-    borderColor: "#ccc",
-    borderRadius: 5
+    marginHorizontal: 5,
+    borderRadius: 5,
+    // add shdow for iOS
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 2.22,
+    // add shadow for Android
+    elevation: 5
+
   },
   viewInfor: {
     flexDirection: "column",
@@ -88,9 +98,8 @@ const styles = StyleSheet.create({
     textAlign: "left"
   },
   totalMoney: {
-    fontSize: 20,
-    fontStyle: "normal",
-    fontWeight: "bold",
+    fontSize: 25,
+    fontFamily: "OpenSans_700Bold",
     color: "green",
     textAlign: "right",
     margin: 5

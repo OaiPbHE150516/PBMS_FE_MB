@@ -36,24 +36,28 @@ const HomeScreen = () => {
 
   const DashBoard = () => {
     return (
-      <View style={styles.view_Dashboard}>
-        <ProfileDashboard style={styles.profile} />
-        <ScrollView>
-          <WalletDashboard style={styles.wallet} />
-          <TransactionDashboard style={styles.transaction} />
-          <BudgetDashboard style={styles.budget} />
-          {/* <ChartDashboard style={styles.chart} /> */}
-          <PieChartDashboard style={styles.chart} />
-          {/* <BalanceDashboard style={styles.balance} /> */}
-        </ScrollView>
-      </View>
+      // <View style={styles.view_Dashboard}>
+      <ScrollView
+        style={styles.view_Dashboard}
+        showsVerticalScrollIndicator={false}
+      >
+        <WalletDashboard navigation={navigation} dataParent={"alo"}/>
+        <TransactionDashboard style={styles.transaction} />
+        <BudgetDashboard style={styles.budget} />
+        {/* <ChartDashboard style={styles.chart} /> */}
+        <PieChartDashboard style={styles.chart} />
+        {/* <BalanceDashboard style={styles.balance} /> */}
+
+        <View style={{ height: 200, flex: 1 }}></View>
+      </ScrollView>
+      // </View>
     );
   };
 
   return (
     <View style={styles.viewStyle}>
+      <ProfileDashboard style={styles.profile} />
       <DashBoard />
-
     </View>
   );
 };
@@ -61,14 +65,17 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   viewStyle: {
     // flex: 1,
-    width: "100%",
+    width: "100%"
     // height: "98%",
-    borderWidth: 1,
-    borderColor: "black"
+    // borderWidth: 1,
+    // borderColor: "black"
   },
   view_Dashboard: {
-    margin: 10,
-    height: "90%",
+    marginVertical: 5,
+    marginHorizontal: 5,
+    height: "100%"
+    // borderWidth: 1,
+    // borderColor: "black"
     // justifyContent: "center",
     // alignContent: "center",
     // alignItems: "center"
@@ -77,10 +84,12 @@ const styles = StyleSheet.create({
     fontSize: 30
   },
   profile: {},
-  wallet: {},
+  wallet: {
+    backgroundColor: "white"
+  },
   transaction: {},
   budget: {},
-  chart: {},
+  chart: {}
 });
 
 export default HomeScreen;

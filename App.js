@@ -13,6 +13,7 @@ import {
   getFocusedRouteNameFromRoute
 } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createStackNavigator } from "@react-navigation/stack";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Icon from "react-native-vector-icons/FontAwesome6";
 import {
@@ -76,6 +77,7 @@ if (Platform.OS === "android") {
 }
 
 const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
 export default function App() {
   const [isSignin, setIsSignin] = useState(false);

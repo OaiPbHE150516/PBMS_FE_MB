@@ -45,9 +45,11 @@ const TransactionDashboard = () => {
   }, [shouldFetchData]);
 
   return transactions && transactions.length > 0 ? (
-    <View style={{ width: "100%", justifyContent: "center", flex: 1 }}>
-      <Text style={styles.textHeader}>Giao dịch gần đây</Text>
-      <View style={styles.viewStyle}>
+    <View style={styles.viewStyle}>
+      <View style={styles.view_Header}>
+        <Text style={styles.text_Header}>{"Giao dịch gần đây"}</Text>
+      </View>
+      <View style={styles.flatList_Container}>
         <FlatList
           scrollEnabled={false}
           showsVerticalScrollIndicator={true}
@@ -97,24 +99,39 @@ const TransactionDashboard = () => {
 };
 
 const styles = StyleSheet.create({
-  textHeader: {
-    fontSize: 18,
-    fontStyle: "italic",
-    fontFamily: "Inconsolata_400Regular"
-  },
   viewStyle: {
-    // borderBlockColor: "dimgray",
-    borderWidth: 0.5,
+    backgroundColor: "white",
+    justifyContent: "center",
+    flex: 1,
+    // borderWidth: 0.5,
+    // borderColor: "darkgray",
+    borderRadius: 5,
+    marginVertical: 5
+  },
+  text_Header: {
+    fontSize: 15,
+    fontFamily: "OpenSans_600SemiBold",
+    textAlign: "center"
+  },
+  view_Header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 5,
+    // borderBottomWidth: 1,
+    // borderBottomColor: "lightgray"
+  },
+  flatList_Container: {
+    // borderWidth: 0.5,
+    // borderColor: "darkgrey",
     flexDirection: "row",
     borderRadius: 5,
-    borderColor: "darkgrey",
     justifyContent: "space-between"
   },
   transactionItem: {
     flexDirection: "row",
     flex: 1,
-    borderBottomWidth: 1,
-    borderColor: "lightgrey",
+    borderBottomWidth: 0.2,
+    borderColor: "darkgray",
     height: 50,
     width: "100%"
   },

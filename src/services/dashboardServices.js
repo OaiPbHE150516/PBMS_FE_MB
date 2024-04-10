@@ -69,7 +69,22 @@ const dashboardServices = {
     } catch (error) {
       console.log("Error getTotalAmountByCategory data:", error);
     }
-  }
+  },
+  // get total amount by type
+  getTotalAmountByType: async (accountID, time) => {
+    try {
+      const response = await axios.get(
+        API.DASHBOARD.TOTAL_AMOUNT_BY_TYPE + accountID + "/" + time,
+        {
+          headers
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.log("Error getTotalAmountByType data:", error);
+    }
+  },
+
 };
 
 export default dashboardServices;

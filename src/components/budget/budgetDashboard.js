@@ -77,7 +77,7 @@ const BudgetDashboard = () => {
                     // use switch case to change color, base on percentProgress
                     color={
                       item.percentProgress < 50
-                        ? "#00b894" // green
+                        ? "green" // green
                         : item.percentProgress < 80
                           ? "#fdcb6e" // yellow
                           : "#d63031" // red
@@ -93,7 +93,19 @@ const BudgetDashboard = () => {
                       }
                     ]}
                   >
-                    <Text style={[styles.text_datestr, {}]}>
+                    <Text
+                      style={[
+                        styles.text_currentAmountStr,
+                        {
+                          color:
+                            item.percentProgress < 50
+                              ? "green" // green
+                              : item.percentProgress < 80
+                                ? "#fdcb6e" // yellow
+                                : "#d63031" // red
+                        }
+                      ]}
+                    >
                       {item.currentAmountStr}
                     </Text>
                   </View>
@@ -113,6 +125,10 @@ const BudgetDashboard = () => {
 };
 
 const styles = StyleSheet.create({
+  text_currentAmountStr: {
+    fontSize: 16,
+    fontFamily: "OpenSans_600SemiBold"
+  },
   text_budgetName: {
     fontSize: 18,
     fontFamily: "OpenSans_600SemiBold",
@@ -126,9 +142,9 @@ const styles = StyleSheet.create({
   view_Header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 5,
-    borderBottomWidth: 1,
-    borderBottomColor: "lightgray"
+    padding: 5
+    // borderBottomWidth: 1,
+    // borderBottomColor: "lightgray"
   },
   view_CurrentAmount: {
     position: "absolute",
@@ -158,19 +174,20 @@ const styles = StyleSheet.create({
     marginBottom: 4
   },
   viewStyle: {
+    backgroundColor: "white",
     justifyContent: "center",
     flex: 1,
-    borderWidth: 0.5,
-    borderColor: "darkgray",
+    // borderWidth: 0.5,
+    // borderColor: "darkgray",
     borderRadius: 5,
-    marginVertical: 10
+    marginVertical: 5
   },
   budgetItem: {
     flexDirection: "column",
     justifyContent: "space-around",
     padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "lightgray",
+    borderBottomWidth: 0.2,
+    borderBottomColor: "darkgray",
     width: "100%"
     // height: 100
   },

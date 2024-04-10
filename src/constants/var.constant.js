@@ -9,5 +9,12 @@ export const VAR = {
     DEFAULT_ALBUM_NAME: "PBMS"
   },
 
-  NUMBER_LASTDAY_EXPENSES_TRANSACTION: 20,
+  SCREEN: {
+    _ACCOUNT: "AccountManagerComponent",
+    WALLETS_MANAGER: "WalletsManagerScreen",
+    CATEGORY_MANAGER: "CategoryManagerScreen",
+    SETTING: "SettingScreen",
+  },
+
+  NUMBER_LASTDAY_EXPENSES_TRANSACTION: 20
 };

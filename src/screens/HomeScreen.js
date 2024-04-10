@@ -64,11 +64,11 @@ const HomeScreen = () => {
           style={styles.view_Dashboard}
           showsVerticalScrollIndicator={false}
         >
+          <PieChartCategoryDashboard style={styles.chart} />
+          <BudgetDashboard style={styles.budget} />
           <WalletDashboard navigation={navigation} />
           <TransactionDashboard navigation={navigation} />
-          <BudgetDashboard style={styles.budget} />
           {/* <ChartDashboard style={styles.chart} /> */}
-          <PieChartCategoryDashboard style={styles.chart} />
           {/* <BalanceDashboard style={styles.balance} /> */}
           <View style={{ height: 200, flex: 1 }}></View>
         </ScrollView>

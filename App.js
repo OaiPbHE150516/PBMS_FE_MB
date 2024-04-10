@@ -158,7 +158,7 @@ export default function App() {
   return (
     <SafeAreaProvider style={styles.container}>
       <SafeAreaView
-        style={[styles.container, { backgroundColor: "#eee", width, height }]}
+        style={[styles.container, { backgroundColor: "rgba(0,0,0,0)", width, height }]}
         edges={["right", "top", "left"]}
       >
         <Provider store={store}>
@@ -226,7 +226,7 @@ export default function App() {
                   headerShown: false,
                   tabBarShowLabel: false,
                   tabBarStyle: {
-                    backgroundColor: "white",
+                    // backgroundColor: "white",
                     borderTopWidth: 0,
                     shadowColor: "darkgray",
                     shadowOffset: {

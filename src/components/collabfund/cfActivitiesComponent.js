@@ -53,6 +53,13 @@ const CfActivitiesComponent = ({ route }) => {
   const [isModalAddTransactionVisible, setIsModalAddTransactionVisible] =
     useState(false);
 
+  const [
+    isModalViewDetailActivityVisible,
+    setIsModalViewDetailActivityVisible
+  ] = useState(false);
+
+  const [AnActivityItemDetail, setAnActivityItemDetail] = useState({});
+
   const textInputRef = useRef(null);
 
   const dispatch = useDispatch();
@@ -189,10 +196,17 @@ const CfActivitiesComponent = ({ route }) => {
     setIsAddTransactionViewsVisible(false);
   }
 
+  function handleOnPressAnActivityItem(item) {
+    console.log("handleOnPressAnActivityItem item: ", item);
+    setAnActivityItemDetail(item);
+    setIsModalViewDetailActivityVisible(!isModalViewDetailActivityVisible);
+  }
+
   const AnActivityItem = ({ item }) => {
     return (
-      <View
-        style={[
+      <Pressable
+        onPress={() => handleOnPressAnActivityItem(item)}
+        style={({ pressed }) => [
           styles.viewAnActivityItem,
           {
             height:
@@ -200,7 +214,8 @@ const CfActivitiesComponent = ({ route }) => {
                 ? 500
                 : item?.filename === ""
                   ? "auto"
-                  : "auto"
+                  : "auto",
+            opacity: pressed ? 0.25 : 1
           }
         ]}
       >
@@ -262,7 +277,7 @@ const CfActivitiesComponent = ({ route }) => {
             </Text>
           ) : null}
         </View>
-      </View>
+      </Pressable>
     );
   };
 
@@ -313,9 +328,17 @@ const CfActivitiesComponent = ({ route }) => {
     );
   };
 
+  const ViewAnActivityDetail = () => {
+    return (
+      <View style={styles.view_Modal_AnActivityItem}>
+        <Text>{"Chi tiết hoạt động"}</Text>
+      </View>
+    );
+  };
+
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.viewContainer}
       keyboardVerticalOffset={keyboardHeight}
     >
@@ -485,12 +508,43 @@ const CfActivitiesComponent = ({ route }) => {
             </View>
           </View>
         </Modal>
+        {/* Modal when press an activity item */}
+        <Modal
+          visible={isModalViewDetailActivityVisible}
+          transparent
+          animationType="slide"
+        >
+          <View style={styles.viewModalBackground}>
+            <Pressable
+              style={{ flex: 1 }}
+              onPress={() =>
+                setIsModalViewDetailActivityVisible(
+                  !isModalViewDetailActivityVisible
+                )
+              }
+            />
+            <ViewAnActivityDetail />
+          </View>
+        </Modal>
       </View>
     </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
+  view_Modal_AnActivityItem: {
+    flexDirection: "column",
+    justifyContent: "space-around",
+    alignItems: "center",
+    alignContent: "center",
+    backgroundColor: "white",
+    padding: 5,
+    minHeight: "85%",
+    height: "auto",
+    maxHeight: "95%",
+    // marginBottom: 20,
+    borderRadius: 10
+  },
   text_ViewTransactionSelected_Date: {
     fontFamily: "Inconsolata_400Regular",
     fontSize: 20
@@ -711,7 +765,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 50,
     justifyContent: "space-between",
-    zIndex: 99,
+    zIndex: 99
     // flex: 1
   },
   textInputActionUserChat: {
@@ -727,7 +781,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "darkgray",
     borderRadius: 10,
-    marginHorizontal: 2,
+    marginHorizontal: 2
   },
   textUserInforName: {
     fontSize: 15,
@@ -740,7 +794,7 @@ const styles = StyleSheet.create({
     // borderWidth: 1,
     // borderColor: "blue",
     flexDirection: "row",
-    marginHorizontal: 2,
+    marginHorizontal: 2
   },
 
   viewContainer: {

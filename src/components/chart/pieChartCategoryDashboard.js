@@ -29,11 +29,12 @@ import walletServices from "../../services/walletServices";
 // library
 import datetimeLibrary from "../../library/datetimeLibrary";
 import colorLibrary from "../../library/colorLibrary";
+import currencyLibrary from "../../library/currencyLIbrary";
 import { screenWidth } from "react-native-gifted-charts/src/utils";
 
 const Tab = createMaterialTopTabNavigator();
 
-const PieChartDashboard = () => {
+const PieChartCategoryDashboard = () => {
   const account = useSelector((state) => state.authen?.account);
   const shouldFetchData = useSelector((state) => state.data.shouldFetchData);
 
@@ -78,7 +79,6 @@ const PieChartDashboard = () => {
       account?.accountID,
       time
     );
-    // console.log("dataTransfers: ", dataTransfers);
     setDataTransfers(dataTransfers);
   }
 
@@ -93,13 +93,25 @@ const PieChartDashboard = () => {
         value: item?.percentage,
         valueStr: item?.percentageStr,
         color: colorLibrary.getColorByIndex(count++),
-        label: item?.categoryType?.name,
-        totalAmountStr: item?.totalAmountStr
+        categoryTypeID: item?.categoryType?.categoryTypeID,
+        label:
+          item?.categoryType?.categoryTypeID === TYPE_INCOME ? "Thu" : "Chi",
+        totalAmount: item?.totalAmount,
+        totalAmountStr: item?.totalAmountStr,
+        frontColor:
+          item?.categoryType?.categoryTypeID === TYPE_INCOME
+            ? colorLibrary.getIncomeColor()
+            : colorLibrary.getExpenseColor()
       }));
+      // sort dataChart by totalAmount
+      // dataChart.sort((a, b) => a.totalAmount - b.totalAmount);
+      // sort dataChart by categoryTypeID
+      dataChart.sort((a, b) => a.categoryTypeID - b.categoryTypeID);
       const returnData = {
         dataChart: dataChart,
         data: response
       };
+      // console.log("returnData fetchTotalAmountByType: ", returnData);
       return returnData;
     } catch (error) {
       console.error("Error fetchTotalAmountByType Dashboard data:", error);
@@ -217,8 +229,12 @@ const PieChartDashboard = () => {
               {data?.data?.totalAmountOfRangeStr}
             </Text>
           </View>
-
-          <View>
+          <View
+            style={[
+              styles.view_FlatlistItemInChart,
+              { borderLeftWidth: 0.5, borderLeftColor: "darkgray" }
+            ]}
+          >
             <FlatList
               data={data?.dataChart || []}
               keyExtractor={(item) => item?.label}
@@ -226,6 +242,74 @@ const PieChartDashboard = () => {
               renderItem={({ item }) => <ALabelPieChartInfor item={item} />}
             />
           </View>
+        </View>
+      </View>
+    );
+  };
+
+  const ABarChart = ({ data }) => {
+    return (
+      <View style={styles.view_AmountExpenseIncome}>
+        <View style={styles.view_AmountExpenseIncome_BarChart}>
+          <BarChart
+            horizontal
+            showGrid
+            hideRules
+            barWidth={20}
+            barBorderRadius={5}
+            width={screenWidth / 2.5}
+            height={screenWidth / 5}
+            data={data?.dataChart}
+            spacing={15}
+            yAxisThickness={0}
+            xAxisThickness={0}
+            hideYAxisText
+            disableScroll
+          />
+        </View>
+        <View style={styles.view_AmountExpenseIncome_Infor}>
+          {data?.dataChart && (
+            <View>
+              <View>
+                <Text
+                  style={[
+                    styles.text_TotalAmount,
+                    { color: data?.dataChart[0]?.frontColor }
+                  ]}
+                >
+                  {data?.dataChart[0]?.totalAmountStr}
+                </Text>
+                <Text
+                  style={[
+                    styles.text_TotalAmount,
+                    { color: data?.dataChart[1]?.frontColor }
+                  ]}
+                >
+                  {data?.dataChart[1]?.totalAmountStr}
+                </Text>
+              </View>
+              <View
+                style={{
+                  borderTopWidth: 0.5,
+                  borderTopColor: "darkgray"
+                }}
+              >
+                <Text
+                  style={[
+                    styles.text_TotalAmount,
+                    {
+                      fontSize: 20,
+                      fontFamily: "OpenSans_600SemiBold",
+                      textAlign: "right",
+                      marginVertical: 5
+                    }
+                  ]}
+                >
+                  {data?.data.minusAmountOfRangeStr}
+                </Text>
+              </View>
+            </View>
+          )}
         </View>
       </View>
     );
@@ -239,6 +323,9 @@ const PieChartDashboard = () => {
           {"Tổng tiền các hạng mục tuần này"}
         </Text>
       </View>
+      <View style={styles.view_ExpenseIncomeChart}>
+        {dataTransfers && <ABarChart data={dataTransfers} />}
+      </View>
       <ScrollView
         style={styles.scrollview_Container_PieChart}
         horizontal={true}
@@ -250,13 +337,6 @@ const PieChartDashboard = () => {
         )}
         {dataIncomes && (
           <APieChart data={dataIncomes} title="Tổng thu" titleColor="green" />
-        )}
-        {dataTransfers && (
-          <APieChart
-            data={dataTransfers}
-            title="Tổng thu chi"
-            titleColor="black"
-          />
         )}
       </ScrollView>
 
@@ -282,7 +362,60 @@ const PieChartDashboard = () => {
 };
 
 const styles = StyleSheet.create({
-  text_InCenterPieChart_Amount:{
+  view_ABarChart_Infor: {
+    flex: 1,
+    // justifyContent: "center",
+    // alignContent: "center",
+    // alignItems: "center",
+    borderWidth: 0.5,
+    borderColor: "darkgray"
+  },
+  text_TotalAmount: {
+    fontSize: 17,
+    fontFamily: "OpenSans_500Medium",
+    textAlign: "right",
+    marginVertical: 5
+  },
+  view_AmountExpenseIncome_Infor: {
+    // backgroundColor: "lightgray",
+    flex: 1.5,
+    // justifyContent: "center",
+    alignContent: "flex-start",
+    alignItems: "flex-end",
+    alignSelf: "flex-start",
+    marginRight: 20,
+    // borderWidth: 1,
+    // borderColor: "blue"
+  },
+  view_AmountExpenseIncome_BarChart: {
+    width: "100%",
+    height: "100%",
+    flex: 3,
+    justifyContent: "center",
+    // alignContent: "center",
+    // alignItems: "center",
+    // borderWidth: 1,
+    // borderColor: "green"
+  },
+  view_AmountExpenseIncome: {
+    // borderWidth: 1,
+    // borderColor: "red",
+    flexDirection: "row",
+    width: screenWidth * 0.97,
+    height: screenWidth / 4,
+    justifyContent: "space-around",
+    alignContent: "center",
+    alignItems: "center",
+    alignSelf: "center"
+  },
+  view_ExpenseIncomeChart: {
+    // borderWidth: 1,
+    // borderColor: "darkgray"
+  },
+  view_FlatlistItemInChart: {
+    paddingHorizontal: 5
+  },
+  text_InCenterPieChart_Amount: {
     fontSize: 17,
     fontFamily: "OpenSans_500Medium"
   },
@@ -399,4 +532,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default PieChartDashboard;
+export default PieChartCategoryDashboard;

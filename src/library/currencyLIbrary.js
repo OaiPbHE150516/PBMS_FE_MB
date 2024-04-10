@@ -1,3 +1,5 @@
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+
 const currencyLibrary = {
   formatCurrency: (number) => {
     // using loop to add comma to number, each 3 digits from right to left
@@ -16,7 +18,15 @@ const currencyLibrary = {
   // remove all '.' and 'space' and 'đ' in string
   removeCurrencyFormat: (currency) => {
     return currency.replace(/\./g, "").replace(/ /g, "").replace(/đ/g, "");
-  }
+  },
+  // get vietnamese currency symbol
+  getCurrencySymbol: () => {
+    return "₫";
+  },
+  // convert string to money format vietnamese currency
+  convertToMoneyFormat: (number) => {
+    return currencyLibrary.formatCurrency(number) + " " + currencyLibrary.getCurrencySymbol();
+  },
 };
 
 export default currencyLibrary;

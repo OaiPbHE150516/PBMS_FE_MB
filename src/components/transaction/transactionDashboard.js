@@ -6,16 +6,20 @@ import {
   Button,
   Alert,
   Image,
-  FlatList
+  FlatList,
+  Pressable
 } from "react-native";
-import pbms from "../../api/pbms";
-import { API } from "../../constants/api.constant";
+import Icon from "react-native-vector-icons/FontAwesome6";
+
+import { VAR } from "../../constants/var.constant";
+
+//  redux & slice
 import { useSelector, useDispatch } from "react-redux";
 
 // services
 import transactionServices from "../../services/transactionServices";
 
-const TransactionDashboard = () => {
+const TransactionDashboard = ({ navigation }) => {
   const account = useSelector((state) => state.authen?.account);
   const shouldFetchData = useSelector((state) => state.data.shouldFetchData);
   const [transactions, setTransactions] = useState([]);
@@ -48,6 +52,19 @@ const TransactionDashboard = () => {
     <View style={styles.viewStyle}>
       <View style={styles.view_Header}>
         <Text style={styles.text_Header}>{"Giao dịch gần đây"}</Text>
+        <Pressable
+          style={({ pressed }) => [
+            styles.pressable_ViewAll,
+            { opacity: pressed ? 0.5 : 1 }
+          ]}
+          onPress={() => {
+            // callback();
+            navigation.push(VAR.SCREEN.REPORT.TRANSACTION);
+          }}
+        >
+          <Text style={styles.text_ViewAll}>{"Xem báo cáo "}</Text>
+          <Icon name="chevron-right" size={15} color="#0984e3" />
+        </Pressable>
       </View>
       <View style={styles.flatList_Container}>
         <FlatList
@@ -99,6 +116,17 @@ const TransactionDashboard = () => {
 };
 
 const styles = StyleSheet.create({
+  text_ViewAll: {
+    color: "#0984e3",
+    fontSize: 15,
+    fontFamily: "OpenSans_600SemiBold"
+  },
+  pressable_ViewAll: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+    marginHorizontal: 5
+  },
   viewStyle: {
     backgroundColor: "white",
     justifyContent: "center",
@@ -116,7 +144,7 @@ const styles = StyleSheet.create({
   view_Header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 5,
+    padding: 5
     // borderBottomWidth: 1,
     // borderBottomColor: "lightgray"
   },

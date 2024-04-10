@@ -14,6 +14,10 @@ export const VAR = {
     WALLETS_MANAGER: "WalletsManagerScreen",
     CATEGORY_MANAGER: "CategoryManagerScreen",
     SETTING: "SettingScreen",
+    REPORT: {
+      WALLET: "WalletReportScreen",
+      TRANSACTION: "TransactionReportScreen"
+    }
   },
 
   NUMBER_LASTDAY_EXPENSES_TRANSACTION: 20

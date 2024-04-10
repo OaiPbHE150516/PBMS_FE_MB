@@ -13,15 +13,19 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
+import { VAR } from "../constants/var.constant";
+
 // components
 import ProfileDashboard from "../components/profile/profilesDashboard";
 import WalletDashboard from "../components/wallet/walletDashboard";
 import TransactionDashboard from "../components/transaction/transactionDashboard";
 import BudgetDashboard from "../components/budget/budgetDashboard";
 // import ChartDashboard from "../components/chart/chartDashboard";
-import PieChartDashboard from "../components/chart/pieChartDashboard";
+import PieChartCategoryDashboard from "../components/chart/pieChartCategoryDashboard";
 
 import WalletsManagerScreen from "./wallets/walletsManagerScreen";
+import WalletReportScreen from "./reports/walletReportScreen";
+import TransactionReportScreen from "./reports/transactionReportScreen";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -61,10 +65,10 @@ const HomeScreen = () => {
           showsVerticalScrollIndicator={false}
         >
           <WalletDashboard navigation={navigation} />
-          <TransactionDashboard style={styles.transaction} />
+          <TransactionDashboard navigation={navigation} />
           <BudgetDashboard style={styles.budget} />
           {/* <ChartDashboard style={styles.chart} /> */}
-          <PieChartDashboard style={styles.chart} />
+          <PieChartCategoryDashboard style={styles.chart} />
           {/* <BalanceDashboard style={styles.balance} /> */}
           <View style={{ height: 200, flex: 1 }}></View>
         </ScrollView>
@@ -82,16 +86,23 @@ const HomeScreen = () => {
           component={HomeInStack}
           listeners={({ navigation }) => ({
             focus: () => {
-              console.log("HomeInStack focused");
+              // console.log("HomeInStack focused");
               handleLoading(false);
             },
             blur: () => {
-              console.log("HomeInStack blurred");
+              // console.log("HomeInStack blurred");
               handleLoading(true);
             }
           })}
         />
-        <Stack.Screen name="WalletsManager" component={WalletsManagerScreen} />
+        <Stack.Screen
+          name={VAR.SCREEN.REPORT.WALLET}
+          component={WalletReportScreen}
+        />
+        <Stack.Screen
+          name={VAR.SCREEN.REPORT.TRANSACTION}
+          component={TransactionReportScreen}
+        />
       </Stack.Navigator>
     </View>
   );

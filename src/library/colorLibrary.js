@@ -15,6 +15,14 @@ const colorLibrary = {
   getRandomIndex: () => {
     return Math.floor(Math.random() * data.length / 2);
   },
+  // get expense color
+  getExpenseColor: () => {
+    return "#ff7675";
+  },
+  // get income color
+  getIncomeColor: () => {
+    return "#00b894";
+  },
 };
 
 const data = [

@@ -11,6 +11,8 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome6";
 
+import { VAR } from "../../constants/var.constant";
+
 // redux & slice
 import { useSelector, useDispatch } from "react-redux";
 
@@ -58,10 +60,10 @@ const WalletDashboard = ({ navigation }) => {
             ]}
             onPress={() => {
               // callback();
-              navigation.push("WalletsManager");
+              navigation.push(VAR.SCREEN.REPORT.WALLET);
             }}
           >
-            <Text style={styles.text_ViewAll}>{"Xem tất cả  "}</Text>
+            <Text style={styles.text_ViewAll}>{"Xem báo cáo "}</Text>
             <Icon name="chevron-right" size={15} color="#0984e3" />
           </Pressable>
         </View>

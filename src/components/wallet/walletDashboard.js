@@ -17,13 +17,13 @@ import { useSelector, useDispatch } from "react-redux";
 // services
 import walletServices from "../../services/walletServices";
 
-const WalletDashboard = ({ navigation, dataParent }) => {
+const WalletDashboard = ({ navigation }) => {
   const account = useSelector((state) => state.authen.account);
   const shouldFetchData = useSelector((state) => state.data.shouldFetchData);
   const [eachWallet, setEachWallet] = useState({});
 
   async function fetchWalletData(accountID) {
-    console.log("fetchWalletData accountID: ", accountID);
+    // console.log("fetchWalletData accountID: ", accountID);
     try {
       await walletServices
         .getTotalBalanceEachWallet(accountID)
@@ -31,14 +31,13 @@ const WalletDashboard = ({ navigation, dataParent }) => {
           // set EachWallet is top 2 wallet of response
           // sort response by balance
           // response.sort((a, b) => b.balance - a.balance);
-          console.log("response fetchWalletData: ", response);
+          // console.log("response fetchWalletData: ", response);
           setEachWallet(response.slice(0, 2));
         });
     } catch (error) {
       console.error("Error fetchWalletData data:", error);
     }
   }
-
 
   useEffect(() => {
     if (account?.accountID) {
@@ -58,9 +57,8 @@ const WalletDashboard = ({ navigation, dataParent }) => {
               { opacity: pressed ? 0.5 : 1 }
             ]}
             onPress={() => {
-              console.log("Pressable to see full wallet");
-              navigation.navigate("Transaction");
-              console.log("dataParent: ", dataParent);
+              // callback();
+              navigation.push("WalletsManager");
             }}
           >
             <Text style={styles.text_ViewAll}>{"Xem tất cả  "}</Text>

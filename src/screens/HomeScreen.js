@@ -6,7 +6,8 @@ import {
   Button,
   Alert,
   FlatList,
-  ScrollView
+  ScrollView,
+  RefreshControl
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
@@ -20,52 +21,92 @@ import BudgetDashboard from "../components/budget/budgetDashboard";
 // import ChartDashboard from "../components/chart/chartDashboard";
 import PieChartDashboard from "../components/chart/pieChartDashboard";
 
+import WalletsManagerScreen from "./wallets/walletsManagerScreen";
+
 const HomeScreen = () => {
   const navigation = useNavigation();
   const account = useSelector((state) => state.authen.account);
   const dispatch = useDispatch();
 
+  const [isLoading, setIsLoading] = useState(true);
+
   const Stack = createStackNavigator();
 
   useEffect(() => {
-    if (account === null) {
+    if (account !== null) {
       // navigation.navigate("Signin");
-      console.log("HomeScreen account: ", account);
+      // console.log("HomeScreen account: ", account);
     }
-  }, [account, dispatch]);
+  }, [account]);
 
-  const DashBoard = () => {
-    return (
-      // <View style={styles.view_Dashboard}>
-      <ScrollView
-        style={styles.view_Dashboard}
-        showsVerticalScrollIndicator={false}
-      >
-        <WalletDashboard navigation={navigation} dataParent={"alo"}/>
-        <TransactionDashboard style={styles.transaction} />
-        <BudgetDashboard style={styles.budget} />
-        {/* <ChartDashboard style={styles.chart} /> */}
-        <PieChartDashboard style={styles.chart} />
-        {/* <BalanceDashboard style={styles.balance} /> */}
+  function handleLoading(loading) {
+    // wait 1s to show loading
+    setTimeout(() => {
+      setIsLoading(loading);
+    }, 100);
+  }
 
-        <View style={{ height: 200, flex: 1 }}></View>
-      </ScrollView>
-      // </View>
+  // const MyListLoader = () => <List />;
+
+  const HomeInStack = ({ navigation }) => {
+    return isLoading ? (
+      <View style={styles.view_Center}>
+        <Text>{"Loading..."}</Text>
+      </View>
+    ) : (
+      <View>
+        <ProfileDashboard style={styles.profile} />
+        <ScrollView
+          style={styles.view_Dashboard}
+          showsVerticalScrollIndicator={false}
+        >
+          <WalletDashboard navigation={navigation} />
+          <TransactionDashboard style={styles.transaction} />
+          <BudgetDashboard style={styles.budget} />
+          {/* <ChartDashboard style={styles.chart} /> */}
+          <PieChartDashboard style={styles.chart} />
+          {/* <BalanceDashboard style={styles.balance} /> */}
+          <View style={{ height: 200, flex: 1 }}></View>
+        </ScrollView>
+      </View>
     );
   };
 
   return (
     <View style={styles.viewStyle}>
-      <ProfileDashboard style={styles.profile} />
-      <DashBoard />
+      <Stack.Navigator
+        screenOptions={{ headerShown: false, refreshPolicy: "never" }}
+      >
+        <Stack.Screen
+          name="HomeInStack"
+          component={HomeInStack}
+          listeners={({ navigation }) => ({
+            focus: () => {
+              console.log("HomeInStack focused");
+              handleLoading(false);
+            },
+            blur: () => {
+              console.log("HomeInStack blurred");
+              handleLoading(true);
+            }
+          })}
+        />
+        <Stack.Screen name="WalletsManager" component={WalletsManagerScreen} />
+      </Stack.Navigator>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  view_Center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center"
+  },
   viewStyle: {
     // flex: 1,
-    width: "100%"
+    width: "100%",
+    height: "100%"
     // height: "98%",
     // borderWidth: 1,
     // borderColor: "black"

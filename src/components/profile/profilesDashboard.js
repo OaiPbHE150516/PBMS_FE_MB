@@ -16,7 +16,7 @@ const ProfileDashboard = () => {
   const [totalBalance, setTotalBalance] = useState(0);
 
   async function fetchTotalBalance(accountID) {
-    console.log("fetchTotalBalance accountID: ", accountID);
+    // console.log("fetchTotalBalance accountID: ", accountID);
     try {
       await walletServices.getTotalBalance(accountID).then((response) => {
         setTotalBalance(response);

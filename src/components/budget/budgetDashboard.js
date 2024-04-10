@@ -23,7 +23,7 @@ const BudgetDashboard = () => {
   const [eachBudget, setEachBudget] = useState({});
 
   async function fetchBudgetData(accountID) {
-    console.log("fetchBudgetData accountID: ", accountID);
+    // console.log("fetchBudgetData accountID: ", accountID);
     try {
       await budgetServices.getAllBudget(accountID).then((response) => {
         // set EachBudget is top 2 budget of response

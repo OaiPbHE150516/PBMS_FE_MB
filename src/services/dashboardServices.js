@@ -45,14 +45,14 @@ const dashboardServices = {
   },
   getTotalAmountByCategory: async (accountID, time, type) => {
     // log params
-    console.log(
-      "getTotalAmountByCategory accountID: ",
-      accountID,
-      " time: ",
-      time,
-      " type: ",
-      type
-    );
+    // console.log(
+    //   "getTotalAmountByCategory accountID: ",
+    //   accountID,
+    //   " time: ",
+    //   time,
+    //   " type: ",
+    //   type
+    // );
     try {
       const response = await axios.get(
         API.DASHBOARD.TOTAL_AMOUNT_BY_CATEGORY +

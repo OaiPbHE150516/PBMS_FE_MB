@@ -78,7 +78,7 @@ const PieChartDashboard = () => {
       account?.accountID,
       time
     );
-    console.log("dataTransfers: ", dataTransfers);
+    // console.log("dataTransfers: ", dataTransfers);
     setDataTransfers(dataTransfers);
   }
 
@@ -155,7 +155,7 @@ const PieChartDashboard = () => {
     // console.log("APieChart data: ", data);
     const [thisDataInCenter, setThisDataInCenter] = useState({});
     function handle(data) {
-      console.log("handle data: ", data);
+      // console.log("handle data: ", data);
       setThisDataInCenter({
         number: data?.valueStr,
         text: data?.label,

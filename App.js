@@ -8,6 +8,7 @@ import {
   Platform,
   Dimensions
 } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {
   NavigationContainer,
   getFocusedRouteNameFromRoute
@@ -161,6 +162,7 @@ export default function App() {
         style={[styles.container, { backgroundColor: "rgba(0,0,0,0)", width, height }]}
         edges={["right", "top", "left"]}
       >
+        <GestureHandlerRootView style={styles.container}>
         <Provider store={store}>
           <NavigationContainer>
             {/* if the user is not signed in then show SigninIOS*/}
@@ -275,6 +277,7 @@ export default function App() {
             )}
           </NavigationContainer>
         </Provider>
+        </GestureHandlerRootView>
       </SafeAreaView>
     </SafeAreaProvider>
   );

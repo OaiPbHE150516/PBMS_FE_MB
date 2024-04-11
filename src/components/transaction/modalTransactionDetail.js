@@ -40,9 +40,11 @@ const ModalTransactionDetail = ({ props, callback }) => {
       <View style={styles.view_Content}>
         <View style={styles.view_TransactionInfor_Row}>
           <View style={styles.view_LabelWithNumber}>
-            <Text style={styles.text_Time}>
-              {props?.transactionDateMinus + ", " + props?.transactionDateStr}
-            </Text>
+            {props?.transactionDateMinus && (
+              <Text style={styles.text_Time}>
+                {props?.transactionDateMinus + ", " + props?.transactionDateStr}
+              </Text>
+            )}
           </View>
           <View style={styles.view_RightInfor}>
             <Text
@@ -309,7 +311,8 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
-    alignContent: "center"
+    alignContent: "center",
+    marginTop: 15,
   },
   viewStyle: {
     // flex: 1,

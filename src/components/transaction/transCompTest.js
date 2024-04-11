@@ -203,10 +203,24 @@ const TransCompTest = ({ route }) => {
               setIsModalDetailVisible(false);
             }}
           />
-          <ModalTransactionDetail
-            props={transactionDetail}
-            callback={onCallbackModalDetail}
-          />
+          <View>
+            <View
+              style={{
+                width: "25%",
+                height: 3,
+                backgroundColor: "darkgray",
+                borderRadius: 10,
+                alignContent: "center",
+                alignSelf: "center",
+                bottom: -5,
+                zIndex: 10,
+              }}
+            ></View>
+            <ModalTransactionDetail
+              props={transactionDetail}
+              callback={onCallbackModalDetail}
+            />
+          </View>
         </View>
       </Modal>
     </View>

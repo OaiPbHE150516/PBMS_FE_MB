@@ -27,9 +27,13 @@ import FastImage from "react-native-fast-image";
 import { useSelector, useDispatch } from "react-redux";
 import collabFundServices from "../../services/collabFundServices";
 
+// library
+import currencyLibrary from "../../library/currencyLIbrary";
+
 // components
 // import FlatListActivities from "./flatListActivitiesComp";
 import FlatListTransactionToAddCF from "./flatlistTransactionToAddCF";
+import ModalTransactionDetail from "../transaction/modalTransactionDetail";
 
 const CfActivitiesComponent = ({ route }) => {
   const { collabFund } = route.params;
@@ -113,29 +117,51 @@ const CfActivitiesComponent = ({ route }) => {
   }
 
   async function handleOnPickMedia() {
+    // Kiểm tra quyền trước khi truy cập vào album ảnh
+    const mediaPermission = await ImagePicker.getMediaLibraryPermissionsAsync();
+    if (mediaPermission.status !== "granted") {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission not granted");
+        Alert.alert("Permission not granted");
+        return;
+      }
+    }
     console.log("Pick Media");
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1
     });
-    // console.log(result);
+    console.log(result);
     if (!result.canceled) {
       setImage(result.assets[0]);
-      setIsModalMediaCameraVisible(!isModalMediaCameraVisible);
+      setIsModalMediaCameraVisible(false);
     }
   }
 
   async function handleOnLaunchCamera() {
+    // Kiểm tra quyền trước khi chụp ảnh
+    const cameraPermission = await ImagePicker.getCameraPermissionsAsync();
+    if (!cameraPermission.granted) {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission not granted");
+        Alert.alert("Permission not granted");
+        return;
+      }
+    }
+
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1
     });
 
-    // console.log(result);
+    console.log(result);
 
     if (!result.canceled) {
       setImage(result.assets[0]);
-      setIsModalMediaCameraVisible(!isModalMediaCameraVisible);
+      setIsModalMediaCameraVisible(false);
     }
   }
 
@@ -209,13 +235,11 @@ const CfActivitiesComponent = ({ route }) => {
         style={({ pressed }) => [
           styles.viewAnActivityItem,
           {
-            height:
-              item?.cfDividingMoneyVMDTO !== null
-                ? 500
-                : item?.filename === ""
-                  ? "auto"
-                  : "auto",
-            opacity: pressed ? 0.25 : 1
+            height: "auto",
+            opacity: pressed ? 0.25 : 1,
+            width: "100%"
+            // position:
+            //   item?.cfDividingMoneyVMDTO !== null ? "absolute" : "relative"
           }
         ]}
       >
@@ -251,17 +275,58 @@ const CfActivitiesComponent = ({ route }) => {
             />
           )}
           {item?.cfDividingMoneyVMDTO ? (
-            <FlatList
-              scrollEnabled={false}
-              data={item?.cfDividingMoneyVMDTO?.cF_DividingMoneyDetails}
-              keyExtractor={(item) => item?.cF_DividingMoneyDetailID}
-              renderItem={({ item }) => (
-                <View>
-                  <Text>{item?.fromAccount?.accountName}</Text>
-                  <Text>{item?.dividingAmount}</Text>
-                </View>
-              )}
-            />
+            <View
+              style={{
+                flexDirection: "column",
+                justifyContent: "center",
+                alignContent: "center",
+                alignItems: "center",
+                // borderWidth: 1,
+                // borderColor: "red",
+                width: "150%"
+              }}
+            >
+              <FlatList
+                scrollEnabled={false}
+                data={item?.cfDividingMoneyVMDTO?.cF_DividingMoneyDetails}
+                keyExtractor={(item) => item?.cF_DividingMoneyDetailID}
+                renderItem={({ item }) => (
+                  // <View>
+                  //   <Text>{item?.fromAccount?.accountName}</Text>
+                  //   <Text>{item?.dividingAmount}</Text>
+                  // </View>
+                  <View style={styles.viewAn_CFDM_Result}>
+                    <View style={styles.viewAnAccount_CFDM}>
+                      <Image
+                        source={{ uri: item?.fromAccount?.pictureURL }}
+                        style={{ width: 30, height: 30, borderRadius: 30 }}
+                      />
+                      <Text style={styles.textAccountName_CFDM}>
+                        {item?.fromAccount?.accountName}
+                      </Text>
+                    </View>
+                    <View style={styles.view_CFDM_Transfer}>
+                      <Icon name="angle-right" size={15} color="darkgray" />
+                      <Text style={styles.text_DividingAmount_CFDM}>
+                        {currencyLibrary.convertToMoneyFormat(
+                          item?.dividingAmount
+                        )}
+                      </Text>
+                      <Icon name="angle-right" size={15} color="darkgray" />
+                    </View>
+                    <View style={styles.viewAnAccount_CFDM}>
+                      <Image
+                        source={{ uri: item?.toAccount?.pictureURL }}
+                        style={{ width: 30, height: 30, borderRadius: 30 }}
+                      />
+                      <Text style={styles.textAccountName_CFDM}>
+                        {item?.toAccount?.accountName}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+              />
+            </View>
           ) : null}
         </View>
         <View style={styles.viewAnActivityItemTimeAmount}>
@@ -331,7 +396,59 @@ const CfActivitiesComponent = ({ route }) => {
   const ViewAnActivityDetail = () => {
     return (
       <View style={styles.view_Modal_AnActivityItem}>
-        <Text>{"Chi tiết hoạt động"}</Text>
+        <View style={styles.view_CloseModal}></View>
+        <View style={styles.view_Modal_AnActivityItem_Header}>
+          <Text style={styles.text_Modal_AnActivityItem_Header}>
+            {"Chi tiết hoạt động"}
+          </Text>
+        </View>
+        <View style={styles.view_Modal_AnActivityItem_ActorInfor}>
+          <View style={styles.view_Row_Center}>
+            {AnActivityItemDetail?.account?.pictureURL && (
+              <Image
+                source={{
+                  uri: AnActivityItemDetail?.account?.pictureURL
+                }}
+                style={{ width: 40, height: 40, borderRadius: 40 }}
+              />
+            )}
+            <Text
+              style={[styles.textActivityAccountName, { marginHorizontal: 2 }]}
+            >
+              {AnActivityItemDetail?.account?.accountName}
+            </Text>
+          </View>
+          <View
+            style={[
+              styles.view_Row_Center,
+              {
+                flexDirection: "column"
+              }
+            ]}
+          >
+            <Text>{AnActivityItemDetail?.createTimeString}</Text>
+          </View>
+        </View>
+        <View style={styles.view_Modal_AnActivityItem_Note}>
+          <Text>{AnActivityItemDetail?.note}</Text>
+        </View>
+        <View>
+          {AnActivityItemDetail?.filename && (
+            <Image
+              source={{
+                uri: AnActivityItemDetail?.filename
+              }}
+              style={{ width: "auto", height: 250 }}
+            />
+          )}
+          {AnActivityItemDetail?.transaction && (
+            <View style={styles.view_Modal_AnActivityItem_Transaction}>
+              <ModalTransactionDetail
+                props={AnActivityItemDetail?.transaction}
+              />
+            </View>
+          )}
+        </View>
       </View>
     );
   };
@@ -398,7 +515,7 @@ const CfActivitiesComponent = ({ route }) => {
           />
         </View>
         <View style={styles.viewActionUserActionable}>
-          {!image || image !== null || image !== undefined ? null : (
+          {image && (
             // null
             <View
               style={{
@@ -532,16 +649,113 @@ const CfActivitiesComponent = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
+  text_DividingAmount_CFDM: {
+    fontSize: 16,
+    fontFamily: "OpenSans_500Medium"
+    // marginHorizontal: 5
+  },
+  view_CFDM_Transfer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    alignContent: "center",
+    flex: 1,
+    width: "30%"
+  },
+  textAccountName_CFDM: {
+    fontSize: 16,
+    fontFamily: "Inconsolata_500Medium",
+    flexWrap: "wrap",
+    flex: 1,
+    marginHorizontal: 5,
+    width: "100%"
+  },
+  viewAnAccount_CFDM: {
+    flexDirection: "row",
+    width: "auto",
+    // flex: 5,
+    maxWidth: "35%",
+    justifyContent: "center",
+    alignContent: "center",
+    alignItems: "center",
+    // borderWidth: 1,
+    // borderColor: "darkgray",
+    padding: 3
+    // justifyContent: "space-around",
+  },
+  viewAn_CFDM_Result: {
+    flexDirection: "row",
+    position: "relative",
+    alignSelf: "center",
+    justifyContent: "space-between",
+    alignContent: "center",
+    alignItems: "center",
+    borderBottomWidth: 0.5,
+    borderBottomColor: "darkgray",
+    // flex: 1,
+    width: "100%",
+    margin: 2
+    // borderWidth: 1,
+    // borderColor: "green"
+  },
+  view_CloseModal: {
+    width: "25%",
+    height: 3,
+    backgroundColor: "darkgray",
+    borderRadius: 10
+  },
+  text_Modal_AnActivityItem_Header: {
+    fontSize: 20,
+    fontFamily: "OpenSans_500Medium"
+  },
+  view_Modal_AnActivityItem_Transaction: {
+    width: "100%",
+    height: "auto",
+    flex: 1
+    // maxHeight: "30%",
+    // borderWidth: 0.5,
+    // borderColor: "green"
+  },
+  view_Modal_AnActivityItem_Note: {
+    width: "100%",
+    minHeight: "10%",
+    height: "auto",
+    maxHeight: "15%",
+    borderWidth: 0.25,
+    borderColor: "darkgray",
+    borderRadius: 10,
+    padding: 5,
+    marginVertical: 5
+  },
+  view_Row_Center: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignContent: "center",
+    alignItems: "center",
+    marginHorizontal: 5,
+    marginVertical: 2
+  },
+  view_Modal_AnActivityItem_Header: {
+    flexDirection: "row",
+    justifyContent: "space-between"
+  },
+  view_Modal_AnActivityItem_ActorInfor: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    // borderBottomWidth: 0.25,
+    // borderBottomColor: "darkgray",
+    width: "100%"
+  },
   view_Modal_AnActivityItem: {
     flexDirection: "column",
-    justifyContent: "space-around",
+    justifyContent: "flex-start",
     alignItems: "center",
     alignContent: "center",
     backgroundColor: "white",
     padding: 5,
-    minHeight: "85%",
+    minHeight: "60%",
     height: "auto",
-    maxHeight: "95%",
+    maxHeight: "85%",
     // marginBottom: 20,
     borderRadius: 10
   },
@@ -686,7 +900,7 @@ const styles = StyleSheet.create({
     borderBottomColorColor: "darkgray",
     borderRadius: 8,
     padding: 4,
-    width: "100%",
+    // width: "100%",
     // minHeight: "10%",
     // height: "auto",
     // height: 50,

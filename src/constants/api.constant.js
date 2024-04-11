@@ -20,6 +20,7 @@ export const API = {
 
     CREATE_ACTIVITY_NO_TRANSACTION: `${Base_URL}/api/collabfund/create/activity/notrans/form`,
     CREATE_ACTIVITY: `${Base_URL}/api/collabfund/create/activity/withtrans/form`,
+    POST_DIVIDE_MONEY: `${Base_URL}/api/collabfund/divide-money`,
   },
   DASHBOARD:{
     BALANCE_GET_ALL_BYDAY: `${Base_URL}/api/balanceHisLogController/get/all/byday/`,

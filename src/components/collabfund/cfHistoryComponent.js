@@ -40,7 +40,7 @@ const CfHistoryComponent = ({ route }) => {
           }
         })
         .then((response) => {
-          console.log("fetchCollabFundHistory response: ", response);
+          // console.log("fetchCollabFundHistory response: ", response);
           setHistory(response);
           setIsRefreshing(false);
         })

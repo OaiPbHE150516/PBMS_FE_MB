@@ -120,6 +120,27 @@ const collabFundServices = {
     } catch (error) {
       console.error("Error posting data createActivity:", error);
     }
+  },
+
+  // post method to divide money
+  postDivideMoney: async (data) => {
+    try {
+      const jsonHeader = {
+        "Content-Type": "application/json"
+      };
+      console.log(data);
+      const response = await axios.post(
+        API.COLLABFUND.POST_DIVIDE_MONEY,
+        // "https://pbms-be-api-vqj42lqqmq-as.a.run.app/api/collabfund/divide-money",
+        data.data,
+        {
+          headers: jsonHeader // Sử dụng 'headers' thay vì 'jsonHeader'
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error postDivideMoney data:", error);
+    }
   }
 };
 

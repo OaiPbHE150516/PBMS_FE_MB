@@ -49,6 +49,14 @@ const CollabFundScreen = () => {
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
 
+  const [isModelMenuVisible, setIsModelMenuVisible] = useState(false);
+
+  const [stateMenu, setStateMenu] = useState(0);
+
+  const DEFAULT_STATE_MENU = 0;
+  const GUILDLINE_CF = 1;
+  const NEW_CF = 2;
+
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
@@ -180,10 +188,88 @@ const CollabFundScreen = () => {
     );
   };
 
+  function handleMenuPress() {
+    console.log("Menu pressed");
+    // setStateMenu(DEFAULT_STATE_MENU);
+    setIsModelMenuVisible(true);
+  }
+
+  function handlePressNewCF() {
+    console.log("New CF pressed");
+    // setStateMenu(NEW_CF);
+  }
+
+  function handlePressGuildCF() {
+    console.log("Guild CF pressed");
+    // setStateMenu(GUILDLINE_CF);
+  }
+
+  const ModalMenu = () => {
+    return (
+      <View
+        style={[
+          styles.view_ModalMenuContent,
+          {
+            // height:
+            //   stateMenu === DEFAULT_STATE_MENU
+            //     ? "15%"
+            //     : stateMenu === GUILDLINE_CF
+            //       ? "30%"
+            //       : "50%"
+          }
+        ]}
+      >
+        <Pressable
+          onPress={() => {
+            handlePressGuildCF();
+          }}
+          style={({ pressed }) => [
+            {
+              opacity: pressed ? 0.25 : 1
+            },
+            styles.pressable_ModalMenuContent_GuildLineCF
+          ]}
+        >
+          <Text style={styles.text_GuildlineCF}>{"Hướng dẫn tính năng"}</Text>
+        </Pressable>
+        <Pressable
+          onPress={() => {
+            handlePressNewCF();
+          }}
+          style={({ pressed }) => [
+            {
+              opacity: pressed ? 0.25 : 1
+            },
+            styles.pressable_ModalMenuContent_NewCF
+          ]}
+        >
+          <Text style={styles.text_NewCF}>{"Tạo chi tiêu chung"}</Text>
+        </Pressable>
+      </View>
+    );
+  };
+
   const CollabFundListScreen = () => {
     return (
       <View style={styles.containerCollabFundList}>
-        <Text style={styles.textCollabFundListHeader}>{"Chi tiêu chung"}</Text>
+        <View style={styles.view_ScreenHeader}>
+          <Text style={styles.textCollabFundListHeader}>
+            {"Chi tiêu chung"}
+          </Text>
+          <Pressable
+            onPress={() => {
+              handleMenuPress();
+            }}
+            style={({ pressed }) => [
+              {
+                opacity: pressed ? 0.25 : 1
+              },
+              styles.pressable_MenuPress
+            ]}
+          >
+            <Icon name="bars" size={30} color="gray" />
+          </Pressable>
+        </View>
         <FlatList
           style={styles.flatlist_collabfund}
           scrollEnabled={true}
@@ -196,6 +282,22 @@ const CollabFundScreen = () => {
             <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
           }
         />
+        <Modal
+          visible={isModelMenuVisible}
+          transparent={true}
+          animationType="slide"
+        >
+          <View style={styles.view_ModalMenu}>
+            {/* a pressable to close modal */}
+            <Pressable
+              style={{ flex: 1, backgroundColor: "red" }}
+              onPress={() => {
+                setIsModelMenuVisible(false);
+              }}
+            />
+            <ModalMenu />
+          </View>
+        </Modal>
       </View>
     );
   };
@@ -216,6 +318,71 @@ const CollabFundScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  pressable_ModalMenuContent_GuildLineCF: {
+    position: "absolute",
+    alignSelf: "flex-end",
+    top: 10,
+    right: 30
+  },
+  text_GuildlineCF: {
+    fontSize: 15,
+    fontFamily: "OpenSans_400Regular_Italic",
+    color: "#0984e3"
+  },
+  text_NewCF: {
+    fontSize: 20,
+    fontFamily: "OpenSans_500Medium",
+    color: "#2d3436"
+  },
+  pressable_ModalMenuContent_NewCF: {
+    width: "50%",
+    height: "auto",
+    backgroundColor: "#74b9ff",
+    borderRadius: 5,
+    marginVertical: 10,
+    marginHorizontal: 10,
+    padding: 5,
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center"
+  },
+  pressable_MenuPress: {
+    // padding: 10,
+    // marginHorizontal: 10,
+    borderWidth: 1,
+    borderColor: "gray",
+    flex: 1,
+    alignItems: "flex-end"
+  },
+  view_ModalMenuContent: {
+    width: "100%",
+    minHeight: "15%",
+    height: "auto",
+    maxHeight: "90%",
+    backgroundColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center",
+    borderRadius: 30,
+    borderWidth: 0.25,
+    borderColor: "darkgray"
+  },
+  view_ModalMenu: {
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    // alignItems: "center",
+    // alignContent: "center",
+    backgroundColor: "rgba(0,0,0,0.25)"
+  },
+  view_ScreenHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    alignContent: "center",
+    width: "100%",
+    padding: 10
+  },
   flatlist_collabfund: {
     width: "100%"
     // height: "100%",
@@ -224,7 +391,7 @@ const styles = StyleSheet.create({
   },
   textCollabFundListHeader: {
     fontSize: 30,
-    fontFamily: "Inconsolata_500Medium",
+    fontFamily: "OpenSans_500Medium",
     color: "black",
     textAlign: "center",
     marginVertical: 10
@@ -328,7 +495,7 @@ const styles = StyleSheet.create({
   },
   containerCollabFundList: {
     flex: 1,
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
     // alignItems: "center",
     // justifyContent: "center",
     // width: "100%",
@@ -341,8 +508,8 @@ const styles = StyleSheet.create({
     // flex: 1,
     width: "100%",
     height: "100%",
-    maxHeight: "90%",
-    backgroundColor: "#fff"
+    maxHeight: "90%"
+    // backgroundColor: "#fff"
     // alignItems: "center",
     // justifyContent: "center",
     // borderWidth: 1,

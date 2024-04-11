@@ -24,7 +24,11 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome6";
 
+// const
+import { API } from "../../constants/api.constant";
+
 // redux
+import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import collabFundServices from "../../services/collabFundServices";
 
@@ -33,6 +37,8 @@ const DevideMoneyInfor = ({ collabFund }) => {
 
   const [nowDivideMoneyInfor, setNowDivideMoneyInfor] = useState([]);
   const [isFetchingData, setIsFetchingData] = useState(false);
+
+  const [isPressableDivideMoney, setIsPressableDivideMoney] = useState(false);
 
   const [isMoreDetailVisible, setIsMoreDetailVisible] = useState(true);
 
@@ -47,9 +53,13 @@ const DevideMoneyInfor = ({ collabFund }) => {
       await collabFundServices.getDivideMoneyInfor(data).then((response) => {
         setNowDivideMoneyInfor(response);
         setIsFetchingData(false);
+        setIsPressableDivideMoney(true);
       });
     } catch (error) {
       console.error("Error fetchDivideMoneyInfor data:", error);
+      Alert.alert("Lỗi", "Lấy dữ liệu chia tiền không thành công", [
+        { text: "OK" }
+      ]);
     }
   }
 
@@ -60,8 +70,49 @@ const DevideMoneyInfor = ({ collabFund }) => {
     }
   }, [account, collabFund]);
 
+  async function postDivideMoney() {
+    try {
+      const jsonHeader = {
+        "Content-Type": "application/json"
+      };
+      const data = {
+        data: {
+          collabFundID: collabFund?.collabFundID,
+          accountID: account?.accountID
+        }
+      };
+      // const response = await axios.post(
+      //   API.COLLABFUND.POST_DIVIDE_MONEY,
+      //   data,
+      //   {
+      //     jsonHeader
+      //   }
+      // );
+      // console.log("response postDivideMoney:", response.data);
+
+      await collabFundServices
+        .postDivideMoney(data)
+        .then((response) => {
+          console.log("response postDivideMoney:", response);
+        })
+        .finally(() => {
+          setIsPressableDivideMoney(false);
+          Alert.alert("Thành công", "Chia tiền thành công", [{ text: "OK" }]);
+        })
+        .catch((error) => {
+          console.error("Error postDivideMoney data:", error);
+          Alert.alert("Lỗi", "Chia tiền không thành công", [{ text: "OK" }]);
+        });
+    } catch (error) {
+      console.error("Error postDivideMoney data:", error);
+      Alert.alert("Lỗi", "Chia tiền không thành công", [{ text: "OK" }]);
+    }
+  }
+
   async function handlePressableDivideMoney() {
     console.log("handlePressableDivideMoney");
+
+    await postDivideMoney();
   }
 
   const AnAccountDMInfor = ({ item }) => {
@@ -165,7 +216,7 @@ const DevideMoneyInfor = ({ collabFund }) => {
       <ScrollView style={styles.viewModalMoreDetailDivideMoneyContent}>
         <View style={styles.viewTableHeader}>
           <Text style={styles.textLabelHeaderChildInContent}>
-            {"Chi tiết quỹ hợp tác"}
+            {"Chi tiết chi tiêu chung"}
           </Text>
         </View>
         {isFetchingData ? (
@@ -234,6 +285,7 @@ const DevideMoneyInfor = ({ collabFund }) => {
           onPress={() => {
             handlePressableDivideMoney();
           }}
+          disabled={!isPressableDivideMoney}
         >
           <Text style={styles.textPressableDivideMoneyAction}>
             {"Chia tiền"}
@@ -353,7 +405,7 @@ const styles = StyleSheet.create({
   viewTableHeader: {
     alignContent: "center",
     alignItems: "center",
-    borderBottomWidth: 0.5,
+    borderBottomWidth: 0.25,
     borderBottomColor: "darkgray",
     marginTop: 10,
     marginBottom: 5

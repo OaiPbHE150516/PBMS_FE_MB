@@ -5,6 +5,9 @@ export const API = {
   AUTHEN: {
     SIGN_IN: `${Base_URL}/api/Auth/signin`
   },
+  ACCOUNT:{
+    SEARCH_KEYWORD: `${Base_URL}/api/profile/search/`,
+  },
   BUDGET:{
     GET_ALL: `${Base_URL}/api/budget/get/all/`,
     GET_DETAIL: `${Base_URL}/api/budget/get/detail/`,
@@ -21,6 +24,8 @@ export const API = {
     CREATE_ACTIVITY_NO_TRANSACTION: `${Base_URL}/api/collabfund/create/activity/notrans/form`,
     CREATE_ACTIVITY: `${Base_URL}/api/collabfund/create/activity/withtrans/form`,
     POST_DIVIDE_MONEY: `${Base_URL}/api/collabfund/divide-money`,
+    CREATE_CF: `${Base_URL}/api/collabfund/create`,
+    UPLOAD_IMAGE_COVER: `${Base_URL}/api/file/upload/collabfund/imagecover`,
   },
   DASHBOARD:{
     BALANCE_GET_ALL_BYDAY: `${Base_URL}/api/balanceHisLogController/get/all/byday/`,

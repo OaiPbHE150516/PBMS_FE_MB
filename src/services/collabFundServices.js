@@ -141,6 +141,65 @@ const collabFundServices = {
     } catch (error) {
       console.error("Error postDivideMoney data:", error);
     }
+  },
+
+  // search account by keyword
+  searchAccountByKeyword: async (data) => {
+    try {
+      const response = await axios.get(API.ACCOUNT.SEARCH_KEYWORD + data, {
+        headers
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error searchAccountByKeyword data:", error);
+    }
+  },
+
+  // create collabfund
+  createCollabFund: async (data) => {
+    try {
+      const response = await axios.post(API.COLLABFUND.CREATE_CF, data, {
+        headers
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error createCollabFund data:", error);
+    }
+  },
+
+  // upload image cover
+  uploadImageCover: async (data) => {
+    try {
+      const formHeader = {
+        "Content-Type": "multipart/form-data"
+      };
+      let fileURL = "";
+      const formData = new FormData();
+      const filename = data?.uri.split("/").pop();
+      const match = /\.(\w+)$/.exec(filename);
+      let type = match ? `image/${match[1]}` : `image`;
+      formData.append("file", {
+        uri: data?.uri,
+        name: filename,
+        type
+      });
+      await axios({
+        method: "post",
+        url: API.COLLABFUND.UPLOAD_IMAGE_COVER,
+        data: formData,
+        headers: formHeader
+      })
+        .then((response) => {
+          fileURL = response.data;
+          // console.log("fileURL", fileURL);
+        })
+        .catch((error) => {
+          console.error("Error uploadImageCover data:", error);
+        });
+      return fileURL;
+    } catch (error) {
+      console.error("Error uploadImageCover data:", error);
+    }
   }
 };
 

@@ -352,6 +352,9 @@ const MyAccount = ({ callback }) => {
         </View> */}
         <ListSettings navigation={navigation} />
         <PressableSignOut navigation={navigation} />
+
+        {/* a footer empty view height 10%*/}
+        <View style={{ height: 100 }}></View>
       </ScrollView>
     );
   }
@@ -605,17 +608,17 @@ const styles = StyleSheet.create({
     elevation: 5
   },
   viewMainScreen: {
-    flex: 1
+    flex: 1,
     // height: "50%",
     // justifyContent: "flex-start",
     // alignItems: "center"
-    // borderWidth: 1,
-    // borderColor: "black"
+    // borderWidth: 10,
+    // borderColor: "green"
   },
   viewStyle: {
     // flex: 1,
     width: "100%",
-    height: "90%"
+    height: "100%"
     // borderWidth: 1,
     // borderColor: "black"
   }

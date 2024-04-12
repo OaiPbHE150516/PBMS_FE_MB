@@ -156,9 +156,9 @@ const styles = StyleSheet.create({
   parentView: {
     // minHeight: "95%",
     // margin: 10,
-    flex: 1
+    flex: 1,
     // borderWidth: 5,
-    // borderColor: "black",
+    // borderColor: "green",
   },
   viewL: {
     // minHeight: Dimensions.get("window").height - 200,

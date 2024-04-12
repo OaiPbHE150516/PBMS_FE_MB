@@ -178,6 +178,9 @@ const TransCompTest = ({ route }) => {
               </View>
             );
           }}
+          ListFooterComponent={() => {
+            return <View style={{ height: 160 }}></View>;
+          }}
         />
       </View>
       <Modal
@@ -213,7 +216,7 @@ const TransCompTest = ({ route }) => {
                 alignContent: "center",
                 alignSelf: "center",
                 bottom: -5,
-                zIndex: 10,
+                zIndex: 10
               }}
             ></View>
             <ModalTransactionDetail
@@ -312,13 +315,13 @@ const styles = StyleSheet.create({
     elevation: 1
   },
   viewL: {
-    height: Dimensions.get("window").height * 0.65
+    // height: Dimensions.get("window").height * 0.65
     // borderColor: "black",
     // borderWidth: 1
   },
   parentView: {
     margin: 2,
-    // borderColor: "black",
+    // borderColor: "red",
     // borderWidth: 1,
     flex: 1,
     height: "100%",

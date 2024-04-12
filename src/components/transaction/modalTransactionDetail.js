@@ -207,6 +207,9 @@ const ModalTransactionDetail = ({ props, callback }) => {
                 style={{ width: width, height: height }}
                 resizeMode="contain"
               />
+              <Text>
+                {props?.imageURL}
+              </Text>
             </View>
           )}
       </View>
@@ -312,7 +315,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     alignContent: "center",
-    marginTop: 15,
+    marginTop: 15
   },
   viewStyle: {
     // flex: 1,

@@ -76,20 +76,10 @@ const AddTransactionScreen = () => {
 
   const [isAddingTransaction, setIsAddingTransaction] = useState(false);
 
-  const [isPulledDown, setIsPulledDown] = useState(false);
   const [isShowDetail, setIsShowDetail] = useState(false);
   const [transAmount, setTransAmount] = useState("");
-  const [isInvoiceScanning, setIsInvoiceScanning] = useState(false);
   const [currentTime, setCurrentTime] = useState("");
 
-  const [permissionResponseMediaLibrary, requestPermissionMediaLibrary] =
-    MediaLibrary.usePermissions();
-  const [permissionResponseCamera, requestPermissionCamera] =
-    ImagePicker.useMediaLibraryPermissions();
-
-  const modalAddTransactionVisible = useSelector(
-    (state) => state.modal.modalAddTransactionVisible
-  );
   const account = useSelector((state) => state.authen.account);
   // const categories = useSelector((state) => state.category.categories);
   const categoryToAddTransaction = useSelector(
@@ -103,6 +93,8 @@ const AddTransactionScreen = () => {
   );
 
   const [addTransactionNote, setAddTransactionNote] = useState("");
+  const [imageOfTransaction, setImageOfTransaction] = useState(null);
+  const [modalImageOfTransaction, setModalImageOfTransaction] = useState(false);
 
   // data screen
   const [isSnackbarVisible, setIsSnackbarVisible] = useState(false);
@@ -301,6 +293,7 @@ const AddTransactionScreen = () => {
   function handleResetAddTransaction() {
     setTransAmount("");
     setAddTransactionNote("");
+    setImageOfTransaction(null);
     dispatch(setCategoryToAddTransaction(null));
     dispatch(setAddTransactionTime(null));
     setCurrentTime(datetimeLibrary.getCurrentTime().datetimestr);
@@ -382,6 +375,55 @@ const AddTransactionScreen = () => {
     if (!result.canceled) {
       setMTakeCamera(false);
       handleUploadToScanInvoice(result.assets[0]);
+    }
+  }
+
+  async function handleOnPickMediaOfTransaction() {
+    // Kiểm tra quyền trước khi truy cập vào album ảnh
+    const mediaPermission = await ImagePicker.getMediaLibraryPermissionsAsync();
+    if (mediaPermission.status !== "granted") {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission not granted");
+        Alert.alert("Permission not granted");
+        return;
+      }
+    }
+
+    // Truy cập vào album ảnh nếu quyền đã được cấp
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1
+    });
+
+    if (!result.canceled) {
+      setModalImageOfTransaction(false);
+      setImageOfTransaction(result.assets[0]);
+    }
+  }
+
+  async function handleOnLaunchCameraOfTransaction() {
+    // Kiểm tra quyền trước khi chụp ảnh
+    const cameraPermission = await ImagePicker.getCameraPermissionsAsync();
+    if (!cameraPermission.granted) {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission not granted");
+        Alert.alert("Permission not granted");
+        return;
+      }
+    }
+
+    // Chụp ảnh nếu quyền đã được cấp
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1
+    });
+
+    if (!result.canceled) {
+      setModalImageOfTransaction(false);
+      setImageOfTransaction(result.assets[0]);
     }
   }
 
@@ -661,21 +703,84 @@ const AddTransactionScreen = () => {
               />
             </View>
           </View>
-          <View style={styles.view_AddTransaction_Note}>
-            <TextInput
-              style={[styles.textinput_AddTransaction_Note]}
-              placeholder="Ghi chú"
-              editable={true}
-              multiline={true}
-              numberOfLines={5}
-              textAlign="left"
-              textAlignVertical="top"
-              value={addTransactionNote}
-              onChangeText={(text) => {
-                setAddTransactionNote(text);
-              }}
+          {isShowDetail && (
+            <View style={styles.viewMoreDetail}>
+              <View style={styles.view_AddTransaction_Note}>
+                <TextInput
+                  style={[styles.textinput_AddTransaction_Note]}
+                  placeholder="Ghi chú"
+                  editable={true}
+                  multiline={true}
+                  numberOfLines={5}
+                  textAlign="left"
+                  textAlignVertical="top"
+                  value={addTransactionNote}
+                  onChangeText={(text) => {
+                    setAddTransactionNote(text);
+                  }}
+                />
+              </View>
+              {!newAssetShowing?.asset && (
+                <View style={styles.viewAmount}>
+                  <View style={styles.viewAmountIcon}>
+                    <Icon name="file-image" size={30} color="darkgrey" />
+                  </View>
+                  <View style={styles.viewSelectCategory}>
+                    <Pressable
+                      style={[styles.pressSelectCategory]}
+                      onPress={() => {
+                        setModalImageOfTransaction(true);
+                        // dispatch(setModalAddTransactionVisible(true));
+                      }}
+                    >
+                      <Text style={styles.textSelectCategory}>
+                        {"Chọn ảnh"}
+                      </Text>
+                    </Pressable>
+                    <Icon
+                      name="angle-right"
+                      size={20}
+                      color="darkgrey"
+                      style={{ left: -20, top: 5 }}
+                    />
+                  </View>
+                </View>
+              )}
+              {imageOfTransaction && (
+                <View
+                  style={{
+                    width: "100%",
+                    height: 300
+                    // backgroundColor: "lightgrey"
+                  }}
+                >
+                  <Image
+                    source={{ uri: imageOfTransaction.uri }}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      resizeMode: "cover"
+                    }}
+                  />
+                </View>
+              )}
+            </View>
+          )}
+          <Pressable
+            onPress={() => {
+              setIsShowDetail(!isShowDetail);
+            }}
+            style={styles.pressMoreDetail}
+          >
+            <Text style={styles.textMoreDetail}>
+              {isShowDetail ? "Ẩn chi tiết" : "Thêm chi tiết"}
+            </Text>
+            <Icon
+              name={isShowDetail ? "chevron-up" : "chevron-down"}
+              size={20}
+              color="darkgrey"
             />
-          </View>
+          </Pressable>
           {/* <Button
             onPress={() => {
               setSnackbarContent("This is a snackbar");
@@ -971,6 +1076,42 @@ const AddTransactionScreen = () => {
         <Modal
           animationType="fade"
           transparent={true}
+          visible={modalImageOfTransaction}
+        >
+          <View style={styles.view_BackgroudModal}>
+            <Pressable
+              onPress={() => {
+                setModalImageOfTransaction(false);
+              }}
+              style={styles.pressable_CloseModal}
+            />
+            <View style={styles.view_Modal_TakeCamera}>
+              <Pressable
+                style={styles.pressableActionUserActionable}
+                onPressIn={() => {
+                  handleOnPickMediaOfTransaction();
+                  // setIsModalMediaCameraVisible(!isModalMediaCameraVisible);
+                }}
+              >
+                <Icon name="images" size={50} color="darkgray" />
+                <Text style={styles.textLabelActionable}>{"Thư viện"}</Text>
+              </Pressable>
+              <Pressable
+                style={styles.pressableActionUserActionable}
+                onPressIn={() => {
+                  handleOnLaunchCameraOfTransaction();
+                  // setIsModalMediaCameraVisible(!isModalMediaCameraVisible);
+                }}
+              >
+                <Icon name="camera" size={50} color="darkgray" />
+                <Text style={styles.textLabelActionable}>{"Máy ảnh"}</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
+        <Modal
+          animationType="fade"
+          transparent={true}
           visible={isAddingTransaction}
         >
           <View style={styles.view_BackgroudModal}>
@@ -1199,9 +1340,9 @@ const styles = StyleSheet.create({
   scrollView: {
     // width: "100%",
     width: Dimensions.get("screen").width * 0.97,
-    height: "100%",
-    // borderColor: "blue",
-    // borderWidth: 1,
+    // height: "200%",
+    borderColor: "blue",
+    borderWidth: 10,
     flex: 1
   },
 
@@ -1212,14 +1353,15 @@ const styles = StyleSheet.create({
   textMoreDetail: {
     fontSize: 22,
     fontFamily: "Inconsolata_400Regular",
-    marginHorizontal: 10
+    marginHorizontal: 10,
+    color: "darkgrey"
   },
   pressMoreDetail: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    alignContent: "center"
-    // marginVertical: 10,
+    alignContent: "center",
+    marginVertical: 10
     // borderColor: "red",
     // borderWidth: 1,
     // marginHorizontal: 10
@@ -1240,7 +1382,7 @@ const styles = StyleSheet.create({
   viewScrollViewParent: {
     flexDirection: "column",
     backgroundColor: "white",
-    height: "85%",
+    // height: "100%",
     borderColor: "darkgray",
     borderWidth: 1
   },
@@ -1395,34 +1537,5 @@ const styles = StyleSheet.create({
     textAlign: "center"
   }
 });
-
-{
-  /* More Detail */
-}
-{
-  /* <View style={styles.viewMoreDetail}>
-            <View
-              style={{
-                height: isShowDetail ? 50 : 0
-                // borderWidth: 2,
-                // borderColor: "darkgray"
-              }}
-            >
-              <Text>More Detail</Text>
-            </View>
-            <View style={styles.viewPressableMoreDetail}>
-              <Pressable
-                style={[styles.pressMoreDetail]}
-                onPress={() => {
-                  setIsShowDetail(isShowDetail ? false : true);
-                  // console.log("isShowDetail: ", isShowDetail);
-                }}
-              >
-                <Text style={styles.textMoreDetail}>Thêm chi tiết</Text>
-                <Icon name="caret-down" size={20} color="darkgrey" />
-              </Pressable>
-            </View>
-          </View> */
-}
 
 export default AddTransactionScreen;

@@ -720,7 +720,7 @@ const AddTransactionScreen = () => {
                   }}
                 />
               </View>
-              {!newAssetShowing?.asset && (
+              {/* {!newAssetShowing?.asset && (
                 <View style={styles.viewAmount}>
                   <View style={styles.viewAmountIcon}>
                     <Icon name="file-image" size={30} color="darkgrey" />
@@ -763,7 +763,7 @@ const AddTransactionScreen = () => {
                     }}
                   />
                 </View>
-              )}
+              )} */}
             </View>
           )}
           <Pressable
@@ -1341,8 +1341,8 @@ const styles = StyleSheet.create({
     // width: "100%",
     width: Dimensions.get("screen").width * 0.97,
     // height: "200%",
-    borderColor: "blue",
-    borderWidth: 10,
+    // borderColor: "blue",
+    // borderWidth: 10,
     flex: 1
   },
 

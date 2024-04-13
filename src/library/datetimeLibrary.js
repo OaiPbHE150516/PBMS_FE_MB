@@ -91,7 +91,6 @@ const datetimeLibrary = {
     ];
   },
 
-  // compare two dates
   compareTwoDates: function (date1, date2) {
     return isBefore(date1, date2);
   },
@@ -100,7 +99,6 @@ const datetimeLibrary = {
     return isSameDay(date1, date2);
   },
 
-  // get current day, only day
   getCurrentDay: function () {
     const currentDate = new Date();
     return currentDate.getDate();
@@ -227,6 +225,29 @@ const datetimeLibrary = {
       currentDate.getSeconds()
     );
   },
+
+  // get start day and end day of the month by adding numMonth to current month
+  getTimeThisMonthByNumMonth: function (numMonth) {
+    const currentDate = new Date();
+    const startdate = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() - numMonth,
+      1
+    );
+    const enddate = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() - numMonth + 1,
+      0
+    );
+    const resultMonthStr = "tháng " + format(startdate, "MM");
+    return [
+      startdate,
+      enddate,
+      format(startdate, "dd-MM-yyyy") + "/" + format(enddate, "dd-MM-yyyy"),
+      format(startdate, "dd/MM") + " - " + format(enddate, "dd/MM"),
+      resultMonthStr
+    ];
+  }
 };
 
 export default datetimeLibrary;

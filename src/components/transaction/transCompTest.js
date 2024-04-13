@@ -11,29 +11,36 @@ import {
   Modal,
   Pressable
 } from "react-native";
+import Icon from "react-native-vector-icons/FontAwesome6";
 import { useSelector, useDispatch } from "react-redux";
 import pbms from "../../api/pbms";
 import { API } from "../../constants/api.constant";
 // import TransactionByDayList from "./transactionByDayList";
+import { useNavigation, useIsFocused } from "@react-navigation/native";
 import transactionServices from "../../services/transactionServices";
 
 // components
 import TransactionByDayItem from "./transactionByDayItem";
 import ModalTransactionDetail from "./modalTransactionDetail";
+import ReportTransactionComp from "./reportTransactionComp";
 
 const TransCompTest = ({ route }) => {
   const account = useSelector((state) => state.authen.account);
+  const shouldFetchData = useSelector((state) => state.data.shouldFetchData);
+  const isFocused = useIsFocused();
   const [transactions, setTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isModalDetailVisible, setIsModalDetailVisible] = useState(false);
   const [transactionDetail, setTransactionDetail] = useState(null);
-
   const [backgroundColorModal, setBackgroundColorModal] = useState(null);
 
-  const data = route.params;
+  const [isShowingModalReport, setIsShowingModalReport] = useState(false);
+
+  let data = route.params;
   const fetchTransactionData = async ({ accountID, time }) => {
     try {
+      console.log("time: ", time);
       const apiurl =
         API.TRANSACTION.GET_TRANSACTION_BY_WEEK + accountID + "/" + time;
       // console.log("apiurl: ", apiurl);
@@ -78,6 +85,13 @@ const TransCompTest = ({ route }) => {
     }, 1000);
   };
 
+  // return isLoading ? null : (
+  //   <View style={styles.parentView}>
+  //     <Text>{account?.accountID}</Text>
+  //     <Text>{data?.time}</Text>
+  //   </View>
+  // );
+
   useEffect(() => {
     if (account !== null) {
       setIsLoading(true);
@@ -86,14 +100,39 @@ const TransCompTest = ({ route }) => {
         setIsLoading(false);
       }
     }
-  }, [account]);
+  }, [shouldFetchData, route]);
 
   return isLoading ? null : (
     <View style={styles.parentView}>
-      <Text style={styles.textHeader}>
-        Các giao dịch từ {transactions?.weekDetail?.startDateStrFull} đến{" "}
-        {transactions?.weekDetail?.endDateStrFull}
-      </Text>
+      <View
+        style={{
+          flexDirection: "row",
+          alignContent: "center",
+          alignItems: "center",
+          justifyContent: "space-between"
+        }}
+      >
+        <Text style={styles.textHeader}>
+          {"Các giao dịch từ "}
+          {transactions?.weekDetail?.startDateStrFull}
+          {" đến "}
+          {transactions?.weekDetail?.endDateStrFull}
+        </Text>
+        <Pressable
+          onPress={() => setIsShowingModalReport(true)}
+          // style with pressed state make it change opacity when pressed
+          style={({ pressed }) => [
+            {
+              opacity: pressed ? 0.5 : 1,
+              marginHorizontal: 5,
+              paddingHorizontal: 5
+            }
+          ]}
+        >
+          {/* <Text style={{ color: "#0984e3" }}>Xem báo cáo</Text> */}
+          <Icon name="chart-line" size={20} color="#0984e3" />
+        </Pressable>
+      </View>
       <View style={{ marginTop: 10 }}>
         <View style={styles.viewMoney}>
           <Text style={styles.textLabelMoney}>Tổng thu</Text>
@@ -226,6 +265,35 @@ const TransCompTest = ({ route }) => {
           </View>
         </View>
       </Modal>
+      <Modal
+        visible={isShowingModalReport}
+        animationType="slide"
+        transparent={true}
+      >
+        <View
+          style={[
+            styles.view_BackgroudModal,
+            {
+              backgroundColor: "rgba(0, 0, 0, 0.25)"
+            }
+          ]}
+        >
+          <Pressable
+            style={styles.pressable_closeModalDetail}
+            onPress={() => {
+              setIsShowingModalReport(false);
+            }}
+          />
+          <View
+            style={{
+              backgroundColor: "white",
+              height: "80%"
+            }}
+          >
+            <ReportTransactionComp time={data.time} />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -241,7 +309,7 @@ const styles = StyleSheet.create({
   },
   textDayInWeek: {
     fontSize: 20,
-    fontFamily: "Inconsolata_500Medium"
+    fontFamily: "OpenSans_500Medium"
   },
   textMonthYear: {
     fontSize: 13,
@@ -295,7 +363,7 @@ const styles = StyleSheet.create({
   },
   textHeader: {
     fontSize: 18,
-    fontFamily: "Inconsolata_400Regular"
+    fontFamily: "OpenSans_400Regular"
   },
   listStyle: {
     margin: 2,

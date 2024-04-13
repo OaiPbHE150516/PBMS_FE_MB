@@ -5,6 +5,12 @@ export const VAR = {
   LAST_WEEK_EN: "LastWeek",
   LAST_WEEK_VI: "Tuần trước",
 
+  THIS_MONTH_VN: "Tháng này",
+  THIS_MONTH_EN: "ThisMonth",
+
+  LAST_MONTH_VN: "Tháng trước",
+  LAST_MONTH_EN: "LastMonth",
+
   MEDIALIBRARY: {
     DEFAULT_ALBUM_NAME: "PBMS"
   },

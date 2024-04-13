@@ -159,124 +159,130 @@ export default function App() {
   return (
     <SafeAreaProvider style={styles.container}>
       <SafeAreaView
-        style={[styles.container, { backgroundColor: "rgba(0,0,0,0)", width, height }]}
+        style={[
+          styles.container,
+          { backgroundColor: "rgba(0,0,0,0)", width, height }
+        ]}
         edges={["right", "top", "left"]}
       >
         <GestureHandlerRootView style={styles.container}>
-        <Provider store={store}>
-          <NavigationContainer>
-            {/* if the user is not signed in then show SigninIOS*/}
-            {!isSignin ? (
-              Platform.OS === "ios" ? (
-                <SignInIOS callback={callBackSignIn} />
+          <Provider store={store}>
+            <NavigationContainer>
+              {/* if the user is not signed in then show SigninIOS*/}
+              {!isSignin ? (
+                Platform.OS === "ios" ? (
+                  <SignInIOS callback={callBackSignIn} />
+                ) : (
+                  <SignInAndroid callback={callBackSignIn} />
+                )
               ) : (
-                <SignInAndroid callback={callBackSignIn} />
-              )
-            ) : (
-              // null
-              <Tab.Navigator
-                screenOptions={({ route }) => ({
-                  tabBarHideOnKeyboard: Platform.OS !== "ios",
-                  tabBarIcon: ({ focused, color, size }) => {
-                    let iconName;
-                    switch (route.name) {
-                      case "Home":
-                        iconName = focused ? "home" : "home-outline";
-                        break;
-                      case "Settings":
-                        iconName = focused ? "settings" : "settings-outline";
-                        break;
-                      // case "Signin":
-                      //   iconName = focused ? "log-in" : "log-in-outline";
-                      //   break;
-                      case "Transaction":
-                        iconName = focused ? "cash" : "cash-outline";
-                        break;
-                      case "AddTransaction":
-                        iconName = focused
-                          ? "add-circle"
-                          : "add-circle-outline";
-                        break;
-                      case "MyAccount":
-                        iconName = focused ? "grid" : "grid-outline";
-                        break;
-                      case "CollabFund":
-                        iconName = focused ? "people" : "people-outline";
-                        break;
-                    }
-                    return (
-                      <Ionicons
-                        name={iconName}
-                        size={
-                          route.name == "AddTransaction"
-                            ? size * 2.2
-                            : size * 1.1
-                        }
-                        color={color}
-                        style={{
-                          position: "absolute",
-                          bottom: -30,
-                          top: route.name == "AddTransaction" ? -12 : 15,
-                          borderRadius: 50,
-                          padding: route.name == "AddTransaction" ? 5 : 0
-                        }}
-                      />
-                    );
-                  },
-                  tabBarActiveTintColor: "tomato",
-                  tabBarInactiveTintColor: "gray",
-                  headerShown: false,
-                  tabBarShowLabel: false,
-                  tabBarStyle: {
-                    // backgroundColor: "white",
-                    borderTopWidth: 0,
-                    shadowColor: "darkgray",
-                    shadowOffset: {
-                      width: 0,
-                      height: 10
+                // null
+                <Tab.Navigator
+                  screenOptions={({ route }) => ({
+                    tabBarHideOnKeyboard: Platform.OS !== "ios",
+                    tabBarIcon: ({ focused, color, size }) => {
+                      let iconName;
+                      switch (route.name) {
+                        case "Home":
+                          iconName = focused ? "home" : "home-outline";
+                          break;
+                        case "Settings":
+                          iconName = focused ? "settings" : "settings-outline";
+                          break;
+                        // case "Signin":
+                        //   iconName = focused ? "log-in" : "log-in-outline";
+                        //   break;
+                        case "Transaction":
+                          iconName = focused ? "cash" : "cash-outline";
+                          break;
+                        case "AddTransaction":
+                          iconName = focused
+                            ? "add-circle"
+                            : "add-circle-outline";
+                          break;
+                        case "MyAccount":
+                          iconName = focused ? "grid" : "grid-outline";
+                          break;
+                        case "CollabFund":
+                          iconName = focused ? "people" : "people-outline";
+                          break;
+                      }
+                      return (
+                        <Ionicons
+                          name={iconName}
+                          size={
+                            route.name == "AddTransaction"
+                              ? size * 2.2
+                              : size * 1.1
+                          }
+                          color={color}
+                          style={{
+                            position: "absolute",
+                            bottom: -30,
+                            top: route.name == "AddTransaction" ? -12 : 15,
+                            borderRadius: 50,
+                            padding: route.name == "AddTransaction" ? 5 : 0
+                          }}
+                        />
+                      );
                     },
-                    shadowOpacity: 0.25,
-                    shadowRadius: 3.5,
-                    elevation: 5,
-                    position: "absolute",
-                    bottom: 20,
-                    left: 10,
-                    right: 10,
-                    borderRadius: 20,
-                    height: 60,
-                    borderWidth: 1,
-                    borderColor: "lightgray",
-                    display: route.name == "Signin" ? "none" : "flex"
-                  }
-                })}
-              >
-                {/* if platform is IOS then add SignInIOS, if Android add SignInScreen */}
-                {/* {Platform.OS === "ios" ? (
+                    tabBarActiveTintColor: "tomato",
+                    tabBarInactiveTintColor: "gray",
+                    headerShown: false,
+                    tabBarShowLabel: false,
+                    tabBarStyle: {
+                      // backgroundColor: "white",
+                      borderTopWidth: 0,
+                      shadowColor: "darkgray",
+                      shadowOffset: {
+                        width: 0,
+                        height: 10
+                      },
+                      shadowOpacity: 0.25,
+                      shadowRadius: 3.5,
+                      elevation: 5,
+                      position: "absolute",
+                      bottom: 20,
+                      left: 10,
+                      right: 10,
+                      borderRadius: 20,
+                      height: 60,
+                      borderWidth: 1,
+                      borderColor: "lightgray",
+                      display: route.name == "Signin" ? "none" : "flex"
+                    }
+                  })}
+                >
+                  {/* if platform is IOS then add SignInIOS, if Android add SignInScreen */}
+                  {/* {Platform.OS === "ios" ? (
                   <Tab.Screen name="Signin" component={SignInIOS} />
                 ) : (
                   // <Tab.Screen name="Signin" component={SigninScreen} />
                   <Tab.Screen name="Signin" component={SignInIOS} />
                 )} */}
-                <Tab.Screen name="Home" component={HomeScreen} />
-                <Tab.Screen name="Transaction" component={TransactionScreen} />
-                <Tab.Screen
-                  name="AddTransaction"
-                  component={AddTransactionScreen}
-                />
-                <Tab.Screen name="CollabFund" component={CollabFundScreen} />
-                {/* <Tab.Screen name="Settings" component={TestScreen} /> */}
-                {/* if the user is signed in then add MyAccount screen */}
-                {/* {isSignin ? ( */}
-                <Tab.Screen
-                  name="MyAccount"
-                  component={MyAccountScreen}
-                  // initialParams={{ callback: callBackSignOut }}
-                />
-                {/* // ) : null} */}
-              </Tab.Navigator>
-            )}
-          </NavigationContainer>
-        </Provider>
+                  <Tab.Screen name="Home" component={HomeScreen} />
+                  <Tab.Screen
+                    name="Transaction"
+                    component={TransactionScreen}
+                  />
+                  <Tab.Screen
+                    name="AddTransaction"
+                    component={AddTransactionScreen}
+                  />
+                  <Tab.Screen name="CollabFund" component={CollabFundScreen} />
+                  {/* <Tab.Screen name="Settings" component={TestScreen} /> */}
+                  {/* if the user is signed in then add MyAccount screen */}
+                  {/* {isSignin ? ( */}
+                  <Tab.Screen
+                    name="MyAccount"
+                    component={MyAccountScreen}
+                    // initialParams={{ callback: callBackSignOut }}
+                  />
+                  {/* // ) : null} */}
+                </Tab.Navigator>
+              )}
+            </NavigationContainer>
+          </Provider>
         </GestureHandlerRootView>
       </SafeAreaView>
     </SafeAreaProvider>

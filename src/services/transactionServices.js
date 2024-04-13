@@ -34,6 +34,25 @@ const transactionServices = {
     }
   },
 
+  // get transactions by time range and accountID
+  getTransactionByTimeRange: async (data) => {
+    try {
+      console.log(data);
+      const response = await axios.get(
+        API.TRANSACTION.GET_TRANSACTION +
+          data?.accountID +
+          "/" +
+          data?.timeRange,
+        {
+          headers
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error getTransactionByTimeRange data:", error);
+    }
+  },
+
   // get detail of a transaction by transactionID
   getTransactionDetail: async (data) => {
     try {

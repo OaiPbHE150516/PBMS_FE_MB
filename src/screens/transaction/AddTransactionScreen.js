@@ -20,11 +20,12 @@ import {
   KeyboardAvoidingView
 } from "react-native";
 // node_modules library
-import { useSelector, useDispatch } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome6";
 import { BlurView } from "expo-blur";
 import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library";
+import { Snackbar as PaperSnackBar } from "react-native-paper";
 
 // library
 import datetimeLibrary from "../../library/datetimeLibrary";
@@ -33,7 +34,8 @@ import { VAR } from "../../constants/var.constant";
 import axios from "axios";
 import { API } from "../../constants/api.constant";
 
-// slice
+// redux & slice
+import { useSelector, useDispatch } from "react-redux";
 import { setModalAddTransactionVisible } from "../../redux/modalSlice";
 import { fetchAllData } from "../../redux/dataSlice";
 import {
@@ -100,10 +102,15 @@ const AddTransactionScreen = () => {
     (state) => state.transaction.addTransactionWallet
   );
 
+  // data screen
+  const [isSnackbarVisible, setIsSnackbarVisible] = useState(false);
+  const [snackbarContent, setSnackbarContent] = useState("");
+
   // const invoiceScanning = useSelector((state) => state.file?.invoiceScanning);
   // const invoiceImageURL = useSelector((state) => state.file?.invoiceImageURL);
   const [invoiceResult, setInvoiceResult] = useState(null);
 
+  const navigation = useNavigation();
   const dispatch = useDispatch();
   useEffect(() => {
     // if (invoiceScanning) {
@@ -133,6 +140,14 @@ const AddTransactionScreen = () => {
   const handleDataFromWallet = (data) => {
     setMWalletVisible(data.isWalletVisible);
   };
+
+  function showSnackbar(content) {
+    setSnackbarContent(content);
+    setIsSnackbarVisible(true);
+    setTimeout(() => {
+      setIsSnackbarVisible(false);
+    }, 800);
+  }
 
   // const handleDataFromTakeCamera = (data) => {
   //   setMTakeCamera(data.isCameraVisible);
@@ -237,6 +252,7 @@ const AddTransactionScreen = () => {
     setIsAddingTransaction(false);
     handleResetAddTransaction();
     dispatch(fetchAllData(new Date().toISOString()));
+    showSnackbar("Thêm giao dịch thành công");
   }
 
   async function uploadInvoiceToAPI({ asset, filenamecustom, accountID }) {
@@ -653,6 +669,13 @@ const AddTransactionScreen = () => {
               textAlignVertical="top"
             />
           </View>
+          {/* <Button
+            onPress={() => {
+              setSnackbarContent("This is a snackbar");
+              setIsSnackbarVisible(true);
+            }}
+            title="Show Snackbar"
+          /> */}
           {/* Invoice Scan */}
           {!mIsProcessing && mIsProcessing !== null && (
             <View style={styles.viewInvoiceScanning}>
@@ -811,6 +834,29 @@ const AddTransactionScreen = () => {
           </Pressable>
         </View>
       </BlurView>
+
+      {/* snackbar here */}
+      <PaperSnackBar
+        style={{ backgroundColor: "#00b894", bottom: "70%" }}
+        visible={isSnackbarVisible}
+        onDismiss={() => setIsSnackbarVisible(false)}
+        action={{
+          label: "Xem",
+          onPress: () => {
+            navigation.navigate("Transaction");
+          }
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 17,
+            fontFamily: "OpenSans_500Medium",
+            color: "white"
+          }}
+        >
+          {snackbarContent}
+        </Text>
+      </PaperSnackBar>
       {/* Modal Compnent */}
       <View style={styles.viewStyle}>
         <Modal

@@ -572,7 +572,8 @@ const CollabFundScreen = () => {
           {/* a pressable to close modal */}
           <Pressable
             style={{
-              flex: 1
+              flex: 1,
+              width: "100%",
               // backgroundColor: "red"
             }}
             onPress={() => {

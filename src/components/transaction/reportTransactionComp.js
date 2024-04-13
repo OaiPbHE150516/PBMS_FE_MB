@@ -36,7 +36,6 @@ import { screenWidth } from "react-native-gifted-charts/src/utils";
 
 const ReportTransactionComp = ({ time }) => {
   const navigation = useNavigation();
-  const isFocused = useIsFocused();
   const dispatch = useDispatch();
   const account = useSelector((state) => state.authen.account);
   const shouldFetchData = useSelector((state) => state.data.shouldFetchData);
@@ -52,11 +51,10 @@ const ReportTransactionComp = ({ time }) => {
   const TYPE_TRANSFER = 3;
 
   useEffect(() => {
-    console.log("ReportTransactionComp isFocused: ", isFocused);
     if (account?.accountID) {
       handleToFetchData();
     }
-  }, [account, shouldFetchData, isFocused]);
+  }, [account, shouldFetchData]);
 
   async function handleToFetchData() {
     const dataExpenses = await fetchTotalAmountByCategory(

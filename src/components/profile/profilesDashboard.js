@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Button, Alert, Image } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import useProfile from "../../hooks/useProfile";
 import { getTotalBalance } from "../../redux/walletSlice";
 
 // services

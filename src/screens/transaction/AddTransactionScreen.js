@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -102,6 +102,8 @@ const AddTransactionScreen = () => {
     (state) => state.transaction.addTransactionWallet
   );
 
+  const [addTransactionNote, setAddTransactionNote] = useState("");
+
   // data screen
   const [isSnackbarVisible, setIsSnackbarVisible] = useState(false);
   const [snackbarContent, setSnackbarContent] = useState("");
@@ -198,7 +200,7 @@ const AddTransactionScreen = () => {
           // totalAmount: amount,
           totalAmount: totalOfInvoice,
           transactionDate: time,
-          note: "has invoice",
+          note: addTransactionNote,
           fromPerson: invoiceResult.supplierName ?? "",
           toPerson: invoiceResult.receiverName ?? "",
           imageURL: response,
@@ -241,7 +243,7 @@ const AddTransactionScreen = () => {
         categoryID: categoryToAddTransaction.categoryID,
         totalAmount: amount,
         transactionDate: time,
-        note: "",
+        note: addTransactionNote,
         fromPerson: "",
         toPerson: "",
         imageURL: ""
@@ -298,6 +300,7 @@ const AddTransactionScreen = () => {
 
   function handleResetAddTransaction() {
     setTransAmount("");
+    setAddTransactionNote("");
     dispatch(setCategoryToAddTransaction(null));
     dispatch(setAddTransactionTime(null));
     setCurrentTime(datetimeLibrary.getCurrentTime().datetimestr);
@@ -667,6 +670,10 @@ const AddTransactionScreen = () => {
               numberOfLines={5}
               textAlign="left"
               textAlignVertical="top"
+              value={addTransactionNote}
+              onChangeText={(text) => {
+                setAddTransactionNote(text);
+              }}
             />
           </View>
           {/* <Button

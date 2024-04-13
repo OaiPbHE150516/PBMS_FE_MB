@@ -223,9 +223,15 @@ const TransactionScreen = () => {
   // same with month
   const MonthReportScreen = () => {
     return (
-      <ReportTransactionComp
-        time={datetimeLibrary.getTimeThisMonthByNumMonth(0)[2]}
-      />
+      <View
+        style={{
+          flex: 1
+        }}
+      >
+        <ReportTransactionComp
+          time={datetimeLibrary.getTimeThisMonthByNumMonth(0)[2]}
+        />
+      </View>
     );
   };
 
@@ -239,7 +245,8 @@ const TransactionScreen = () => {
         <View style={{ flex: 1 }}>
           <Pressable
             onPress={() => {
-              handlePressableMenu();
+              // handlePressableMenu();
+              setIsModalMenuVisible(true);
             }}
           >
             <Icon name="bars" size={30} color="#2d3436" />
@@ -474,70 +481,3 @@ const styles = StyleSheet.create({
 });
 
 export default TransactionScreen;
-
-// put this to the TabWeek.Navigator
-// sceneContainerStyle={{ backgroundColor: "white" }}
-// tabBar={({ state, descriptors, navigation }) => {
-//   return (
-//     <View
-//       style={{
-//         flexDirection: "row",
-//         justifyContent: "space-around",
-//         alignItems: "center",
-//         backgroundColor: "white",
-//         borderBottomWidth: 1,
-//         borderBottomColor: "lightgray"
-//       }}
-//     >
-//       {state.routes.map((route, index) => {
-//         const { options } = descriptors[route.key];
-//         const label =
-//           options.tabBarLabel !== undefined
-//             ? options.tabBarLabel
-//             : options.title !== undefined
-//             ? options.title
-//             : route.name;
-
-//         const isFocused = state.index === index;
-
-//         const onPress = () => {
-//           const event = navigation.emit({
-//             type: "tabPress",
-//             target: route.key,
-//             canPreventDefault: true
-//           });
-
-//           if (!isFocused && !event.defaultPrevented) {
-//             navigation.navigate(route.name);
-//           }
-//         };
-
-//         const onLongPress = () => {
-//           navigation.emit({
-//             type: "tabLongPress",
-//             target: route.key
-//           });
-//         };
-
-//         return (
-//           <View
-//             style={{
-//               flex: 1,
-//               justifyContent: "center",
-//               alignItems: "center",
-//               borderBottomWidth: 3,
-//               borderBottomColor: isFocused ? "tomato" : "white"
-//             }}
-//             key={index}
-//           >
-//             <Button
-//               title={label}
-//               onPress={onPress}
-//               onLongPress={onLongPress}
-//             />
-//           </View>
-//         );
-//       })}
-//     </View>
-//   );
-// }}

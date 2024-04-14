@@ -26,6 +26,9 @@ export const API = {
     POST_DIVIDE_MONEY: `${Base_URL}/api/collabfund/divide-money`,
     CREATE_CF: `${Base_URL}/api/collabfund/create`,
     UPLOAD_IMAGE_COVER: `${Base_URL}/api/file/upload/collabfund/imagecover`,
+
+    ACCEPT_CF_INVITATION: `${Base_URL}/api/collabfund/accept`,
+    REJECT_CF_INVITATION: `${Base_URL}/api/collabfund/decline`,
   },
   DASHBOARD:{
     BALANCE_GET_ALL_BYDAY: `${Base_URL}/api/balanceHisLogController/get/all/byday/`,

@@ -72,9 +72,13 @@ const CollabFundScreen = () => {
 
   const [accountsSelected, setAccountsSelected] = useState([]);
 
+  const [isAddingNewCF, setIsAddingNewCF] = useState(false);
+
   // const
   const widthScreen = Dimensions.get("window").width;
   const heightScreen = Dimensions.get("window").height;
+  const ACCOUNT_STATE_PENDING = 3;
+  const ACCOUNT_STATE_ACTIVE = 1;
 
   // data for guildline CF
   const [indexGuildlineCF, setIndexGuildlineCF] = useState(0);
@@ -134,6 +138,48 @@ const CollabFundScreen = () => {
     });
   }
 
+  function handleAcceptCollabFund(collabFund) {
+    console.log("Accept collab fund: ", collabFund);
+    // update collab fund state to active
+    try {
+      const data = {
+        collabFundID: collabFund?.collabFundID,
+        accountMemberID: account?.accountID
+      };
+      collabFundServices.acceptToCollabFund(data).finally(() => {
+        // alert chấp nhận thành công
+        // Alert.alert("Chấp nhận tham gia chi tiêu chung thành công", "", [
+        //   {
+        //     text: "OK",
+        //     onPress: () => console.log("handleAcceptCollabFund OK Pressed")
+        //   }
+        // ]);
+        onRefresh();
+      });
+    } catch (error) {}
+  }
+
+  function handleRejectCollabFund(collabFund) {
+    console.log("Reject collab fund: ", collabFund);
+    // delete collab fund
+    try {
+      const data = {
+        collabFundID: collabFund?.collabFundID,
+        accountMemberID: account?.accountID
+      };
+      collabFundServices.rejectToCollabFund(data).finally(() => {
+        // alert từ chối thành công
+        // Alert.alert("Từ chối tham gia chi tiêu chung thành công", "", [
+        //   {
+        //     text: "OK",
+        //     onPress: () => console.log("handleRejectCollabFund OK Pressed")
+        //   }
+        // ]);
+        onRefresh();
+      });
+    } catch (error) {}
+  }
+
   const AnCollabFundItem = ({ collabFund }) => {
     return (
       <ImageBackground
@@ -146,6 +192,9 @@ const CollabFundScreen = () => {
           onPress={() => {
             handleCollabFundItemOnPress(collabFund);
           }}
+          disabled={
+            collabFund?.accountState?.activeStateID === ACCOUNT_STATE_PENDING
+          }
         >
           <BlurView
             intensity={10}
@@ -197,6 +246,33 @@ const CollabFundScreen = () => {
               <Text style={styles.textCollabFundItemBalance}>
                 {collabFund?.totalAmountStr}
               </Text>
+              {collabFund?.accountState?.activeStateID ===
+                ACCOUNT_STATE_PENDING && (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    width: "100%",
+                    height: "auto"
+                  }}
+                >
+                  <Pressable
+                    style={styles.pressable_AnCollabFundItemAction_Reject}
+                    onPress={() => {
+                      handleRejectCollabFund(collabFund);
+                    }}
+                  >
+                    <Icon name="xmark" size={40} color="#e17055" />
+                  </Pressable>
+                  <Pressable
+                    style={styles.pressable_AnCollabFundItemAction_Accept}
+                    onPress={() => {
+                      handleAcceptCollabFund(collabFund);
+                    }}
+                  >
+                    <Icon name="check" size={40} color="#00b894" />
+                  </Pressable>
+                </View>
+              )}
               <Pressable
                 style={styles.pressableAnCollabFundItemDetail}
                 onPress={() => {}}
@@ -215,6 +291,7 @@ const CollabFundScreen = () => {
   }
 
   async function handlePressNewCF() {
+    setIsAddingNewCF(true);
     if (!isModalNewCFVisible) {
       setIsModalNewCFVisible(true);
       return;
@@ -280,8 +357,17 @@ const CollabFundScreen = () => {
             }
           ]);
         });
+        handleResetNewCF();
+        setIsAddingNewCF(false);
     } catch (error) {}
     // 2. create new CF with imageURL
+  }
+
+  function handleResetNewCF(){
+    setNewCF({});
+    setImageCover(null);
+    setCurrentSearchText("");
+    setAccountsSelected([]);
   }
 
   function handlePressGuildCF() {
@@ -573,7 +659,7 @@ const CollabFundScreen = () => {
           <Pressable
             style={{
               flex: 1,
-              width: "100%",
+              width: "100%"
               // backgroundColor: "red"
             }}
             onPress={() => {
@@ -893,6 +979,7 @@ const CollabFundScreen = () => {
                         },
                         styles.pressable_ModalMenuContent_NewCF
                       ]}
+                      disabled={isAddingNewCF}
                     >
                       <Text style={styles.text_NewCF}>{"Hủy"}</Text>
                     </Pressable>
@@ -908,6 +995,7 @@ const CollabFundScreen = () => {
                       },
                       styles.pressable_ModalMenuContent_NewCF
                     ]}
+                    disabled={isAddingNewCF}
                   >
                     <Text style={styles.text_NewCF}>
                       {"Tạo chi tiêu chung"}
@@ -1017,6 +1105,22 @@ const CollabFundScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  pressable_AnCollabFundItemAction_Reject: {
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center",
+    flex: 1,
+    marginHorizontal: 10,
+    paddingHorizontal: 5
+  },
+  pressable_AnCollabFundItemAction_Accept: {
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center",
+    flex: 1,
+    marginHorizontal: 10,
+    paddingHorizontal: 5
+  },
   view_ModalGuildLineCF_Action: {
     flex: 1,
     width: "100%",
@@ -1214,9 +1318,9 @@ const styles = StyleSheet.create({
     color: "white"
   },
   pressableAnCollabFundItemDetail: {
-    backgroundColor: "rgba(0,0,0,0.2)",
-    padding: 5,
-    borderRadius: 5
+    // backgroundColor: "rgba(0,0,0,0.2)",
+    padding: 5
+    // borderRadius: 5
   },
   imageAccountInCollabFund: {
     width: 30,
@@ -1241,19 +1345,21 @@ const styles = StyleSheet.create({
     marginVertical: 5
   },
   viewCollabFundItemAction: {
-    width: "30%",
+    // width: "30%",
+    flex: 4,
     justifyContent: "space-between",
     alignItems: "flex-end",
     alignContent: "flex-end"
   },
   viewCollabFundItemInfor: {
-    width: "70%",
+    // width: "70%",
+    flex: 6,
     // borderWidth: 1,
     // borderColor: "red",
     justifyContent: "space-between"
   },
   textCollabFundItemBalance: {
-    fontSize: 20,
+    fontSize: 25,
     fontFamily: "OpenSans_600SemiBold",
     textAlign: "right",
     color: "white"

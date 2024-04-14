@@ -200,6 +200,31 @@ const collabFundServices = {
     } catch (error) {
       console.error("Error uploadImageCover data:", error);
     }
+  },
+
+  // accept to collab fund
+  acceptToCollabFund: async (data) => {
+    try {
+      console.log(data);
+      const response = await axios.put(API.COLLABFUND.ACCEPT_CF_INVITATION, data, {
+        headers
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error acceptToCollabFund data:", error);
+    }
+  },
+
+  // reject to collab fund
+  rejectToCollabFund: async (data) => {
+    try {
+      const response = await axios.put(API.COLLABFUND.REJECT_CF_INVITATION, data, {
+        headers
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error rejectToCollabFund data:", error);
+    }
   }
 };
 

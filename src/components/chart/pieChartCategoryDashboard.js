@@ -84,33 +84,36 @@ const PieChartCategoryDashboard = () => {
 
   async function fetchTotalAmountByType(accountID, time) {
     try {
-      const response = await dashboardServices.getTotalAmountByType(
+      let returnData = {};
+      await dashboardServices.getTotalAmountByType(
         accountID,
         time
-      );
-      let count = 1;
-      let dataChart = response?.categoryWithTransactionData?.map((item) => ({
-        value: item?.percentage,
-        valueStr: item?.percentageStr,
-        color: colorLibrary.getColorByIndex(count++),
-        categoryTypeID: item?.categoryType?.categoryTypeID,
-        label:
-          item?.categoryType?.categoryTypeID === TYPE_INCOME ? "Thu" : "Chi",
-        totalAmount: item?.totalAmount,
-        totalAmountStr: item?.totalAmountStr,
-        frontColor:
-          item?.categoryType?.categoryTypeID === TYPE_INCOME
-            ? colorLibrary.getIncomeColor()
-            : colorLibrary.getExpenseColor()
-      }));
-      // sort dataChart by totalAmount
-      // dataChart.sort((a, b) => a.totalAmount - b.totalAmount);
-      // sort dataChart by categoryTypeID
-      dataChart.sort((a, b) => a.categoryTypeID - b.categoryTypeID);
-      const returnData = {
-        dataChart: dataChart,
-        data: response
-      };
+      ).then((res) => {
+        console.log("res: ", res);
+        let count = 1;
+        let dataChart = res?.categoryWithTransactionData?.map((item) => ({
+          value: item?.percentage,
+          valueStr: item?.percentageStr,
+          color: colorLibrary.getColorByIndex(count++),
+          categoryTypeID: item?.categoryType?.categoryTypeID,
+          label:
+            item?.categoryType?.categoryTypeID === TYPE_INCOME ? "Thu" : "Chi",
+          totalAmount: item?.totalAmount,
+          totalAmountStr: item?.totalAmountStr,
+          frontColor:
+            item?.categoryType?.categoryTypeID === TYPE_INCOME
+              ? colorLibrary.getIncomeColor()
+              : colorLibrary.getExpenseColor()
+        }));
+        // sort dataChart by totalAmount
+        // dataChart.sort((a, b) => a.totalAmount - b.totalAmount);
+        // sort dataChart by categoryTypeID
+        dataChart?.sort((a, b) => a.categoryTypeID - b.categoryTypeID);
+        returnData = {
+          dataChart: dataChart,
+          data: res
+        };
+      });
       // console.log("returnData fetchTotalAmountByType: ", returnData);
       return returnData;
     } catch (error) {

@@ -62,7 +62,7 @@ const TransactionDashboard = ({ navigation }) => {
             navigation.push(VAR.SCREEN.REPORT.TRANSACTION);
           }}
         >
-          <Text style={styles.text_ViewAll}>{"Xem báo cáo "}</Text>
+          {/* <Text style={styles.text_ViewAll}>{"Xem báo cáo "}</Text> */}
           <Icon name="chevron-right" size={15} color="#0984e3" />
         </Pressable>
       </View>
@@ -124,8 +124,9 @@ const styles = StyleSheet.create({
   pressable_ViewAll: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-around",
-    marginHorizontal: 5
+    justifyContent: "flex-end",
+    marginHorizontal: 5,
+    width: "50%"
   },
   viewStyle: {
     backgroundColor: "white",

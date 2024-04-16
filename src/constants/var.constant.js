@@ -23,7 +23,9 @@ export const VAR = {
     REPORT: {
       WALLET: "WalletReportScreen",
       TRANSACTION: "TransactionReportScreen"
-    }
+    },
+    MENU: "MyAccount",
+    SPENDING_LIMIT_SCREEN: "SpendingLimitScreen",
   },
 
   NUMBER_LASTDAY_EXPENSES_TRANSACTION: 20

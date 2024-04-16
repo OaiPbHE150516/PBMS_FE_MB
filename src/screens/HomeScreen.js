@@ -26,6 +26,9 @@ import PieChartCategoryDashboard from "../components/chart/pieChartCategoryDashb
 import WalletsManagerScreen from "./wallets/walletsManagerScreen";
 import WalletReportScreen from "./reports/walletReportScreen";
 import TransactionReportScreen from "./reports/transactionReportScreen";
+import SpendingLimitScreen from "./spendinglimit/spendingLimitScreen";
+
+import MyAccount from "../../src/screens/MyAccount";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -65,7 +68,7 @@ const HomeScreen = () => {
           showsVerticalScrollIndicator={false}
         >
           <PieChartCategoryDashboard style={styles.chart} />
-          <BudgetDashboard style={styles.budget} />
+          <BudgetDashboard navigation={navigation} />
           <WalletDashboard navigation={navigation} />
           <TransactionDashboard navigation={navigation} />
           {/* <ChartDashboard style={styles.chart} /> */}
@@ -103,6 +106,12 @@ const HomeScreen = () => {
           name={VAR.SCREEN.REPORT.TRANSACTION}
           component={TransactionReportScreen}
         />
+        <Stack.Screen
+          name={VAR.SCREEN.SPENDING_LIMIT_SCREEN}
+          component={SpendingLimitScreen}
+          
+        />
+
       </Stack.Navigator>
     </View>
   );

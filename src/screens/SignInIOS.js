@@ -18,7 +18,7 @@ import pbms from "../api/pbms";
 import { API } from "../constants/api.constant";
 import { signinHardcode } from "../redux/authenSlice";
 
-const SignInIOS = ({callback}) => {
+const SignInIOS = ({ callback }) => {
   const navigation = useNavigation();
 
   const [accounts, setAccounts] = useState([]);
@@ -56,7 +56,7 @@ const SignInIOS = ({callback}) => {
   const AnAccountItem = ({ account }) => {
     return (
       <Pressable
-        style={({pressed}) => [
+        style={({ pressed }) => [
           {
             backgroundColor: pressed ? "#b2bec3" : "white"
           },
@@ -64,8 +64,32 @@ const SignInIOS = ({callback}) => {
         ]}
         onPress={() => handleAnAccountItemClicked(account)}
       >
-        <Text>{account.accountID}</Text>
-        <Text>{account.accountName}</Text>
+        <Image
+          style={{ width: 40, height: 40, borderRadius: 40 }}
+          source={{ uri: account.pictureURL }}
+        />
+        <View
+          style={{
+            marginHorizontal: 10
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 20,
+              fontFamily: "OpenSans_500Medium"
+            }}
+          >
+            {account.accountName}
+          </Text>
+          <Text
+            style={{
+              fontSize: 15,
+              fontFamily: "OpenSans_400Regular_Italic"
+            }}
+          >
+            {account.emailAddress}
+          </Text>
+        </View>
       </Pressable>
     );
   };
@@ -76,7 +100,14 @@ const SignInIOS = ({callback}) => {
 
   return (
     <View style={styles.viewContainer}>
-      <Text>SignInIOS</Text>
+      <Text
+        style={{
+          fontSize: 20,
+          fontFamily: "OpenSans_500Medium"
+        }}
+      >
+        {"Fast Signin Screen ONLY FOR DEBUGGING"}
+      </Text>
       <View style={styles.viewFlatList}>
         <FlatList
           style={styles.flatList}
@@ -92,11 +123,15 @@ const SignInIOS = ({callback}) => {
 
 const styles = StyleSheet.create({
   viewAnAccountItem: {
-    borderWidth: 1,
-    borderColor: "black",
-    width: Dimensions.get("window").width - 20,
+    // borderWidth: 1,
+    // borderColor: "black",
+    // width: Dimensions.get("window").width - 20,
     margin: 5,
-    padding: 5
+    padding: 5,
+    flexDirection: "row",
+    width: "98%",
+    borderBottomColor: "darkgray",
+    borderBottomWidth: 0.5,
   },
   viewContainer: {
     flex: 1,
@@ -109,14 +144,15 @@ const styles = StyleSheet.create({
     // borderWidth: 1,
     // borderColor: "black",
     // height: 300,
-    // width: Dimensions.get("window").width
+    // width: Dimensions.get("window").width,
+    width: "100%"
   },
   viewFlatList: {
     // flex: 1,
-    borderWidth: 1,
-    borderColor: "black",
+    // borderWidth: 1,
+    // borderColor: "black",
     height: "80%",
-    width: Dimensions.get("window").width - 20
+    width: "95%"
   }
 });
 

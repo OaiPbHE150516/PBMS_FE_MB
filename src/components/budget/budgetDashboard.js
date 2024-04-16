@@ -6,9 +6,12 @@ import {
   Button,
   Alert,
   Image,
-  FlatList
+  FlatList,
+  Pressable
 } from "react-native";
 import { ProgressBar } from "react-native-paper";
+import Icon from "react-native-vector-icons/FontAwesome6";
+import { VAR } from "../../constants/var.constant";
 
 // redux & slice
 import { useSelector, useDispatch } from "react-redux";
@@ -17,7 +20,7 @@ import { fetchAllData } from "../../redux/dataSlice";
 // services
 import budgetServices from "../../services/budgetServices";
 
-const BudgetDashboard = () => {
+const BudgetDashboard = ({ navigation }) => {
   const account = useSelector((state) => state.authen.account);
   const shouldFetchData = useSelector((state) => state.data.shouldFetchData);
   const [eachBudget, setEachBudget] = useState({});
@@ -50,6 +53,19 @@ const BudgetDashboard = () => {
               ? "Ngân sách hiện tại"
               : "Không có ngân sách nào"}
           </Text>
+          <Pressable
+            style={({ pressed }) => [
+              styles.pressable_ViewAll,
+              { opacity: pressed ? 0.5 : 1 }
+            ]}
+            onPress={() => {
+              // callback();
+              navigation.push(VAR.SCREEN.SPENDING_LIMIT_SCREEN);
+            }}
+          >
+            {/* <Text style={styles.text_ViewAll}>{"Xem báo cáo "}</Text> */}
+            <Icon name="chevron-right" size={15} color="#0984e3" />
+          </Pressable>
         </View>
         <FlatList
           data={eachBudget}
@@ -85,6 +101,13 @@ const BudgetDashboard = () => {
                   />
                 </View>
                 <View style={styles.view_ABudget_Infor}>
+                  {item.percentProgress > 50 && (
+                    <View style={styles.view_remainAmountStr}>
+                      <Text style={styles.text_remainAmountStr}>
+                        {item.remainAmountStr}
+                      </Text>
+                    </View>
+                  )}
                   <View
                     style={[
                       styles.view_CurrentAmount,
@@ -125,6 +148,30 @@ const BudgetDashboard = () => {
 };
 
 const styles = StyleSheet.create({
+  view_remainAmountStr: {
+    position: "absolute",
+    zIndex: 2,
+    left: 0
+  },
+  text_remainAmountStr: {
+    fontSize: 18,
+    fontFamily: "OpenSans_600SemiBold",
+    color: "#d63031",
+    textAlign: "left"
+  },
+  text_ViewAll: {
+    color: "#0984e3",
+    fontSize: 15,
+    fontFamily: "OpenSans_600SemiBold"
+  },
+  pressable_ViewAll: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    marginHorizontal: 5,
+    // borderWidth: 1,
+    width: "50%"
+  },
   text_currentAmountStr: {
     fontSize: 16,
     fontFamily: "OpenSans_600SemiBold"

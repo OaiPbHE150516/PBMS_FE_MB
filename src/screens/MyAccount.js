@@ -42,6 +42,7 @@ import PrivacyPolicyScreen from "./others/privacyPolicyScreen";
 import TermsOfUseScreen from "./others/termsOfUseScreen";
 import HelpScreen from "./others/helpScreen";
 import SuggestToDeveScreen from "./suggest/suggestToDeveScreen";
+import SpendingLimitScreen from "./spendinglimit/spendingLimitScreen";
 
 // redux
 import { getCategories } from "../redux/categorySlice";
@@ -183,6 +184,13 @@ const dataGridFeature = [
     icon: "cart-shopping",
     color: "lightcoral",
     screen: "ShoppingScreen"
+  },
+  {
+    id: 7,
+    name: "Hạn mức chi",
+    icon: "tags",
+    color: "lightsalmon",
+    screen: VAR.SCREEN.SPENDING_LIMIT_SCREEN
   }
 ];
 
@@ -421,6 +429,10 @@ const MyAccount = ({ callback }) => {
         />
         <Stack.Screen name="TermsOfUseScreen" component={TermsOfUseScreen} />
         <Stack.Screen name="HelpScreen" component={HelpScreen} />
+        <Stack.Screen
+          name={VAR.SCREEN.SPENDING_LIMIT_SCREEN}
+          component={SpendingLimitScreen}
+        />
       </Stack.Navigator>
     </View>
   );
@@ -608,7 +620,7 @@ const styles = StyleSheet.create({
     elevation: 5
   },
   viewMainScreen: {
-    flex: 1,
+    flex: 1
     // height: "50%",
     // justifyContent: "flex-start",
     // alignItems: "center"

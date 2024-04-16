@@ -276,6 +276,12 @@ export default function App() {
                   <Tab.Screen
                     name="MyAccount"
                     component={MyAccountScreen}
+                    listeners={({ navigation }) => ({
+                      tabLongPress: (e) => {
+                        setIsSignin(false);
+                        handleSignOut();
+                      }
+                    })}
                     // initialParams={{ callback: callBackSignOut }}
                   />
                   {/* // ) : null} */}

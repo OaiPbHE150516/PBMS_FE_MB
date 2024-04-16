@@ -107,14 +107,34 @@ const collabFundServices = {
     }
   },
 
+  // // create activity with transaction form ( default )
+  // createActivity: async (data) => {
+  //   try {
+  //     console.log("data: ", data);
+  //     const formHeader = {
+  //       "Content-Type": "multipart/form-data"
+  //     };
+  //     const response = await axios.post(API.COLLABFUND.CREATE_ACTIVITY, data, {
+  //       formHeader
+  //     });
+  //     return response.data;
+  //   } catch (error) {
+  //     console.error("Error posting data createActivity:", error);
+  //   }
+  // },
+
   // create activity with transaction form ( default )
   createActivity: async (data) => {
     try {
+      console.log("data: ", data);
       const formHeader = {
         "Content-Type": "multipart/form-data"
       };
-      const response = await axios.post(API.COLLABFUND.CREATE_ACTIVITY, data, {
-        formHeader
+      const response = await axios({
+        method: "post",
+        url: API.COLLABFUND.CREATE_ACTIVITY,
+        data: data,
+        headers: formHeader
       });
       return response.data;
     } catch (error) {
@@ -128,7 +148,6 @@ const collabFundServices = {
       const jsonHeader = {
         "Content-Type": "application/json"
       };
-      console.log(data);
       const response = await axios.post(
         API.COLLABFUND.POST_DIVIDE_MONEY,
         // "https://pbms-be-api-vqj42lqqmq-as.a.run.app/api/collabfund/divide-money",
@@ -206,9 +225,13 @@ const collabFundServices = {
   acceptToCollabFund: async (data) => {
     try {
       console.log(data);
-      const response = await axios.put(API.COLLABFUND.ACCEPT_CF_INVITATION, data, {
-        headers
-      });
+      const response = await axios.put(
+        API.COLLABFUND.ACCEPT_CF_INVITATION,
+        data,
+        {
+          headers
+        }
+      );
       return response.data;
     } catch (error) {
       console.error("Error acceptToCollabFund data:", error);
@@ -218,9 +241,13 @@ const collabFundServices = {
   // reject to collab fund
   rejectToCollabFund: async (data) => {
     try {
-      const response = await axios.put(API.COLLABFUND.REJECT_CF_INVITATION, data, {
-        headers
-      });
+      const response = await axios.put(
+        API.COLLABFUND.REJECT_CF_INVITATION,
+        data,
+        {
+          headers
+        }
+      );
       return response.data;
     } catch (error) {
       console.error("Error rejectToCollabFund data:", error);

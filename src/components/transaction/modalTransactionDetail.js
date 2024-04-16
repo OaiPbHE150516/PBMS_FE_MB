@@ -63,7 +63,7 @@ const ModalTransactionDetail = ({ props, callback }) => {
           {/* <Text style={styles.textHeaderViewChildIS}>{"Giao dịch"}</Text> */}
           <AnInputInvoiceScanning
             isHasIcon={false}
-            textLabelTop="Danh mục"
+            textLabelTop="Hạng mục"
             value={category?.nameVN}
             onChangeText={(text) => {
               // setInvoiceResult({ ...invoiceResult, supplierName: text });

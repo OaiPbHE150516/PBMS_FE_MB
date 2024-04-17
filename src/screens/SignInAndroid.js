@@ -130,7 +130,7 @@ const SignInAndroid = ({ callback }) => {
             <Text style={styles.text_Title_Big}>{"PBMS"}</Text>
             <View style={styles.view_Description}>
               <Text style={styles.text_Description}>
-                {"Trợ lý quản lý thu chi cá nhân"}
+                {"Hệ thống quản lý ngân sách cá nhân"}
               </Text>
             </View>
           </View>

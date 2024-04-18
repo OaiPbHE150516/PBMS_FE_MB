@@ -247,7 +247,72 @@ const datetimeLibrary = {
       format(startdate, "dd/MM") + " - " + format(enddate, "dd/MM"),
       resultMonthStr
     ];
-  }
+  },
+
+  // get datetime now, local time
+  getDateTimeNow: function () {
+    const currentDate = new Date();
+    return {
+      now: currentDate,
+      hour: currentDate.getHours(),
+      minute: currentDate.getMinutes(),
+      day: currentDate.getDate(),
+      month: currentDate.getMonth() + 1,
+      year: currentDate.getFullYear(),
+      date: format(currentDate, "yyyy-MM-dd"),
+      time: format(currentDate, "HH:mm:ss"),
+      datetime:
+        format(currentDate, "yyyy-MM-dd") +
+        "T" +
+        format(currentDate, "HH:mm") +
+        ":00.000Z",
+      datetimestr:
+        format(currentDate, "HH:mm") + ", " + this.getDayInWeek(currentDate)
+    };
+  },
+
+  // get number day in month
+  getNumberDayInMonth: function (month, year) {
+    return new Date(year, month, 0).getDate();
+  },
+
+  // get number day in month from begin to current day
+  getNumberDayInMonthToCurrentDay: function (month, year) {
+    const currentDate = new Date();
+    return currentDate.getDate();
+  },
+
+  // get daydate by day in month, like 'Thứ Năm, 18 tháng 4'
+  getDayDate: function (day, month, year) {
+    const currentDate = new Date(year, month - 1, day);
+    return this.getDayInWeek(currentDate);
+  },
+
+  // get daydate by day in month, like 'Thứ Năm, 18 tháng 4' by num day from now
+  getDayDateByNumDay: function (numDay) {
+    const currentDate = new Date();
+    const day = addDays(currentDate, numDay * -1);
+    return {
+      day: day.getDate(),
+      month: day.getMonth() + 1,
+      dayStr: this.getDayInWeek(day)
+    };
+  },
+
+  // convert hour, minute, day, month, year to datetime string, like 'HH: mm" + ", " + "dd/MM/yyyy'
+  convertToDateTimeStr: function (hour, minute, day, month, year) {
+    month -= 1;
+    return (
+      (hour < 10 ? "0" + hour : hour) +
+      ":" +
+      (minute < 10 ? "0" + minute : minute) +
+      ", " +
+      this.getDayInWeek(new Date(year, month, day))
+    );
+  },
+
+  // check and return time now if input time is before now
+  
 };
 
 export default datetimeLibrary;

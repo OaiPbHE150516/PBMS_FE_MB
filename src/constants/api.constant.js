@@ -63,6 +63,7 @@ export const API = {
   INVOICE: {
     SCAN: `${Base_URL}/api/invoice/scan`,
     SCAN_V4: `${Base_URL}/api/invoice/scan/v4`,
+    SCAN_V5: `${Base_URL}/api/invoice/scan/v5`,
     TEST: `${Base_URL}/api/invoice/scantest`
   },
   FILE: {

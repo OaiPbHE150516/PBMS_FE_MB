@@ -54,6 +54,114 @@ const fileServices = {
     }
   },
 
+  uploadToScanInvoice: async (asset) => {
+    try {
+      const urlapi = API.INVOICE.SCAN_V4;
+      const formData = new FormData();
+      const filename = asset?.uri.split("/").pop();
+      const match = /\.(\w+)$/.exec(filename);
+      let type = match ? `image/${match[1]}` : `image`;
+      let filedata = null;
+      if (Platform.OS === "android") {
+        filedata = {
+          uri: asset?.uri,
+          name: filename,
+          type: type
+        };
+      } else {
+        filedata = {
+          uri: asset?.uri,
+          name: filename,
+          type: type
+        };
+      }
+      formData.append("file", filedata);
+      let dataReturn = null;
+      await axios({
+        method: "post",
+        url: urlapi,
+        data: formData,
+        headers: {
+          "Content-Type": "multipart/form-data"
+        },
+        onUploadProgress: (progressEvent) => {
+          console.log(
+            "Upload Progress: " +
+              Math.round((progressEvent.loaded / progressEvent.total) * 100) +
+              "%"
+          );
+        }
+      })
+        .then((response) => {
+          if (response) {
+            console.log("uploadToScanInvoice response.data: ", response.data);
+            dataReturn = response.data;
+          }
+        })
+        .catch((error) => {
+          console.error("uploadToScanInvoice data:", error);
+        });
+      return dataReturn;
+    } catch (error) {
+      console.error("Error upToScanInvoice data:", error);
+    }
+  },
+
+  uploadToScanInvoiceV5: async (data) => {
+    try {
+      console.log("data: ", data);
+      const urlapi = API.INVOICE.SCAN_V5;
+      const formData = new FormData();
+      const filename = data?.asset?.uri.split("/").pop();
+      const match = /\.(\w+)$/.exec(filename);
+      let type = match ? `image/${match[1]}` : `image`;
+      let filedata = null;
+      if (Platform.OS === "android") {
+        filedata = {
+          uri: data?.asset?.uri,
+          name: filename,
+          type: type
+        };
+      } else {
+        filedata = {
+          uri: data?.asset?.uri,
+          name: filename,
+          type: type
+        };
+      }
+      formData.append("accountID", data?.accountID);
+      formData.append("file", filedata);
+      let dataReturn = null;
+      await axios({
+        method: "post",
+        url: urlapi,
+        data: formData,
+        headers: {
+          "Content-Type": "multipart/form-data"
+        },
+        onUploadProgress: (progressEvent) => {
+          console.log(
+            "Upload Progress: " +
+              Math.round((progressEvent.loaded / progressEvent.total) * 100) +
+              "%"
+          );
+        }
+      })
+        .then((response) => {
+          if (response) {
+            console.log("uploadToScanInvoice response.data: ", response.data);
+            dataReturn = response.data;
+          }
+        })
+        .catch((error) => {
+          console.error("uploadToScanInvoice data:", error);
+        });
+      return dataReturn;
+    } catch (error) {
+      console.error("Error upToScanInvoice data:", error);
+    }
+  },
+
   uploadToInvoiceTransaction: async (asset) => {
     try {
       const header = {

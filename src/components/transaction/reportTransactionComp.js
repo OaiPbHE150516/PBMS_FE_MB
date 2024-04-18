@@ -84,7 +84,7 @@ const ReportTransactionComp = ({ time }) => {
         accountID,
         time
       ).then((res) => {
-        console.log("res: ", res);
+        // console.log("res: ", res);
         let count = 1;
         let dataChart = res?.categoryWithTransactionData?.map((item) => ({
           value: item?.percentage,

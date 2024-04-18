@@ -68,8 +68,9 @@ const TabCategoryInModalComponent = ({ props, callback }) => {
         dispatch(setModalAddTransactionVisible(false));
         callback(category);
       } else if (action === false) {
-        console.log("action", action);
-        console.log("category", category);
+        // console.log("action", action);
+        // console.log("category", category);
+        callback(category);
       }
     };
     return (

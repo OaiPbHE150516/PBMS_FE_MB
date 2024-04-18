@@ -68,6 +68,7 @@ import TestScreen from "./src/screens/TestScreen";
 import SignInIOS from "./src/screens/SignInIOS";
 import MyAccount from "./src/screens/MyAccount";
 import CollabFundScreen from "./src/screens/collabfund/collabFundScreenv2";
+import NewAddTransactionScreen from "./src/screens/transaction/newAddTransactionScreen";
 
 const { width, height } = Dimensions.get("window");
 
@@ -206,6 +207,9 @@ export default function App() {
                         case "CollabFund":
                           iconName = focused ? "people" : "people-outline";
                           break;
+                        case "NewAddTransaction":
+                          iconName = focused ? "cloudy" : "cloudy-outline";
+                          break;
                       }
                       return (
                         <Ionicons
@@ -232,7 +236,7 @@ export default function App() {
                     tabBarShowLabel: false,
                     tabBarStyle: {
                       // backgroundColor: "white",
-                      borderTopWidth: 0,
+                      borderTopWidth: 0.25,
                       shadowColor: "darkgray",
                       shadowOffset: {
                         width: 0,
@@ -248,7 +252,7 @@ export default function App() {
                       borderRadius: 20,
                       height: 60,
                       borderWidth: 1,
-                      borderColor: "lightgray",
+                      borderColor: "dark",
                       display: route.name == "Signin" ? "none" : "flex"
                     }
                   })}
@@ -269,6 +273,11 @@ export default function App() {
                     name="AddTransaction"
                     component={AddTransactionScreen}
                   />
+                  <Tab.Screen
+                    // NewAddTransactionScreen
+                    name="NewAddTransaction"
+                    component={NewAddTransactionScreen}
+                  />
                   <Tab.Screen name="CollabFund" component={CollabFundScreen} />
                   {/* <Tab.Screen name="Settings" component={TestScreen} /> */}
                   {/* if the user is signed in then add MyAccount screen */}
@@ -284,6 +293,7 @@ export default function App() {
                     })}
                     // initialParams={{ callback: callBackSignOut }}
                   />
+
                   {/* // ) : null} */}
                 </Tab.Navigator>
               )}

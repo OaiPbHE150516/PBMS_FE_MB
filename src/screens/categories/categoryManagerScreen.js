@@ -71,45 +71,43 @@ const CategoryManagerScreen = () => {
     }
   }, [account]);
 
+  function onCallbackCategory(data) {
+    console.log("data: ", data);
+  }
+
   const Tab1 = () => {
-    // if (nowCategories === null) {
-    //   return (
-    //     <View
-    //       style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-    //     >
-    //       <ActivityIndicator size="large" color="tomato" />
-    //     </View>
-    //   );
-    // }
     return (
       nowCategories[0] && (
         <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+            height: "70%"
+          }}
         >
           <TabCategoryInModalComponent
             props={{ category: nowCategories[0], action: false }}
+            callback={onCallbackCategory}
           />
         </View>
       )
     );
   };
   const Tab2 = () => {
-    // if (nowCategories === null) {
-    //   return (
-    //     <View
-    //       style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-    //     >
-    //       <ActivityIndicator size="large" color="tomato" />
-    //     </View>
-    //   );
-    // }
     return (
       nowCategories[1] && (
         <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center"
+          }}
         >
           <TabCategoryInModalComponent
             props={{ category: nowCategories[1], action: false }}
+            callback={onCallbackCategory}
           />
         </View>
       )
@@ -195,57 +193,75 @@ const CategoryManagerScreen = () => {
         >
           <Icon name="chevron-left" size={22} color="#3498db" />
         </Pressable>
-        <Text style={styles.modalTextHeader}>{"Hạng mục thu / chi"}</Text>
+        <View style={styles.view_TextHeader}>
+          <Text style={styles.modalTextHeader}>{"Hạng mục thu / chi"}</Text>
+        </View>
+        <Pressable
+          style={styles.pressable_Menu}
+          onPress={() => {
+            console.log("onPressIn");
+            // setIsLoading(true);
+          }}
+        >
+          <Icon name="ellipsis-vertical" size={22} color="#2d3436" />
+        </Pressable>
       </View>
-      <TabCategory.Navigator
-        screenOptions={{
-          tabBarScrollEnabled: true,
-          tabBarStyle: {
-            alignSelf: "flex-end",
-            flexDirection: "row",
-            width: Dimensions.get("window").width * 0.95
-          },
-          tabBarItemStyle: {
-            alignItems: "center",
-            justifyContent: "center",
-            alignSelf: "center",
-            alignContent: "center",
-            flexDirection: "row",
-            width: "50%"
-          },
-          tabBarLabelStyle: {
-            fontSize: 18,
-            fontFamily: "Inconsolata_500Medium",
-            color: "darkgray",
-            textTransform: "none",
-            letterSpacing: 0,
-            width: Dimensions.get("window").width * 0.5
-          },
-          tabBarIndicatorStyle: {
-            backgroundColor: "tomato"
-          },
-          swipeEnabled: true
+      <View
+        style={{
+          backgroundColor: "red"
         }}
       >
-        <TabCategory.Screen
-          name="Khoản chi"
-          component={Tab2}
-          listeners={{
-            focus: () => {
-              handleFocusScreen(1);
-            }
+        <TabCategory.Navigator
+          screenOptions={{
+            tabBarScrollEnabled: true,
+            tabBarStyle: {
+              alignSelf: "flex-end",
+              flexDirection: "row",
+              width: Dimensions.get("window").width * 0.95
+            },
+            tabBarItemStyle: {
+              alignItems: "center",
+              justifyContent: "center",
+              alignSelf: "center",
+              alignContent: "center",
+              flexDirection: "row",
+              width: "50%"
+            },
+            tabBarLabelStyle: {
+              fontSize: 18,
+              fontFamily: "Inconsolata_500Medium",
+              color: "darkgray",
+              textTransform: "none",
+              letterSpacing: 0,
+              width: Dimensions.get("window").width * 0.5
+            },
+            tabBarIndicatorStyle: {
+              backgroundColor: "tomato"
+            },
+            swipeEnabled: true
           }}
-        />
-        <TabCategory.Screen
-          name="Khoản thu"
-          component={Tab1}
-          listeners={{
-            focus: () => {
-              handleFocusScreen(0);
-            }
-          }}
-        />
-      </TabCategory.Navigator>
+        >
+          <TabCategory.Screen
+            name="Khoản chi"
+            component={Tab2}
+            listeners={{
+              focus: () => {
+                handleFocusScreen(1);
+              }
+            }}
+          />
+          <TabCategory.Screen
+            name="Khoản thu"
+            component={Tab1}
+            listeners={{
+              focus: () => {
+                handleFocusScreen(0);
+              }
+            }}
+          />
+        </TabCategory.Navigator>
+      </View>
+
       <View style={styles.viewActionModal}>
         <Pressable
           style={[styles.buttonContinueModal, styles.buttonActionModal]}
@@ -393,18 +409,37 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 5
   },
+  view_TextHeader: {
+    // width: "60%",
+    flex: 6,
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center",
+    // alignSelf: "center",
+    // borderWidth: 1,/p
+  },
+  pressable_Menu: {
+    // borderWidth: 1,
+    // borderColor: "darkgray",
+    flex: 1,
+    alignItems: "flex-end",
+    justifyContent: "flex-end",
+    alignContent: "flex-end",
+    right: 0,
+    marginHorizontal: 10,
+  },
   viewHeader: {
     width: "100%",
     flexDirection: "row",
-    justifyContent: "space-between",
-    justifyContent: "center",
-    alignItems: "center",
-    alignContent: "center"
+    justifyContent: "space-around",
+    // backgroundColor: "green",
+    // alignItems: "center",
+    // alignContent: "center"
   },
   pressableBack: {
     alignSelf: "flex-start",
     margin: 2,
-    position: "absolute",
+    // position: "absolute",
     top: 2,
     left: 8,
     flex: 1,
@@ -416,7 +451,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginVertical: 20,
-    marginHorizontal: 5
+    marginHorizontal: 5,
+    backgroundColor: "red",
+    borderWidth: 10
   },
   buttonActionModal: {
     // backgroundColor: "lightblue",

@@ -8,7 +8,8 @@ import {
   Image,
   FlatList,
   Dimensions,
-  ScrollView
+  ScrollView,
+  Pressable
 } from "react-native";
 import {
   BarChart,
@@ -17,6 +18,8 @@ import {
   PopulationPyramid
 } from "react-native-gifted-charts";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { SegmentedButtons } from "react-native-paper";
+import Icon from "react-native-vector-icons/FontAwesome6";
 
 // redux & slice
 import { useSelector, useDispatch } from "react-redux";
@@ -53,15 +56,25 @@ const PieChartCategoryDashboard = () => {
   const TYPE_EXPENSE = 2;
   const TYPE_INCOME = 1;
   const TYPE_TRANSFER = 3;
+  const TAB_WEEK = "week";
+  const TAB_MONTH = "month";
+
+  // state for PieChart
+  const [selectedTab, setSelectedTab] = useState(TAB_WEEK);
 
   useEffect(() => {
     if (account?.accountID) {
-      handleToFetchData();
+      let time = datetimeLibrary.getTimeWeekBefore(0)[2];
+      // change time if selectedTab is month
+      if (selectedTab === TAB_MONTH) {
+        time = datetimeLibrary.getTimeThisMonthByNumMonth(1)[2];
+      }
+      console.log("time: ", time);
+      handleToFetchData(time);
     }
-  }, [shouldFetchData]);
+  }, [shouldFetchData, selectedTab]);
 
-  async function handleToFetchData() {
-    const time = datetimeLibrary.getTimeWeekBefore(0)[2];
+  async function handleToFetchData(time) {
     const dataExpenses = await fetchTotalAmountByCategory(
       account?.accountID,
       time,
@@ -85,35 +98,36 @@ const PieChartCategoryDashboard = () => {
   async function fetchTotalAmountByType(accountID, time) {
     try {
       let returnData = {};
-      await dashboardServices.getTotalAmountByType(
-        accountID,
-        time
-      ).then((res) => {
-        // console.log("res: ", res);
-        let count = 1;
-        let dataChart = res?.categoryWithTransactionData?.map((item) => ({
-          value: item?.percentage,
-          valueStr: item?.percentageStr,
-          color: colorLibrary.getColorByIndex(count++),
-          categoryTypeID: item?.categoryType?.categoryTypeID,
-          label:
-            item?.categoryType?.categoryTypeID === TYPE_INCOME ? "Thu" : "Chi",
-          totalAmount: item?.totalAmount,
-          totalAmountStr: item?.totalAmountStr,
-          frontColor:
-            item?.categoryType?.categoryTypeID === TYPE_INCOME
-              ? colorLibrary.getIncomeColor()
-              : colorLibrary.getExpenseColor()
-        }));
-        // sort dataChart by totalAmount
-        // dataChart.sort((a, b) => a.totalAmount - b.totalAmount);
-        // sort dataChart by categoryTypeID
-        dataChart?.sort((a, b) => a.categoryTypeID - b.categoryTypeID);
-        returnData = {
-          dataChart: dataChart,
-          data: res
-        };
-      });
+      await dashboardServices
+        .getTotalAmountByType(accountID, time)
+        .then((res) => {
+          // console.log("res: ", res);
+          let count = 1;
+          let dataChart = res?.categoryWithTransactionData?.map((item) => ({
+            value: item?.percentage,
+            valueStr: item?.percentageStr,
+            color: colorLibrary.getColorByIndex(count++),
+            categoryTypeID: item?.categoryType?.categoryTypeID,
+            label:
+              item?.categoryType?.categoryTypeID === TYPE_INCOME
+                ? "Thu"
+                : "Chi",
+            totalAmount: item?.totalAmount,
+            totalAmountStr: item?.totalAmountStr,
+            frontColor:
+              item?.categoryType?.categoryTypeID === TYPE_INCOME
+                ? colorLibrary.getIncomeColor()
+                : colorLibrary.getExpenseColor()
+          }));
+          // sort dataChart by totalAmount
+          // dataChart.sort((a, b) => a.totalAmount - b.totalAmount);
+          // sort dataChart by categoryTypeID
+          dataChart?.sort((a, b) => a.categoryTypeID - b.categoryTypeID);
+          returnData = {
+            dataChart: dataChart,
+            data: res
+          };
+        });
       // console.log("returnData fetchTotalAmountByType: ", returnData);
       return returnData;
     } catch (error) {
@@ -189,6 +203,8 @@ const PieChartCategoryDashboard = () => {
           <PieChart
             data={data?.dataChart || []}
             donut
+            isAnimated={true}
+            animationDuration={2000}
             strokeColor="white"
             strokeWidth={2}
             textColor="black"
@@ -209,11 +225,11 @@ const PieChartCategoryDashboard = () => {
                   <Text style={styles.text_InCenterPieChart_Number}>
                     {thisDataInCenter?.number}
                   </Text>
-                  <Text style={styles.text_InCenterPieChart_Amount}>
-                    {thisDataInCenter?.amountStr}
-                  </Text>
                   <Text style={styles.text_InCenterPieChart_Label}>
                     {thisDataInCenter?.text}
+                  </Text>
+                  <Text style={styles.text_InCenterPieChart_Amount}>
+                    {thisDataInCenter?.amountStr}
                   </Text>
                 </View>
               );
@@ -318,13 +334,115 @@ const PieChartCategoryDashboard = () => {
     );
   };
 
-  // return hello world
   return (
     <View style={styles.view_Container}>
-      <View style={styles.view_Header}>
+      <View
+        style={[
+          styles.view_Header,
+          { width: screenWidth, justifyContent: "space-between" }
+        ]}
+      >
         <Text style={styles.text_Header}>
-          {"Tổng tiền các hạng mục tuần này"}
+          {"Tổng tiền thu chi các hạng mục"}
         </Text>
+        {/* <SegmentedButtons
+          style={{ width: "50%" }}
+          value={selectedTab}
+          onValueChange={setSelectedTab}
+          buttons={[
+            {
+              value: "week",
+              label: "Tuần",
+              // style: { backgroundColor: "white" },
+              checkedColor: "#0984e3",
+              // showSelectedCheck: true,
+              icon: "calendar-week"
+            },
+            {
+              value: "month",
+              label: "Tháng",
+              // style: { backgroundColor: "white" },
+              checkedColor: "#0984e3",
+              // showSelectedCheck: true,
+              icon: "calendar-month"
+            }
+          ]}
+        /> */}
+        {/* make a segment button by two Pressable */}
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            flex: 1,
+            borderWidth: 0.5,
+            borderColor: "#b2bec3",
+            borderRadius: 5,
+            marginHorizontal: 5
+          }}
+        >
+          <Pressable
+            style={[
+              styles.pressable_SegmentButton,
+              {
+                backgroundColor: selectedTab === TAB_WEEK ? "#b2bec3" : "white"
+                // justifyContent:
+                // selectedTab === TAB_WEEK ? "center" : "flex-end"
+              }
+            ]}
+            onPress={() => setSelectedTab(TAB_WEEK)}
+          >
+            {selectedTab === TAB_MONTH && (
+              <View style={{ marginHorizontal: 2 }}>
+                <Icon
+                  name="calendar-week"
+                  size={15}
+                  color={selectedTab === TAB_WEEK ? "white" : "#2d3436"}
+                />
+              </View>
+            )}
+            {selectedTab === TAB_WEEK && (
+              <Text
+                style={{
+                  color: selectedTab === TAB_WEEK ? "white" : "#2d3436",
+                  marginHorizontal: 2
+                }}
+              >
+                {"Tuần"}
+              </Text>
+            )}
+          </Pressable>
+          <Pressable
+            style={[
+              styles.pressable_SegmentButton,
+              {
+                backgroundColor: selectedTab === TAB_MONTH ? "#b2bec3" : "white"
+                // justifyContent:
+                //   selectedTab === TAB_MONTH ? "center" : "flex-start"
+              }
+            ]}
+            onPress={() => setSelectedTab(TAB_MONTH)}
+          >
+            {selectedTab === TAB_WEEK && (
+              <View style={{ marginHorizontal: 2 }}>
+                <Icon
+                  name="calendar"
+                  size={15}
+                  color={selectedTab === TAB_MONTH ? "white" : "#2d3436"}
+                />
+              </View>
+            )}
+            {selectedTab === TAB_MONTH && (
+              <Text
+                style={{
+                  color: selectedTab === TAB_MONTH ? "white" : "#2d3436",
+                  marginHorizontal: 2
+                }}
+              >
+                {"Tháng"}
+              </Text>
+            )}
+          </Pressable>
+        </View>
       </View>
       <View style={styles.view_ExpenseIncomeChart}>
         {dataTransfers && <ABarChart data={dataTransfers} />}
@@ -365,6 +483,15 @@ const PieChartCategoryDashboard = () => {
 };
 
 const styles = StyleSheet.create({
+  pressable_SegmentButton: {
+    padding: 5,
+    borderRadius: 5,
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center",
+    flexDirection: "row"
+  },
   view_ABarChart_Infor: {
     flex: 1,
     // justifyContent: "center",
@@ -386,7 +513,7 @@ const styles = StyleSheet.create({
     alignContent: "flex-start",
     alignItems: "flex-end",
     alignSelf: "flex-start",
-    marginRight: 20,
+    marginRight: 20
     // borderWidth: 1,
     // borderColor: "blue"
   },
@@ -394,7 +521,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     flex: 3,
-    justifyContent: "center",
+    justifyContent: "center"
     // alignContent: "center",
     // alignItems: "center",
     // borderWidth: 1,
@@ -477,12 +604,17 @@ const styles = StyleSheet.create({
   text_Header: {
     fontSize: 15,
     fontFamily: "OpenSans_600SemiBold",
-    textAlign: "center"
+    textAlign: "left",
+    flexWrap: "wrap",
+    flex: 2
   },
   view_Header: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    padding: 5
+    paddingVertical: 5,
+    // borderWidth: 1,
+    // borderColor: "darkgray",
+    paddingHorizontal: 10,
+    alignContent: "center"
   },
   view_PieChart_Dot: {
     height: 10,

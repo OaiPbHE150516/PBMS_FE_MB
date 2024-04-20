@@ -21,7 +21,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome6";
 
-const NewTabCategoryComponent = ({ props, callback, selected }) => {
+const NewTabCategoryComponent = ({ props, callback, selected, isHasFooter }) => {
   function handleCategoryItemPress(category) {
     callback(category);
   }
@@ -83,6 +83,28 @@ const NewTabCategoryComponent = ({ props, callback, selected }) => {
           <ACategoryItem category={item} depth={0} action={true} />
         )}
         keyExtractor={(item) => item.categoryID}
+        // add footer
+        ListFooterComponent={
+          <View
+            style={{
+              height: isHasFooter ? 150 : 10,
+              width: "100%",
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "flex-start"
+            }}
+          >
+            {/* a divider horizontal view */}
+            <View
+              style={{
+                width: "100%",
+                height: 2,
+                backgroundColor: "darkgray",
+                marginVertical: 10
+              }}
+            />
+          </View>
+        }
       />
     </View>
   );
@@ -131,7 +153,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 20,
+    borderRadius: 20
   }
 });
 

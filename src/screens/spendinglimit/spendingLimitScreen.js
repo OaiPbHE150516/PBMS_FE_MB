@@ -61,6 +61,10 @@ const SpendingLimitScreen = ({ route, navigation }) => {
     }
   }, [isFocused, shouldFetchData]);
 
+  const handleBack = () => {
+    navigation.goBack();
+  };
+
   const ASpendingLimit = ({ item }) => {
     return (
       <View style={styles.budgetItem}>

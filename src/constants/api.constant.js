@@ -44,6 +44,7 @@ export const API = {
     GET_TOTAL_BALANCE: `${Base_URL}/api/wallet/get/total-amount/`,
     GET_ALL_WALLET: `${Base_URL}/api/wallet/get/account/`,
     GET_EACH_WALLET_BALANCE: `${Base_URL}/api/wallet/get/total-amount-each-wallet/`,
+    GET_BALANCE_HISTORY_LOG: `${Base_URL}/api/balanceHisLogController/get/each/`,
     CREATE_WALLET: `${Base_URL}/api/wallet/create`
   },
   TRANSACTION: {

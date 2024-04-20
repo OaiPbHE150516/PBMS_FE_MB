@@ -54,6 +54,7 @@ const walletServices = {
     } catch (error) {
       console.error("Error createWallet data:", error.message);
     }
-  }
+  },
+  // get balance history log of wallet by accountID and time range
 };
 export default walletServices;

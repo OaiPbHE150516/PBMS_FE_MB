@@ -22,8 +22,7 @@ import Icon from "react-native-vector-icons/FontAwesome6";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 
 // components
-import ModalCategoryComponent from "../../components/category/modalCategoryComponent";
-import TabCategoryInModalComponent from "../../components/category/tabCategoryInModalComponent";
+import NewTabCategoryComponent from "../../components/category/newTabCategoryComp";
 
 // redux
 import { getCategories, createCategory } from "../../redux/categorySlice";
@@ -38,7 +37,6 @@ const CategoryManagerScreen = () => {
   const account = useSelector((state) => state.authen?.account);
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const [isModalAddCateVisible, setIsModalAddCateVisible] = useState(false);
   const [cateParentList, setCateParentList] = useState([]);
 
   const [newCate, setNewCate] = useState({
@@ -48,6 +46,10 @@ const CategoryManagerScreen = () => {
   });
 
   const [nowCategories, setNowCategories] = useState([]);
+
+  // screen state
+  const [isModalAddCateVisible, setIsModalAddCateVisible] = useState(false);
+  const [isShowMenuModal, setIsShowMenuModal] = useState(false);
 
   // async function fetchDataCategories
   async function fetchDataCategories() {
@@ -87,9 +89,10 @@ const CategoryManagerScreen = () => {
             height: "70%"
           }}
         >
-          <TabCategoryInModalComponent
+          <NewTabCategoryComponent
             props={{ category: nowCategories[0], action: false }}
             callback={onCallbackCategory}
+            isHasFooter={true}
           />
         </View>
       )
@@ -105,9 +108,10 @@ const CategoryManagerScreen = () => {
             alignItems: "center"
           }}
         >
-          <TabCategoryInModalComponent
+          <NewTabCategoryComponent
             props={{ category: nowCategories[1], action: false }}
             callback={onCallbackCategory}
+            isHasFooter={true}
           />
         </View>
       )
@@ -199,8 +203,8 @@ const CategoryManagerScreen = () => {
         <Pressable
           style={styles.pressable_Menu}
           onPress={() => {
-            console.log("onPressIn");
-            // setIsLoading(true);
+            // setIsShowMenuModal(!isShowMenuModal);
+            setIsModalAddCateVisible(!isModalAddCateVisible);
           }}
         >
           <Icon name="ellipsis-vertical" size={22} color="#2d3436" />
@@ -272,6 +276,12 @@ const CategoryManagerScreen = () => {
           <Text style={styles.textPressableAction}>{"Thêm hạng mục"}</Text>
         </Pressable>
       </View>
+
+      {/* a modal of menu modal */}
+      {/* <Modal animationType="slide" transparent={true} visible={isShowMenuModal}>
+        <View style={styles.viewModaAddCate}>
+        </View>
+      </Modal> */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -414,7 +424,7 @@ const styles = StyleSheet.create({
     flex: 6,
     justifyContent: "center",
     alignItems: "center",
-    alignContent: "center",
+    alignContent: "center"
     // alignSelf: "center",
     // borderWidth: 1,/p
   },
@@ -426,12 +436,12 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     alignContent: "flex-end",
     right: 0,
-    marginHorizontal: 10,
+    marginHorizontal: 10
   },
   viewHeader: {
     width: "100%",
     flexDirection: "row",
-    justifyContent: "space-around",
+    justifyContent: "space-around"
     // backgroundColor: "green",
     // alignItems: "center",
     // alignContent: "center"
@@ -452,8 +462,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginVertical: 20,
     marginHorizontal: 5,
-    backgroundColor: "red",
-    borderWidth: 10
+    // backgroundColor: "red",
+    // borderWidth: 10
   },
   buttonActionModal: {
     // backgroundColor: "lightblue",

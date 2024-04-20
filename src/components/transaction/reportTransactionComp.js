@@ -8,7 +8,8 @@ import {
   Image,
   FlatList,
   Dimensions,
-  ScrollView
+  ScrollView,
+  Pressable
 } from "react-native";
 import {
   BarChart,
@@ -43,6 +44,7 @@ const ReportTransactionComp = ({ time }) => {
   const [dataExpenses, setDataExpenses] = useState({});
   const [dataIncomes, setDataInCenterIncomes] = useState({});
   const [dataTransfers, setDataTransfers] = useState({});
+  const [dataTags, setDataTags] = useState({});
 
   // data constance
   const screenWidth = Dimensions.get("window").width;
@@ -63,6 +65,7 @@ const ReportTransactionComp = ({ time }) => {
       TYPE_EXPENSE
     );
     setDataExpenses(dataExpenses);
+
     const dataIncomes = await fetchTotalAmountByCategory(
       account?.accountID,
       time,
@@ -75,40 +78,44 @@ const ReportTransactionComp = ({ time }) => {
       time
     );
     setDataTransfers(dataTransfers);
+
+    const dataTags = await fetchTotalAmountByTag(account?.accountID, time);
+    setDataTags(dataTags);
   }
 
   async function fetchTotalAmountByType(accountID, time) {
     try {
       let returnData = {};
-      await dashboardServices.getTotalAmountByType(
-        accountID,
-        time
-      ).then((res) => {
-        // console.log("res: ", res);
-        let count = 1;
-        let dataChart = res?.categoryWithTransactionData?.map((item) => ({
-          value: item?.percentage,
-          valueStr: item?.percentageStr,
-          color: colorLibrary.getColorByIndex(count++),
-          categoryTypeID: item?.categoryType?.categoryTypeID,
-          label:
-            item?.categoryType?.categoryTypeID === TYPE_INCOME ? "Thu" : "Chi",
-          totalAmount: item?.totalAmount,
-          totalAmountStr: item?.totalAmountStr,
-          frontColor:
-            item?.categoryType?.categoryTypeID === TYPE_INCOME
-              ? colorLibrary.getIncomeColor()
-              : colorLibrary.getExpenseColor()
-        }));
-        // sort dataChart by totalAmount
-        // dataChart.sort((a, b) => a.totalAmount - b.totalAmount);
-        // sort dataChart by categoryTypeID
-        dataChart?.sort((a, b) => a.categoryTypeID - b.categoryTypeID);
-        returnData = {
-          dataChart: dataChart,
-          data: res
-        };
-      });
+      await dashboardServices
+        .getTotalAmountByType(accountID, time)
+        .then((res) => {
+          // console.log("res: ", res);
+          let count = 1;
+          let dataChart = res?.categoryWithTransactionData?.map((item) => ({
+            value: item?.percentage,
+            valueStr: item?.percentageStr,
+            color: colorLibrary.getColorByIndex(count++),
+            categoryTypeID: item?.categoryType?.categoryTypeID,
+            label:
+              item?.categoryType?.categoryTypeID === TYPE_INCOME
+                ? "Thu"
+                : "Chi",
+            totalAmount: item?.totalAmount,
+            totalAmountStr: item?.totalAmountStr,
+            frontColor:
+              item?.categoryType?.categoryTypeID === TYPE_INCOME
+                ? colorLibrary.getIncomeColor()
+                : colorLibrary.getExpenseColor()
+          }));
+          // sort dataChart by totalAmount
+          // dataChart.sort((a, b) => a.totalAmount - b.totalAmount);
+          // sort dataChart by categoryTypeID
+          dataChart?.sort((a, b) => a.categoryTypeID - b.categoryTypeID);
+          returnData = {
+            dataChart: dataChart,
+            data: res
+          };
+        });
       // console.log("returnData fetchTotalAmountByType: ", returnData);
       return returnData;
     } catch (error) {
@@ -149,6 +156,36 @@ const ReportTransactionComp = ({ time }) => {
     }
   }
 
+  async function fetchTotalAmountByTag(accountID, time) {
+    try {
+      const response = await dashboardServices.getTotalAmountByTag(
+        accountID,
+        time
+      );
+      let count = colorLibrary.getRandomIndex();
+      let dataChart = response?.tagWithProductData?.map((item) => ({
+        value: item?.percentage,
+        valueStr: item?.percentageStr,
+        color: colorLibrary.getColorByIndex(count++),
+        label: item?.tag?.primaryTag,
+        childTags: item?.tag?.childTags,
+        tagWithTotalAmounts: item?.tagWithTotalAmounts,
+        totalAmountStr: item?.totalAmountStr
+      }));
+      const returnData = {
+        dataChart: dataChart,
+        data: response
+      };
+      return returnData;
+    } catch (error) {
+      console.error("Error fetchTotalAmountByTag Dashboard data:", error);
+      Alert.alert(
+        "Lỗi",
+        "Không thể lấy dữ liệu các tổng tiền theo tag từ server"
+      );
+    }
+  }
+
   const ALabelPieChartInfor = ({ item }) => {
     return (
       <View style={styles.view_APieChart_Infor}>
@@ -162,64 +199,164 @@ const ReportTransactionComp = ({ time }) => {
   };
 
   const ACellItem = ({ item }) => {
+    const [showDetail, setShowDetail] = useState(false);
     return (
-      <View
-        style={{
-          // borderWidth: 2,
-          // borderColor: "green",
-          flexDirection: "row",
-          // justifyContent: "space-around",
-          alignContent: "center",
-          alignItems: "center",
-          width: "95%",
-          height: 40,
-          marginVertical: 5,
-          marginHorizontal: 5,
-          borderBottomWidth: 0.5,
-          borderBottomColor: "#b2bec3",
-          borderRadius: 10
-        }}
+      <Pressable
+        style={({ pressed }) => [
+          styles.pressable_ACellItem,
+          { backgroundColor: pressed ? "#dfe6e9" : "white" }
+        ]}
+        onPress={() => setShowDetail(!showDetail)}
       >
         <View
-          style={[
-            styles.view_PieChart_Dot,
-            { backgroundColor: item.color, flex: 2, width: "auto", height: 20 }
-          ]}
-        />
-        <View style={{ flex: 6, marginHorizontal: 5 }}>
-          <Text
-            style={{
-              fontSize: 16,
-              fontFamily: "OpenSans_400Regular",
-              textAlign: "left"
-            }}
-          >
-            {item?.label}
-          </Text>
+          style={{
+            flexDirection: "row",
+            alignContent: "center",
+            alignItems: "center",
+            alignSelf: "center",
+            bottom: -10
+          }}
+        >
+          <View
+            style={[
+              styles.view_PieChart_Dot,
+              {
+                backgroundColor: item.color,
+                flex: 2,
+                width: "auto",
+                height: 20
+              }
+            ]}
+          />
+          <View style={{ flex: 6, marginHorizontal: 5 }}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontFamily: "OpenSans_400Regular",
+                textAlign: "left"
+              }}
+            >
+              {item?.label}
+            </Text>
+          </View>
+          <View style={{ flex: 6 }}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontFamily: "OpenSans_400Regular",
+                textAlign: "right"
+              }}
+            >
+              {item?.valueStr}
+            </Text>
+          </View>
+          <View style={{ flex: 6 }}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontFamily: "OpenSans_600SemiBold",
+                textAlign: "right"
+              }}
+            >
+              {item?.totalAmountStr}
+            </Text>
+          </View>
         </View>
-        <View style={{ flex: 6 }}>
-          <Text
-            style={{
-              fontSize: 16,
-              fontFamily: "OpenSans_400Regular",
-              textAlign: "right"
-            }}
-          >
-            {item?.valueStr}
-          </Text>
-        </View>
-        <View style={{ flex: 6 }}>
-          <Text
-            style={{
-              fontSize: 16,
-              fontFamily: "OpenSans_500Medium",
-              textAlign: "right"
-            }}
-          >
-            {item?.totalAmountStr}
-          </Text>
-        </View>
-      </View>
+        {showDetail && (
+          <View style={{ bottom: -10, marginHorizontal: 10 }}>
+            {item?.tagWithTotalAmounts && (
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-around",
+                  borderBottomWidth: 0.25,
+                  borderBottomColor: "darkgray"
+                }}
+              >
+                <Text
+                  style={[
+                    styles.text_17OpenSans400,
+                    {
+                      flex: 2
+                    }
+                  ]}
+                >
+                  {"Tag"}
+                </Text>
+                <Text
+                  style={[
+                    styles.text_17OpenSans400,
+                    {
+                      textAlign: "center"
+                    }
+                  ]}
+                >
+                  {"Số lượng"}
+                </Text>
+                <Text
+                  style={[
+                    styles.text_17OpenSans400,
+                    {
+                      textAlign: "right"
+                    }
+                  ]}
+                >
+                  {"Tổng tiền"}
+                </Text>
+              </View>
+            )}
+
+            <FlatList
+              data={item?.tagWithTotalAmounts || []}
+              keyExtractor={(item) => item?.tag}
+              renderItem={({ item }) => (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-around",
+                    borderBottomWidth: 0.15,
+                    borderBottomColor: "darkgray"
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.text_15OpenSans400,
+                      {
+                        flex: 2
+                      }
+                    ]}
+                  >
+                    {item?.tag}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.text_15OpenSans400,
+                      {
+                        flex: 1,
+                        textAlign: "center"
+                      }
+                    ]}
+                  >
+                    {item?.numberOfProduct}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.text_15OpenSans400,
+                      {
+                        flex: 1,
+                        textAlign: "right",
+                        fontFamily: "OpenSans_600SemiBold"
+                      }
+                    ]}
+                  >
+                    {item?.totalAmountStr}
+                  </Text>
+                </View>
+              )}
+            />
+          </View>
+        )}
+      </Pressable>
     );
   };
 
@@ -315,7 +452,7 @@ const ReportTransactionComp = ({ time }) => {
             keyExtractor={(item) => item?.label}
             scrollEnabled={false}
             renderItem={({ item }) => <ACellItem item={item} />}
-            ListFooterComponent={<View style={{ height: 500 }}></View>}
+            ListFooterComponent={<View style={{ height: 100 }}></View>}
           />
           {/* <View style={{ height: 500 }}></View> */}
         </View>
@@ -392,7 +529,7 @@ const ReportTransactionComp = ({ time }) => {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.view_Header}>
         <Text style={styles.text_Header}>
           {"Tổng tiền các hạng mục thời gian này: "}
@@ -406,7 +543,7 @@ const ReportTransactionComp = ({ time }) => {
         style={styles.scrollview_Container_PieChart}
         horizontal={true}
         pagingEnabled={true}
-        showsHorizontalScrollIndicator={false}
+        showsHorizontalScrollIndicator={true}
       >
         {dataExpenses && (
           <APieChart data={dataExpenses} title="Tổng chi" titleColor="red" />
@@ -414,15 +551,47 @@ const ReportTransactionComp = ({ time }) => {
         {dataIncomes && (
           <APieChart data={dataIncomes} title="Tổng thu" titleColor="green" />
         )}
+        {dataTags && (
+          <APieChart
+            data={dataTags}
+            title="Tổng tiền theo nhãn"
+            titleColor="blue"
+          />
+        )}
       </ScrollView>
-    </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  text_17OpenSans400: {
+    flex: 1,
+    fontSize: 17,
+    fontFamily: "Inconsolata_500Medium"
+  },
+  text_15OpenSans400: {
+    fontSize: 15,
+    fontFamily: "Inconsolata_400Regular"
+  },
+  pressable_ACellItem: {
+    // borderWidth: 2,
+    // borderColor: "green",
+    flexDirection: "column",
+    // alignContent: "center",
+    // alignItems: "center",
+    width: "95%",
+    minHeight: 40,
+    height: "auto",
+    marginVertical: 5,
+    marginHorizontal: 5,
+    borderBottomWidth: 0.5,
+    borderBottomColor: "#b2bec3",
+    borderRadius: 10,
+    paddingBottom: 10
+  },
   container: {
     // flex: 1,
-    // backgroundColor: "#fff",
+    backgroundColor: "white",
     // alignItems: "center",
     // justifyContent: "center",
     alignContent: "center",

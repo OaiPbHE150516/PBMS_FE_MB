@@ -27,10 +27,7 @@ const transactionServices = {
       const response = await axios.get(urlapi, { headers });
       return response.data;
     } catch (error) {
-      console.error(
-        "Error getLastNumberExpensesTransaction data:",
-        error
-      );
+      console.error("Error getLastNumberExpensesTransaction data:", error);
     }
   },
 
@@ -60,7 +57,7 @@ const transactionServices = {
       // console.log("accountID: ", data.accountID);
       const response = await axios.get(
         API.TRANSACTION.GET_TRANSACTION_DETAIL +
-        data?.transactionID +
+          data?.transactionID +
           "/" +
           data?.accountID,
         {
@@ -78,7 +75,10 @@ const transactionServices = {
   getRecentlyTransaction: async (data) => {
     try {
       const response = await axios.get(
-        API.TRANSACTION.GET_RECENTLY_TRANSACTION + data.accountID + "/" + data.limit,
+        API.TRANSACTION.GET_RECENTLY_TRANSACTION +
+          data.accountID +
+          "/" +
+          data.limit,
         {
           headers
         }
@@ -103,15 +103,17 @@ const transactionServices = {
       console.error("Error addTransactionNoInvoice data:", error);
     }
   },
+
   addTransactionWithInvoice: async (data) => {
     try {
-      const response = await axios.post(
-        API.TRANSACTION.ADD_TRANSACTION_WITH_INVOICE,
-        data,
-        {
-          headers
+      const response = await axios({
+        method: "post",
+        url: API.TRANSACTION.ADD_TRANSACTION_WITH_INVOICE,
+        data: data,
+        headers: {
+          "Content-type": "application/json"
         }
-      );
+      });
       console.log("response: ", response.data);
       return response.data;
     } catch (error) {

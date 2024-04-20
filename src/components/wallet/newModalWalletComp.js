@@ -38,7 +38,7 @@ const NewModalWalletComponent = ({ selected, callback }) => {
       .getAllWallet(account?.accountID)
       .then((response) => {
         // sort response by banlance
-        response.sort((a, b) => {
+        response?.sort((a, b) => {
           return b.balance - a.balance;
         });
 
@@ -65,7 +65,7 @@ const NewModalWalletComponent = ({ selected, callback }) => {
         <Text style={styles.headerText}>{"Chọn ví"}</Text>
       </View>
       <FlatList
-        data={wallets}
+        data={wallets || []}
         keyExtractor={(item) => item.walletID.toString()}
         renderItem={({ item }) => (
           <Pressable
@@ -73,19 +73,19 @@ const NewModalWalletComponent = ({ selected, callback }) => {
               {
                 backgroundColor: pressed
                   ? "#b2bec3"
-                  : item.walletID === selected?.walletID
+                  : item?.walletID === selected?.walletID
                     ? "#dfe6e9"
                     : "white",
-                borderBottomColor: item.balance < 0 ? "#d63031" : "darkgray",
-                borderLeftColor: item.balance < 0 ? "#d63031" : "darkgray",
+                borderBottomColor: item?.balance < 0 ? "#d63031" : "darkgray",
+                borderLeftColor: item?.balance < 0 ? "#d63031" : "darkgray",
                 shadowColor: item.balance < 0 ? "#d63031" : "darkgray"
               },
               styles.walletItem
             ]}
             onPress={() => handleCallbackAWallet(item)}
           >
-            <Text style={styles.walletName}>{item.name}</Text>
-            <Text style={styles.walletBalance}>{item.balanceStr}</Text>
+            <Text style={styles.walletName}>{item?.name}</Text>
+            <Text style={styles.walletBalance}>{item?.balanceStr}</Text>
           </Pressable>
         )}
       />

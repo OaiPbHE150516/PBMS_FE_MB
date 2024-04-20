@@ -26,10 +26,13 @@ const AnInputProductInIS = ({
   name,
   quanity,
   unitprice,
+  tag,
   amount,
+  editable,
   onChangeTextName,
   onChangeTextQuanity,
   onChangeTextUnitPrice,
+  onChangeTextTag,
   onChangeTextAmount,
   secureTextEntry
 }) => {
@@ -44,6 +47,7 @@ const AnInputProductInIS = ({
         style={[styles.viewProductName, { maxWidth: "60%", minWidth: "60%" }]}
       >
         <TextInput
+          editable={editable}
           value={name}
           multiline={true}
           // numberOfLines={2}
@@ -58,14 +62,29 @@ const AnInputProductInIS = ({
           ]}
           onChangeText={onChangeTextName}
         />
-        <TextInput
-          value={unitprice}
-          style={[styles.textInputInvoice, { fontSize: 16 }]}
-          onChangeText={onChangeTextUnitPrice}
-          keyboardType={Platform.OS === "ios" ? "numeric" : "number-pad"}
-        />
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between"
+          }}
+        >
+          <TextInput
+            editable={editable}
+            value={unitprice}
+            style={[styles.textInputInvoice, { fontSize: 16 }]}
+            onChangeText={onChangeTextUnitPrice}
+            keyboardType={Platform.OS === "ios" ? "numeric" : "number-pad"}
+          />
+          <TextInput
+            editable={editable}
+            value={tag}
+            style={[styles.textInputInvoice, styles.text_Tag]}
+            onChangeText={onChangeTextTag}
+          />
+        </View>
       </View>
       <TextInput
+        editable={editable}
         value={quanity}
         style={[styles.textInputInvoice, { maxWidth: "10%", fontSize: 16 }]}
         onChangeText={onChangeTextQuanity}
@@ -73,6 +92,7 @@ const AnInputProductInIS = ({
         keyboardType={Platform.OS === "ios" ? "numeric" : "number-pad"}
       />
       <TextInput
+        editable={editable}
         value={amount}
         style={[
           styles.textInputInvoice,
@@ -86,6 +106,19 @@ const AnInputProductInIS = ({
 };
 
 const styles = StyleSheet.create({
+  text_Tag: {
+    fontSize: 16,
+    fontFamily: "Inconsolata_400Regular",
+    fontStyle: "italic",
+    textTransform: "capitalize",
+    // maxWidth: "40%",
+    // minWidth: "30%",
+    textAlign: "right",
+    borderBottomWidth: 0.5,
+    borderBottomColor: "darkgray",
+    paddingHorizontal: 2,
+    marginHorizontal: 10
+  },
   viewProductName: {
     height: "auto"
   },
@@ -109,7 +142,7 @@ const styles = StyleSheet.create({
     // maxWidth: "100%",
     height: "auto",
     paddingHorizontal: 10,
-    // borderColor: "darkgrey",
+    // borderColor: "darkgray",
     // borderWidth: 1,
     // borderRadius: 5,
     marginVertical: 2

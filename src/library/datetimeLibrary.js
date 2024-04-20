@@ -311,8 +311,13 @@ const datetimeLibrary = {
     );
   },
 
-  // check and return time now if input time is before now
-  
+  // convert "HH:mm:ss" to ss number like "00:00:22.1417193" to 22s
+  convertToSecond: function (timeStr) {
+    const timeArray = timeStr.split(":");
+    return parseInt(timeArray[2]).toString() + "s";
+  },
+
+
 };
 
 export default datetimeLibrary;

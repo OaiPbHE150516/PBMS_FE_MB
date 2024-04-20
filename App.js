@@ -196,11 +196,11 @@ export default function App() {
                         case "Transaction":
                           iconName = focused ? "cash" : "cash-outline";
                           break;
-                        case "AddTransaction":
-                          iconName = focused
-                            ? "add-circle"
-                            : "add-circle-outline";
-                          break;
+                        // case "AddTransaction":
+                        //   iconName = focused
+                        //     ? "add-circle"
+                        //     : "add-circle-outline";
+                        //   break;
                         case "MyAccount":
                           iconName = focused ? "grid" : "grid-outline";
                           break;
@@ -208,24 +208,26 @@ export default function App() {
                           iconName = focused ? "people" : "people-outline";
                           break;
                         case "NewAddTransaction":
-                          iconName = focused ? "cloudy" : "cloudy-outline";
+                          iconName = focused
+                            ? "add-circle"
+                            : "add-circle-outline";
                           break;
                       }
                       return (
                         <Ionicons
                           name={iconName}
                           size={
-                            route.name == "AddTransaction"
-                              ? size * 2.2
-                              : size * 1.1
+                            route.name == "NewAddTransaction"
+                              ? size * 2.5
+                              : size * 1.2
                           }
                           color={color}
                           style={{
                             position: "absolute",
                             bottom: -30,
-                            top: route.name == "AddTransaction" ? -12 : 15,
+                            top: route.name == "NewAddTransaction" ? -15 : 15,
                             borderRadius: 50,
-                            padding: route.name == "AddTransaction" ? 5 : 0
+                            padding: route.name == "NewAddTransaction" ? 5 : 0
                           }}
                         />
                       );
@@ -251,8 +253,8 @@ export default function App() {
                       right: 10,
                       borderRadius: 20,
                       height: 60,
-                      borderWidth: 1,
-                      borderColor: "dark",
+                      borderWidth: 0.75,
+                      borderColor: "darkgray",
                       display: route.name == "Signin" ? "none" : "flex"
                     }
                   })}
@@ -269,10 +271,10 @@ export default function App() {
                     name="Transaction"
                     component={TransactionScreen}
                   />
-                  <Tab.Screen
+                  {/* <Tab.Screen
                     name="AddTransaction"
                     component={AddTransactionScreen}
-                  />
+                  /> */}
                   <Tab.Screen
                     // NewAddTransactionScreen
                     name="NewAddTransaction"

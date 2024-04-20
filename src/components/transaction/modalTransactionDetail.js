@@ -167,8 +167,10 @@ const ModalTransactionDetail = ({ props, callback }) => {
                 keyExtractor={(item) => item.productID}
                 renderItem={({ item }) => (
                   <AnInputProductInIS
+                    editable={false}
                     name={item.productName}
                     unitprice={item.unitPrice.toString()}
+                    tag={item.tag.toString()}
                     quanity={item.quanity.toString()}
                     amount={item.totalAmount.toString()}
                     onChangeTextName={(text) => {
@@ -207,9 +209,7 @@ const ModalTransactionDetail = ({ props, callback }) => {
                 style={{ width: width, height: height }}
                 resizeMode="contain"
               />
-              <Text>
-                {props?.imageURL}
-              </Text>
+              <Text>{props?.imageURL}</Text>
             </View>
           )}
       </View>

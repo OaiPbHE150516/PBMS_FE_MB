@@ -8,7 +8,8 @@ import {
   isBefore,
   isAfter,
   isSameDay,
-  startOfMonth
+  startOfMonth,
+  addHours
 } from "date-fns";
 
 const datetimeLibrary = {
@@ -76,18 +77,22 @@ const datetimeLibrary = {
   },
 
   getTimeWeekBefore: function (numWeek) {
-    const currentDate = new Date();
+    const currentDate = addHours(new Date(), 7);
     // if currentDate is Sunday, then numWeek += 1
     if (currentDate.getDay() === 0) {
       numWeek += 1;
     }
     const startdate = addDays(startOfWeek(subWeeks(currentDate, numWeek)), 1);
     const enddate = addDays(endOfWeek(subWeeks(currentDate, numWeek)), 1);
+    const startDateStr000 = format(startdate, "yyyy-MM-dd") + "T00:00:00.000Z";
+    const endDateStr000 = format(enddate, "yyyy-MM-dd") + "T23:59:59.000Z";
     return [
       startdate,
       enddate,
       format(startdate, "dd-MM-yyyy") + "/" + format(enddate, "dd-MM-yyyy"),
-      format(startdate, "dd/MM") + " - " + format(enddate, "dd/MM")
+      format(startdate, "dd/MM") + " - " + format(enddate, "dd/MM"),
+      startDateStr000,
+      endDateStr000
     ];
   },
 
@@ -228,7 +233,7 @@ const datetimeLibrary = {
 
   // get start day and end day of the month by adding numMonth to current month
   getTimeThisMonthByNumMonth: function (numMonth) {
-    const currentDate = new Date();
+    const currentDate = addHours(new Date(), 7);
     const startdate = new Date(
       currentDate.getFullYear(),
       currentDate.getMonth() - numMonth,
@@ -240,12 +245,16 @@ const datetimeLibrary = {
       0
     );
     const resultMonthStr = "tháng " + format(startdate, "MM");
+    const startDateStr000 = format(startdate, "yyyy-MM-dd") + "T00:00:00.000Z";
+    const endDateStr000 = format(enddate, "yyyy-MM-dd") + "T23:59:59.000Z";
     return [
       startdate,
       enddate,
       format(startdate, "dd-MM-yyyy") + "/" + format(enddate, "dd-MM-yyyy"),
       format(startdate, "dd/MM") + " - " + format(enddate, "dd/MM"),
-      resultMonthStr
+      resultMonthStr,
+      startDateStr000,
+      endDateStr000
     ];
   },
 
@@ -315,6 +324,12 @@ const datetimeLibrary = {
   convertToSecond: function (timeStr) {
     const timeArray = timeStr.split(":");
     return parseInt(timeArray[2]).toString() + "s";
+  },
+
+  // get time this moment, like '2024-04-18T22:02:00.000Z'
+  getTimeStrThisMoment: function () {
+    const currentDate = new Date();
+    return format(currentDate, "yyyy-MM-dd") + "T" + format(currentDate, "HH:mm") + ":00.000Z";
   },
 
 

@@ -21,10 +21,13 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome6";
 
-const NewTabCategoryComponent = ({ props, callback, selected, isHasFooter }) => {
-  function handleCategoryItemPress(category) {
-    callback(category);
-  }
+const NewTabCategoryComponent = ({
+  props,
+  callback,
+  callbackLongPress,
+  selected,
+  isHasFooter
+}) => {
 
   const ACategoryItem = ({ category, depth = 0 }) => {
     return (
@@ -40,7 +43,13 @@ const NewTabCategoryComponent = ({ props, callback, selected, isHasFooter }) => 
             }
           ]}
           onPress={() => {
-            handleCategoryItemPress(category);
+            callback(category);
+          }}
+          onLongPress={() => {
+            // only call callback if it valid
+            if (callbackLongPress) {
+              callbackLongPress(category);
+            }
           }}
         >
           <Icon
@@ -139,15 +148,7 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     alignItems: "center",
-    alignContent: "center",
-    shadowColor: "#636e72",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 2,
-    elevation: 5
+    alignContent: "center"
   },
   container: {
     flex: 1,

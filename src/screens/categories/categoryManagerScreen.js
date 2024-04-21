@@ -20,6 +20,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { BlurView } from "expo-blur";
 import Icon from "react-native-vector-icons/FontAwesome6";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import {
+  TextInput as PaperTextInput,
+  Chip as PaperChip
+} from "react-native-paper";
 
 // components
 import NewTabCategoryComponent from "../../components/category/newTabCategoryComp";
@@ -35,27 +39,32 @@ const TabCategory = createMaterialTopTabNavigator();
 const CategoryManagerScreen = () => {
   // const categories = useSelector((state) => state.category?.categories);
   const account = useSelector((state) => state.authen?.account);
+  const shouldFetchData = useSelector((state) => state.data.shouldFetchData);
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const [cateParentList, setCateParentList] = useState([]);
 
+  // services state
+  const [cateParentList, setCateParentList] = useState([]);
   const [newCate, setNewCate] = useState({
     name: "",
     parentID: null,
     accountID: account?.accountID
   });
-
+  const [editCate, setEditCate] = useState({});
   const [nowCategories, setNowCategories] = useState([]);
 
   // screen state
   const [isModalAddCateVisible, setIsModalAddCateVisible] = useState(false);
   const [isShowMenuModal, setIsShowMenuModal] = useState(false);
+  const [isShowModalEditCate, setIsShowModalEditCate] = useState(false);
+  const [focusScreen, setFocusScreen] = useState(0);
 
-  // async function fetchDataCategories
+  // const variables
+  const MAX_LENGTH_CATE_NAME = 30;
+
   async function fetchDataCategories() {
     try {
       await categoryServices.getCategories(account?.accountID).then((res) => {
-        console.log("fetchDataCategories res: ", res);
         setNowCategories(res);
       });
     } catch (error) {
@@ -67,71 +76,41 @@ const CategoryManagerScreen = () => {
   useEffect(() => {
     if (account !== null) {
       fetchDataCategories();
-      // if (categories === null) {
-      //   dispatch(getCategories(account?.accountID));
-      // }
+      handleFocusScreen(focusScreen);
     }
-  }, [account]);
+  }, [account, shouldFetchData]);
+
+  useEffect(() => {
+    handleFocusScreen(focusScreen);
+  }, [focusScreen, shouldFetchData]);
 
   function onCallbackCategory(data) {
     console.log("data: ", data);
+    // setIsShowModalEditCate(!isShowModalEditCate);
   }
 
-  const Tab1 = () => {
-    return (
-      nowCategories[0] && (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            width: "100%",
-            height: "70%"
-          }}
-        >
-          <NewTabCategoryComponent
-            props={{ category: nowCategories[0], action: false }}
-            callback={onCallbackCategory}
-            isHasFooter={true}
-          />
-        </View>
-      )
-    );
-  };
-  const Tab2 = () => {
-    return (
-      nowCategories[1] && (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center"
-          }}
-        >
-          <NewTabCategoryComponent
-            props={{ category: nowCategories[1], action: false }}
-            callback={onCallbackCategory}
-            isHasFooter={true}
-          />
-        </View>
-      )
-    );
-  };
-
-  const handleAddCategory = () => {
-    setIsModalAddCateVisible(true);
-  };
+  function onCallbackLongPressCategory(data) {
+    if (cateParentList?.length === 0 || cateParentList === null) return;
+    console.log("onCallbackLongPressCategory data: ", data);
+    setEditCate(data);
+    setIsShowModalEditCate(!isShowModalEditCate);
+  }
 
   const handleBack = () => {
     navigation.goBack();
   };
+
+  function handleReloadCategories() {
+    setNowCategories([]);
+    fetchDataCategories();
+  }
 
   function handleCreateCategory() {
     console.log("newCate: ", newCate);
     if (
       newCate?.name === "" ||
       newCate?.parentID === null ||
-      newCate?.name.length > 30
+      newCate?.name.length > MAX_LENGTH_CATE_NAME
     ) {
       Alert.alert(
         "Thông báo",
@@ -147,16 +126,12 @@ const CategoryManagerScreen = () => {
       parentID: cateParentList[0]?.categoryID
     });
     setIsModalAddCateVisible(!isModalAddCateVisible);
+    handleReloadCategories();
   }
 
-  function handleFocusScreen(index) {
-    if (nowCategories && nowCategories[index]) {
-      const listParent = [
-        nowCategories[index],
-        ...nowCategories[index]?.children
-      ];
-      // console.log("listParent: ", listParent);
-      setCateParentList(listParent);
+  async function handleFocusScreen(index) {
+    if (nowCategories[index]) {
+      setCateParentList([nowCategories[index]]);
       setNewCate({
         ...newCate,
         parentID: nowCategories[index]?.categoryID,
@@ -165,24 +140,189 @@ const CategoryManagerScreen = () => {
     }
   }
 
-  const AnCateParentItem = ({ item }) => {
-    function onHandleItemOnPress(item) {
-      console.log("item: ", item);
-      setNewCate({ ...newCate, parentID: item.categoryID });
-      dispatch(getCategories(account?.accountID));
+  function onHandleItemOnPress(item) {
+    console.log("item: ", item);
+    if (isShowModalEditCate) {
+      setEditCate({ ...editCate, parentCategoryID: item.categoryID });
     }
+    if (isModalAddCateVisible) {
+      setNewCate({ ...newCate, parentID: item.categoryID });
+    }
+    // dispatch(getCategories(account?.accountID));
+  }
+
+  function handleCancelEditCate() {
+    setIsShowModalEditCate(!isShowModalEditCate);
+    setEditCate(null);
+  }
+
+  function handleCancelAddCate() {
+    setIsModalAddCateVisible(!isModalAddCateVisible);
+    setNewCate({
+      ...newCate,
+      name: "",
+      parentID: cateParentList[0]?.categoryID
+    });
+  }
+
+  function handleDeleteCate(categoryID) {
+    console.log("categoryID: ", categoryID);
+    Alert.alert("Thông báo", "Bạn có chắc chắn muốn xóa hạng mục này?", [
+      {
+        text: "Hủy",
+        onPress: () => console.log("Cancel Pressed"),
+        style: "cancel"
+      },
+      {
+        text: "Xóa",
+        onPress: () => {
+          deleteCategory(categoryID);
+          setIsShowModalEditCate(!isShowModalEditCate);
+        }
+      }
+    ]);
+  }
+
+  async function deleteCategory(categoryID) {
+    try {
+      await categoryServices.deleteCategory({
+        categoryID: categoryID,
+        accountID: account?.accountID
+      });
+      Alert.alert("Thông báo", "Xóa hạng mục thành công");
+      setIsShowModalEditCate(!isShowModalEditCate);
+      handleReloadCategories();
+    } catch (error) {
+      console.log("deleteCategory error: ", error);
+      Alert.alert("Thông báo", "Lỗi khi xóa hạng mục");
+    }
+  }
+
+  async function handleUpdateCategory() {
+    console.log("editCate: ", editCate);
+    if (
+      editCate?.nameVN === "" ||
+      editCate?.nameVN.length > MAX_LENGTH_CATE_NAME
+    ) {
+      Alert.alert(
+        "Thông báo",
+        "Tên hạng mục không được để trống hoặc quá " +
+          MAX_LENGTH_CATE_NAME +
+          " ký tự"
+      );
+      return;
+    }
+    try {
+      await categoryServices.updateCategory({
+        cate: editCate,
+        accountID: account?.accountID
+      });
+      Alert.alert("Thông báo", "Cập nhật hạng mục thành công");
+      setIsShowModalEditCate(!isShowModalEditCate);
+      handleReloadCategories();
+    } catch (error) {
+      console.log("handleUpdateCategory error: ", error);
+      Alert.alert("Thông báo", "Lỗi khi cập nhật hạng mục");
+    }
+  }
+
+  const Tab1 = () => {
     return (
-      <Pressable
-        style={styles.pressableCateItem}
-        onPress={() => {
-          onHandleItemOnPress(item);
-        }}
-      >
-        <Text style={styles.textCateItem}>{item.nameVN}</Text>
-        {item.categoryID === newCate?.parentID ? (
-          <Icon name="check" size={20} color="darkgray" />
-        ) : null}
-      </Pressable>
+      nowCategories[0] && (
+        <View style={styles.view_TabCategory}>
+          <NewTabCategoryComponent
+            props={{ category: nowCategories[0], action: false }}
+            callback={onCallbackCategory}
+            callbackLongPress={onCallbackLongPressCategory}
+            isHasFooter={true}
+          />
+        </View>
+      )
+    );
+  };
+  const Tab2 = () => {
+    return (
+      nowCategories[1] && (
+        <View style={styles.view_TabCategory}>
+          <NewTabCategoryComponent
+            props={{ category: nowCategories[1], action: false }}
+            callback={onCallbackCategory}
+            callbackLongPress={onCallbackLongPressCategory}
+            isHasFooter={true}
+          />
+        </View>
+      )
+    );
+  };
+
+  const AnCateParentItem = ({ item, depth = 0 }) => {
+    return (
+      <View style={styles.viewCateItem}>
+        <Pressable
+          style={({ pressed }) => [
+            styles.pressableCateItem,
+            {
+              marginLeft: 20 * depth,
+              width: Dimensions.get("window").width * 0.9 - 30 * depth,
+              height: 40,
+              backgroundColor: pressed ? "lightgray" : null
+            }
+          ]}
+          onPress={() => {
+            onHandleItemOnPress(item);
+          }}
+          // disable when item is editing or item have children is editing
+          disabled={
+            (isShowModalEditCate && item.categoryID === editCate?.categoryID) ||
+            (isShowModalEditCate &&
+              item.parentCategoryID === editCate?.categoryID)
+          }
+        >
+          {item?.isRoot ? (
+            <Icon
+              style={styles.iconCateItem}
+              name="folder-tree"
+              size={15}
+              color="black"
+            />
+          ) : (
+            <Icon
+              style={styles.iconCateItem}
+              name="angle-right"
+              size={15}
+              color="black"
+            />
+          )}
+
+          <Text style={styles.textCateItem}>{item.nameVN}</Text>
+          {isModalAddCateVisible && item.categoryID === newCate?.parentID ? (
+            <Icon
+              style={styles.iconCateItemSelected}
+              name="check"
+              size={20}
+              color="darkgray"
+            />
+          ) : null}
+          {isShowModalEditCate &&
+          item.categoryID === editCate?.parentCategoryID ? (
+            <Icon
+              style={styles.iconCateItemSelected}
+              name="check"
+              size={20}
+              color="darkgray"
+            />
+          ) : null}
+        </Pressable>
+        {item.children &&
+          item.children.length > 0 &&
+          item.children.map((child) => (
+            <AnCateParentItem
+              key={child.categoryID}
+              item={child}
+              depth={depth + 1}
+            />
+          ))}
+      </View>
     );
   };
 
@@ -198,59 +338,42 @@ const CategoryManagerScreen = () => {
           <Icon name="chevron-left" size={22} color="#3498db" />
         </Pressable>
         <View style={styles.view_TextHeader}>
-          <Text style={styles.modalTextHeader}>{"Hạng mục thu / chi"}</Text>
+          <Text style={styles.text_ScreenHeader}>{"Hạng mục thu / chi"}</Text>
         </View>
+        <Pressable
+          style={({ pressed }) => [
+            // styles.pressable_Menu,
+            {
+              opacity: pressed ? 0.5 : 1,
+              alignItems: "flex-end",
+              justifyContent: "flex-end",
+              alignContent: "flex-end"
+            }
+          ]}
+          onPress={() => {
+            handleReloadCategories();
+          }}
+        >
+          <Icon name="arrow-rotate-right" size={22} color="#2d3436" />
+        </Pressable>
         <Pressable
           style={styles.pressable_Menu}
           onPress={() => {
-            // setIsShowMenuModal(!isShowMenuModal);
             setIsModalAddCateVisible(!isModalAddCateVisible);
           }}
+          disabled={cateParentList?.length === 0 || cateParentList === null}
         >
           <Icon name="ellipsis-vertical" size={22} color="#2d3436" />
         </Pressable>
       </View>
-      <View
-        style={{
-          backgroundColor: "red"
-        }}
-      >
-        <TabCategory.Navigator
-          screenOptions={{
-            tabBarScrollEnabled: true,
-            tabBarStyle: {
-              alignSelf: "flex-end",
-              flexDirection: "row",
-              width: Dimensions.get("window").width * 0.95
-            },
-            tabBarItemStyle: {
-              alignItems: "center",
-              justifyContent: "center",
-              alignSelf: "center",
-              alignContent: "center",
-              flexDirection: "row",
-              width: "50%"
-            },
-            tabBarLabelStyle: {
-              fontSize: 18,
-              fontFamily: "Inconsolata_500Medium",
-              color: "darkgray",
-              textTransform: "none",
-              letterSpacing: 0,
-              width: Dimensions.get("window").width * 0.5
-            },
-            tabBarIndicatorStyle: {
-              backgroundColor: "tomato"
-            },
-            swipeEnabled: true
-          }}
-        >
+      <View style={{}}>
+        <TabCategory.Navigator screenOptions={screenOptions}>
           <TabCategory.Screen
             name="Khoản chi"
             component={Tab2}
             listeners={{
               focus: () => {
-                handleFocusScreen(1);
+                setFocusScreen(1);
               }
             }}
           />
@@ -259,86 +382,141 @@ const CategoryManagerScreen = () => {
             component={Tab1}
             listeners={{
               focus: () => {
-                handleFocusScreen(0);
+                setFocusScreen(0);
               }
             }}
           />
         </TabCategory.Navigator>
       </View>
-
-      <View style={styles.viewActionModal}>
-        <Pressable
-          style={[styles.buttonContinueModal, styles.buttonActionModal]}
-          onPressIn={() => {
-            handleAddCategory();
-          }}
-        >
-          <Text style={styles.textPressableAction}>{"Thêm hạng mục"}</Text>
-        </Pressable>
-      </View>
-
-      {/* a modal of menu modal */}
-      {/* <Modal animationType="slide" transparent={true} visible={isShowMenuModal}>
-        <View style={styles.viewModaAddCate}>
-        </View>
-      </Modal> */}
       <Modal
         animationType="slide"
         transparent={true}
         visible={isModalAddCateVisible}
       >
-        <View style={styles.viewModaAddCate}>
+        <View style={styles.view_Modal_Background}>
+          {/* a pressable to close modal */}
+          <Pressable
+            style={styles.pressable_CloseModal}
+            onPress={() => handleCancelAddCate()}
+          />
           <View style={styles.modalAddCate}>
             <Text style={styles.modalAddCateTextHeader}>{"Thêm hạng mục"}</Text>
-            <TextInput
-              style={styles.textInput}
-              placeholder={"Nhập tên hạng mục"}
-              placeholderTextColor={"darkgray"}
-              value={newCate?.name}
-              onChangeText={(text) => setNewCate({ ...newCate, name: text })}
-            />
-            <Text
+            <View
               style={{
-                fontSize: 20,
-                fontFamily: "Inconsolata_500Medium",
-                alignSelf: "flex-start",
-                marginHorizontal: 10
+                width: "100%",
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+                alignContent: "center"
               }}
             >
+              <PaperTextInput
+                mode="outlined"
+                style={styles.textInput}
+                label={"Tên hạng mục"}
+                placeholderTextColor={"darkgray"}
+                value={newCate?.name}
+                onChangeText={(text) => setNewCate({ ...newCate, name: text })}
+              />
+            </View>
+
+            <Text style={styles.text_PickParentCate}>
               {"Chọn hạng mục cha"}
             </Text>
             <View style={styles.viewFlatListParentCate}>
-              {cateParentList === null ? (
-                <View
-                  style={{
-                    flex: 1,
-                    justifyContent: "center",
-                    alignItems: "center"
-                  }}
+              <FlatList
+                data={cateParentList || []}
+                keyExtractor={(item) => item.categoryID}
+                renderItem={({ item }) => (
+                  <AnCateParentItem item={item} depth={0} />
+                )}
+              />
+              <View style={styles.viewActionModal}>
+                <Pressable
+                  style={[styles.buttonCloseModal, styles.buttonActionModal]}
+                  onPress={() => handleCancelAddCate()}
                 >
-                  <Text> {"Loading"}</Text>
-                  <ActivityIndicator size="large" color="tomato" />
-                </View>
-              ) : (
-                <FlatList
-                  data={cateParentList}
-                  renderItem={({ item }) => <AnCateParentItem item={item} />}
-                />
-              )}
+                  <Text style={styles.textPressableAction}>{"Hủy"}</Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.buttonContinueModal, styles.buttonActionModal]}
+                  onPress={() => handleCreateCategory()}
+                >
+                  <Text style={styles.textPressableAction}>{"Thêm"}</Text>
+                </Pressable>
+              </View>
             </View>
-            <View style={styles.viewActionModal}>
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isShowModalEditCate}
+      >
+        <View style={styles.view_Modal_Background}>
+          <Pressable
+            style={styles.pressable_CloseModal}
+            onPress={() => {
+              handleCancelEditCate();
+            }}
+          />
+          <View style={styles.modalAddCate}>
+            <Text style={styles.modalAddCateTextHeader}>{"Sửa hạng mục"}</Text>
+            <View
+              style={{
+                width: "100%",
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+                alignContent: "center"
+              }}
+            >
+              <PaperTextInput
+                mode="outlined"
+                style={styles.textInput}
+                label={"Tên hạng mục"}
+                placeholderTextColor={"darkgray"}
+                value={editCate?.nameVN}
+                onChangeText={(text) =>
+                  setEditCate({ ...editCate, nameVN: text })
+                }
+              />
               <Pressable
-                style={[styles.buttonCloseModal, styles.buttonActionModal]}
-                onPress={() => setIsModalAddCateVisible(!isModalAddCateVisible)}
+                style={({ pressed }) => [
+                  styles.pressable_DeleteCate,
+                  { opacity: pressed ? 0.2 : 1 }
+                ]}
+                onPress={() => handleDeleteCate(editCate?.categoryID)}
               >
-                <Text style={styles.textPressableAction}>{"Hủy"}</Text>
+                <Icon name="trash" size={20} color="#b2bec3" />
               </Pressable>
-              <Pressable
-                style={[styles.buttonContinueModal, styles.buttonActionModal]}
-                onPress={() => handleCreateCategory()}
-              >
-                <Text style={styles.textPressableAction}>{"Lưu"}</Text>
-              </Pressable>
+            </View>
+            <Text style={styles.text_PickParentCate}>
+              {"Chọn hạng mục cha"}
+            </Text>
+            <View style={styles.viewFlatListParentCate}>
+              <FlatList
+                data={cateParentList || []}
+                keyExtractor={(item) => item.categoryID}
+                renderItem={({ item }) => (
+                  <AnCateParentItem item={item} depth={0} />
+                )}
+              />
+              <View style={styles.viewActionModal}>
+                <Pressable
+                  style={[styles.buttonCloseModal, styles.buttonActionModal]}
+                  onPress={() => handleCancelEditCate()}
+                >
+                  <Text style={styles.textPressableAction}>{"Hủy"}</Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.buttonContinueModal, styles.buttonActionModal]}
+                  onPress={() => handleUpdateCategory()}
+                >
+                  <Text style={styles.textPressableAction}>{"Lưu"}</Text>
+                </Pressable>
+              </View>
             </View>
           </View>
         </View>
@@ -347,56 +525,130 @@ const CategoryManagerScreen = () => {
   );
 };
 
+const screenOptions = {
+  tabBarScrollEnabled: true,
+  tabBarStyle: {
+    alignSelf: "flex-end",
+    flexDirection: "row",
+    width: Dimensions.get("window").width * 0.95
+  },
+  tabBarItemStyle: {
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
+    alignContent: "center",
+    flexDirection: "row",
+    width: "50%"
+  },
+  tabBarLabelStyle: {
+    fontSize: 18,
+    fontFamily: "Inconsolata_500Medium",
+    color: "darkgray",
+    textTransform: "none",
+    letterSpacing: 0,
+    width: Dimensions.get("window").width * 0.5
+  },
+  tabBarIndicatorStyle: {
+    backgroundColor: "tomato"
+  },
+  swipeEnabled: true
+};
+
 const styles = StyleSheet.create({
+  pressable_DeleteCate: {
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center",
+    flexDirection: "row",
+    flex: 0.2
+  },
+  pressable_CloseModal: {
+    flex: 1,
+    width: "100%",
+    height: "100%"
+  },
+  text_PickParentCate: {
+    fontSize: 20,
+    fontFamily: "OpenSans_500Medium",
+    alignSelf: "flex-start",
+    marginHorizontal: 10,
+    marginVertical: 5
+  },
+  view_TabCategory: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    backgroundColor: "white"
+    // height: "70%"
+  },
+  viewCateItem: {
+    marginHorizontal: 10,
+    marginVertical: 5,
+    flexDirection: "column"
+    // borderWidth: 2,
+    // borderColor: "red"
+  },
+  iconCateItemSelected: {
+    marginHorizontal: 10,
+    marginRight: 20,
+    right: -75
+  },
+  iconCateItem: {
+    marginHorizontal: 10,
+    marginRight: 20
+  },
   textCateItem: {
     fontSize: 20,
     fontFamily: "Inconsolata_400Regular"
   },
   pressableCateItem: {
-    height: 40,
-    marginVertical: 5,
-    paddingVertical: 2,
-    paddingHorizontal: 10,
-    paddingRight: "20%",
-    marginHorizontal: 5,
-    borderBottomColor: "darkgray",
+    marginVertical: 3,
+    paddingVertical: 3,
     borderBottomWidth: 1,
+    borderBottomColor: "#b2bec3",
+    borderLeftColor: "#b2bec3",
+    borderLeftWidth: 1,
     borderRadius: 5,
+    width: "100%",
     flexDirection: "row",
-    justifyContent: "space-between",
+    alignItems: "center",
     alignContent: "center"
   },
   viewFlatListParentCate: {
     width: "100%",
-    height: "auto",
-    maxHeight: "80%",
-    borderWidth: 1,
-    borderColor: "darkgray",
+    // flex: 1,
+    height: "80%",
+    // maxHeight: "80%",
+    // borderWidth: 1,
+    // borderColor: "darkgray",
     borderRadius: 5,
-    marginVertical: 10,
+    // marginVertical: 10,
     justifyContent: "center"
     // alignItems: "center",
   },
   modalAddCateTextHeader: {
     fontSize: 25,
-    fontFamily: "Inconsolata_500Medium"
+    fontFamily: "OpenSans_500Medium",
+    marginVertical: 10
   },
   textInput: {
-    borderWidth: 1,
-    borderColor: "darkgray",
     borderRadius: 5,
-    width: "100%",
+    flex: 1,
     height: 40,
-    marginVertical: 10,
-    paddingHorizontal: 10,
+    // marginVertical: 10,
     fontFamily: "Inconsolata_400Regular",
-    fontSize: 20
+    fontSize: 20,
+    backgroundColor: "white"
   },
-  viewModaAddCate: {
+  view_Modal_Background: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    alignContent: "center"
+    alignContent: "center",
+    backgroundColor: "rgba(0,0,0,0.25)"
   },
   modalAddCate: {
     justifyContent: "flex-start",
@@ -405,18 +657,10 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     backgroundColor: "white",
     height: "auto",
-    maxHeight: "80%",
-    width: "95%",
+    maxHeight: "90%",
+    width: "100%",
     borderRadius: 5,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-    paddingVertical: 10,
+    // paddingVertical: 10,
     paddingHorizontal: 5
   },
   view_TextHeader: {
@@ -442,7 +686,7 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     justifyContent: "space-around"
-    // backgroundColor: "green",
+    // backgroundColor: "#fab1a0",
     // alignItems: "center",
     // alignContent: "center"
   },
@@ -459,9 +703,9 @@ const styles = StyleSheet.create({
   viewActionModal: {
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: "center",
-    marginVertical: 20,
-    marginHorizontal: 5,
+    alignItems: "center"
+    // marginVertical: 20,
+    // marginHorizontal: 5
     // backgroundColor: "red",
     // borderWidth: 10
   },
@@ -486,12 +730,12 @@ const styles = StyleSheet.create({
   textPressableAction: {
     textAlign: "center",
     fontSize: 20,
-    fontFamily: "Inconsolata_400Regular"
+    fontFamily: "OpenSans_400Regular"
   },
-  modalTextHeader: {
-    fontSize: 30,
+  text_ScreenHeader: {
+    fontSize: 25,
     // fontWeight: "bold",
-    fontFamily: "Inconsolata_500Medium"
+    fontFamily: "OpenSans_500Medium"
     // marginTop: 10
   },
   modalView: {

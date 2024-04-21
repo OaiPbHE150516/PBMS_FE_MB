@@ -28,6 +28,16 @@ const budgetServices = {
       console.error("Error getBudgetDetail budgetServices data:", error);
     }
   },
+  createBudget: async (data) => {
+    try {
+      const response = await axios.post(API.BUDGET.CREATE, data, {
+        headers
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error createBudget budgetServices data:", error);
+    }
+  },
 };
 
 export default budgetServices;

@@ -181,7 +181,7 @@ const ReportTransactionComp = ({ time }) => {
       console.error("Error fetchTotalAmountByTag Dashboard data:", error);
       Alert.alert(
         "Lỗi",
-        "Không thể lấy dữ liệu các tổng tiền theo tag từ server"
+        "Không thể lấy dữ liệu các tổng tiền theo nhãn tag từ server"
       );
     }
   }

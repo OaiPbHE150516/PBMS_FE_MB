@@ -11,6 +11,7 @@ export const API = {
   BUDGET:{
     GET_ALL: `${Base_URL}/api/budget/get/all/`,
     GET_DETAIL: `${Base_URL}/api/budget/get/detail/`,
+    CREATE: `${Base_URL}/api/budget/create/`,
   },
   COLLABFUND: {
     GET_ALL_COLLABFUND: `${Base_URL}/api/collabfund/get/all/`,
@@ -60,7 +61,9 @@ export const API = {
   },
   CATEGORY: {
     GET_CATEGORIES: `${Base_URL}/api/category/get/typebytype/`,
-    CREATE_CATEGORY: `${Base_URL}/api/category/create`
+    CREATE_CATEGORY: `${Base_URL}/api/category/create`,
+    DELETE_CATEGORY: `${Base_URL}/api/category/delete/`,
+    UPDATE_CATEGORY: `${Base_URL}/api/category/update/`
   },
   INVOICE: {
     SCAN: `${Base_URL}/api/invoice/scan`,

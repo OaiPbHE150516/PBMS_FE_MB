@@ -67,7 +67,7 @@ const PieChartCategoryDashboard = () => {
       let time = datetimeLibrary.getTimeWeekBefore(0)[2];
       // change time if selectedTab is month
       if (selectedTab === TAB_MONTH) {
-        time = datetimeLibrary.getTimeThisMonthByNumMonth(1)[2];
+        time = datetimeLibrary.getTimeThisMonthByNumMonth(0)[2];
       }
       console.log("time: ", time);
       handleToFetchData(time);

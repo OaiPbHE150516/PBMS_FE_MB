@@ -43,6 +43,8 @@ import TermsOfUseScreen from "./others/termsOfUseScreen";
 import HelpScreen from "./others/helpScreen";
 import SuggestToDeveScreen from "./suggest/suggestToDeveScreen";
 import SpendingLimitScreen from "./spendinglimit/spendingLimitScreen";
+import ShareWithFriendsScreen from "./others/shareWithFriendsScreen";
+import RateAppScreen from "./others/rateAppScreen";
 
 // redux
 import { getCategories } from "../redux/categorySlice";
@@ -115,7 +117,11 @@ const AccountManagerPressable = ({ navigation }) => {
 const AnItemInGrid = ({ item, navigation }) => {
   function handleItemOnPress(item) {
     // console.log("item: ", item);
-    navigation.navigate(item.screen);
+    // navigation.navigate(item.screen);
+    // check that item.screen is available to navigate, if not, do nothing
+    if (item.screen) {
+      navigation.navigate(item.screen);
+    }
   }
 
   return (
@@ -162,28 +168,28 @@ const dataGridFeature = [
     name: "Báo cáo",
     icon: "chart-simple",
     color: "lightskyblue",
-    screen: "ReportScreen"
+    // screen: "ReportScreen"
   },
   {
     id: 4,
     name: "Nhắc nhở",
     icon: "note-sticky",
     color: "goldenrod",
-    screen: "NotificationsScreen"
+    // screen: "NotificationsScreen"
   },
   {
     id: 5,
     name: "Dự kiến",
     icon: "business-time",
     color: "mediumslateblue",
-    screen: "SettingsScreen"
+    // screen: "SettingsScreen"
   },
   {
     id: 6,
     name: "Mua sắm",
     icon: "cart-shopping",
     color: "lightcoral",
-    screen: "ShoppingScreen"
+    // screen: "ShoppingScreen"
   },
   {
     id: 7,
@@ -237,7 +243,7 @@ const dataListOtherSettings = [
     name: "Đánh giá ứng dụng",
     icon: "star",
     color: "lightgray",
-    screen: "RateAppScreen"
+    screen: "RateAppScreen",
   },
   {
     id: 5,
@@ -269,9 +275,22 @@ const dataListOtherSettings = [
   }
 ];
 
+// function onCallbackRateDeve() {
+//   console.log("onCallBackRateDeve");
+// }
+
+const onCallbackRateDeve = () => {
+  console.log("onCallbackRateDeve");
+};
+
 const AnItemInList = ({ item, navigation }) => {
   function handleItemOnPress(item) {
-    // console.log("item: ", item);
+    // if calback is available, call it
+    // if (item?.callback) {
+    //   callback();
+    // } else {
+    //   navigation.navigate(item.screen);
+    // }
     navigation.navigate(item.screen);
   }
 
@@ -307,7 +326,7 @@ const ListSettings = ({ navigation }) => {
         data={dataListOtherSettings}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <AnItemInList item={item} navigation={navigation} />
+          <AnItemInList item={item} navigation={navigation}/>
         )}
       />
     </View>
@@ -432,6 +451,14 @@ const MyAccount = ({ callback }) => {
         <Stack.Screen
           name={VAR.SCREEN.SPENDING_LIMIT_SCREEN}
           component={SpendingLimitScreen}
+        />
+        <Stack.Screen
+          name="ShareWithFriendsScreen"
+          component={ShareWithFriendsScreen}
+        />
+        <Stack.Screen
+          name="RateAppScreen"
+          component={RateAppScreen}
         />
       </Stack.Navigator>
     </View>
@@ -580,7 +607,7 @@ const styles = StyleSheet.create({
     height: 40,
     alignContent: "center",
     alignItems: "center",
-    borderRadius: 15,
+    borderRadius: 15
     // shadowColor: "darkgray",
     // shadowOffset: {
     //   width: 0,

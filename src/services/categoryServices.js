@@ -22,17 +22,61 @@ const categoryServices = {
         accountID: category.accountID,
         nameVN: category.name,
         nameEN: category.name,
-        parentCategoryID: category.parentID,
+        parentCategoryID: category.parentID
       };
       console.log("newCategory: ", newCategory);
-      const response = await axios.post(API.CATEGORY.CREATE_CATEGORY, newCategory, {
-        headers
-      });
+      const response = await axios.post(
+        API.CATEGORY.CREATE_CATEGORY,
+        newCategory,
+        {
+          headers
+        }
+      );
       return response.data;
     } catch (error) {
       console.error("Error createCategory data:", error);
     }
   },
+
+  // delete category
+  deleteCategory: async (data) => {
+    try {
+      const response = await axios.delete(
+        API.CATEGORY.DELETE_CATEGORY + data?.categoryID + "/" + data.accountID,
+        {
+          headers
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error deleteCategory data:", error);
+    }
+  },
+
+  // update category
+  updateCategory: async (data) => {
+    try {
+      console.log("data: ", data);
+      const newCategory = {
+        categoryID: data?.cate?.categoryID,
+        accountID: data?.accountID,
+        nameVN: data?.cate?.nameVN,
+        nameEN: data?.cate?.nameVN,
+        parentCategoryID: data?.cate?.parentCategoryID
+      };
+      console.log("newCategory: ", newCategory);
+      const response = await axios.put(
+        API.CATEGORY.UPDATE_CATEGORY,
+        newCategory,
+        {
+          headers
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error updateCategory data:", error);
+    }
+  }
 };
 
 export default categoryServices;

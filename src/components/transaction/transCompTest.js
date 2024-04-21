@@ -23,6 +23,7 @@ import transactionServices from "../../services/transactionServices";
 import TransactionByDayItem from "./transactionByDayItem";
 import ModalTransactionDetail from "./modalTransactionDetail";
 import ReportTransactionComp from "./reportTransactionComp";
+import NotiNoData from "../noti/notiNoData";
 
 const TransCompTest = ({ route }) => {
   const account = useSelector((state) => state.authen.account);
@@ -33,7 +34,6 @@ const TransCompTest = ({ route }) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isModalDetailVisible, setIsModalDetailVisible] = useState(false);
   const [transactionDetail, setTransactionDetail] = useState(null);
-  const [backgroundColorModal, setBackgroundColorModal] = useState(null);
 
   const [isShowingModalReport, setIsShowingModalReport] = useState(false);
 
@@ -46,6 +46,7 @@ const TransCompTest = ({ route }) => {
       // console.log("apiurl: ", apiurl);
       const response = await pbms.get(apiurl);
       setTransactions(response.data);
+      console.log("response.data: ", response.data?.transactionByDayW?.length);
     } catch (error) {
       console.error("Error fetchTransactionData data:", error);
     }
@@ -135,19 +136,19 @@ const TransCompTest = ({ route }) => {
       </View>
       <View style={{ marginTop: 10 }}>
         <View style={styles.viewMoney}>
-          <Text style={styles.textLabelMoney}>Tổng thu</Text>
+          <Text style={styles.textLabelMoney}>{"Tổng thu"}</Text>
           <Text style={[styles.textDataMoney, { color: "green" }]}>
             {transactions?.totalAmountInStr}
           </Text>
         </View>
         <View style={styles.viewMoney}>
-          <Text style={styles.textLabelMoney}>Tổng chi</Text>
+          <Text style={styles.textLabelMoney}>{"Tổng chi"}</Text>
           <Text style={[styles.textDataMoney, { color: "tomato" }]}>
             -{transactions?.totalAmountOutStr}
           </Text>
         </View>
         <View style={styles.viewMoney}>
-          <Text style={[styles.textLabelMoney]}>Số dư</Text>
+          <Text style={[styles.textLabelMoney]}>{"Số dư"}</Text>
           <View style={{ borderTopColor: "darkgray", borderTopWidth: 1 }}>
             <Text
               style={[
@@ -163,85 +164,92 @@ const TransCompTest = ({ route }) => {
         </View>
       </View>
       <View style={styles.viewL}>
-        <FlatList
-          scrollEnabled={true}
-          showsVerticalScrollIndicator={true}
-          focusable={true}
-          data={transactions?.transactionByDayW}
-          keyExtractor={(item) => item.dayDetail.dayStr}
-          refreshControl={
-            <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
-          }
-          renderItem={({ item }) => {
-            return (
-              <View style={styles.listStyle}>
-                <View style={styles.viewHeaderInList}>
-                  <View style={styles.viewDay}>
-                    <Text style={styles.textDayNumber}>
-                      {item.dayDetail.dayStr}
-                    </Text>
-                    <View style={styles.viewDayCh}>
-                      <Text style={styles.textDayInWeek}>
-                        {item.dayDetail.full_VN}
+        {transactions?.transactionByDayW?.length === 0 && (
+          <View style={styles.view_NoData}>
+            <NotiNoData />
+          </View>
+        )}
+        {transactions?.transactionByDayW && (
+          <FlatList
+            scrollEnabled={true}
+            showsVerticalScrollIndicator={true}
+            focusable={true}
+            data={transactions?.transactionByDayW}
+            keyExtractor={(item) => item.dayDetail.dayStr}
+            refreshControl={
+              <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+            }
+            renderItem={({ item }) => {
+              return (
+                <View style={styles.listStyle}>
+                  <View style={styles.viewHeaderInList}>
+                    <View style={styles.viewDay}>
+                      <Text style={styles.textDayNumber}>
+                        {item.dayDetail.dayStr}
                       </Text>
-                      <Text style={styles.textMonthYear}>
-                        {item.dayDetail.monthYearStr}
+                      <View style={styles.viewDayCh}>
+                        <Text style={styles.textDayInWeek}>
+                          {item.dayDetail.full_VN}
+                        </Text>
+                        <Text style={styles.textMonthYear}>
+                          {item.dayDetail.monthYearStr}
+                        </Text>
+                      </View>
+                    </View>
+                    <View style={styles.viewTotalAmount}>
+                      <Text style={styles.textTotalAmount}>
+                        {item.totalAmountStr}
                       </Text>
                     </View>
                   </View>
-                  <View style={styles.viewTotalAmount}>
-                    <Text style={styles.textTotalAmount}>
-                      {item.totalAmountStr}
-                    </Text>
+                  <View>
+                    {/* <TransactionByDayList props={item?.transactions} /> */}
+                    <FlatList
+                      scrollEnabled={true}
+                      showsVerticalScrollIndicator={true}
+                      data={item?.transactions}
+                      keyExtractor={(item) => item.transactionID}
+                      renderItem={({ item }) => {
+                        return (
+                          <View style={styles.view_Item_TransactionByDayList}>
+                            <TransactionByDayItem
+                              props={item}
+                              callback={onCallback}
+                            />
+                          </View>
+                        );
+                      }}
+                    />
                   </View>
                 </View>
-                <View>
-                  {/* <TransactionByDayList props={item?.transactions} /> */}
-                  <FlatList
-                    scrollEnabled={true}
-                    showsVerticalScrollIndicator={true}
-                    data={item?.transactions}
-                    keyExtractor={(item) => item.transactionID}
-                    renderItem={({ item }) => {
-                      return (
-                        <View style={styles.view_Item_TransactionByDayList}>
-                          <TransactionByDayItem
-                            props={item}
-                            callback={onCallback}
-                          />
-                        </View>
-                      );
-                    }}
-                  />
-                </View>
-              </View>
-            );
-          }}
-          ListFooterComponent={() => {
-            return <View style={{ height: 160 }}></View>;
-          }}
-        />
+              );
+            }}
+            ListFooterComponent={() => {
+              return <View style={{ height: 160 }}></View>;
+            }}
+          />
+        )}
       </View>
       <Modal
         visible={isModalDetailVisible}
-        animationType="slide"
+        animationType="fade"
         transparent={true}
-        onShow={() => {
-          setBackgroundColorModal("rgba(0, 0, 0, 0.1)");
-        }}
+        // onShow={() => {
+        //   setBackgroundColorModal("rgba(0, 0, 0, 0.1)");
+        // }}
       >
         <View
           style={[
             styles.view_BackgroudModal,
             {
-              backgroundColor: backgroundColorModal
+              backgroundColor: "rgba(0, 0, 0, 0.1)"
             }
           ]}
         >
           <Pressable
             style={styles.pressable_closeModalDetail}
             onPress={() => {
-              setBackgroundColorModal("rgba(0, 0, 0, 0)");
+              // setBackgroundColorModal("rgba(0, 0, 0, 0)");
               setIsModalDetailVisible(false);
             }}
           />
@@ -328,7 +336,7 @@ const styles = StyleSheet.create({
   },
   textTotalAmount: {
     fontSize: 20,
-    fontFamily: "Inconsolata_500Medium"
+    fontFamily: "OpenSans_500Medium"
   },
   viewDayCh: {
     flexDirection: "column",
@@ -336,7 +344,7 @@ const styles = StyleSheet.create({
   },
   textDayNumber: {
     fontSize: 30,
-    fontFamily: "Inconsolata_500Medium"
+    fontFamily: "OpenSans_500Medium"
   },
   viewHeaderInList: {
     // borderColor: "tomato",
@@ -345,8 +353,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between"
   },
   textDataMoney: {
-    fontSize: 20,
-    fontFamily: "Inconsolata_600SemiBold",
+    fontSize: 17,
+    fontFamily: "OpenSans_600SemiBold",
     textAlign: "right"
     // backgroundColor: "lightgrey",
     // borderColor: "dark",
@@ -354,7 +362,7 @@ const styles = StyleSheet.create({
   },
   textLabelMoney: {
     fontSize: 18,
-    fontFamily: "Inconsolata_500Medium"
+    fontFamily: "OpenSans_500Medium"
   },
   viewMoney: {
     flexDirection: "row",
@@ -374,26 +382,33 @@ const styles = StyleSheet.create({
     // borderColor: "black",
     // borderWidth: 1,
     flex: 1,
-    backgroundColor: "#f0f0f0",
     borderRadius: 5,
-    shadowRadius: 5,
-    shadowColor: "black",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.05,
-    elevation: 1
+    backgroundColor: "white"
   },
   viewL: {
     // height: Dimensions.get("window").height * 0.65
     // borderColor: "black",
     // borderWidth: 1
+    backgroundColor: "white"
+  },
+  view_NoData: {
+    width: "100%",
+    height: "50%",
+    justifyContent: "center",
+    alignContent: "center",
+    alignItems: "center",
+    margin: 10
   },
   parentView: {
-    margin: 2,
+    // margin: 2,
     // borderColor: "red",
     // borderWidth: 1,
     flex: 1,
     height: "100%",
-    marginTop: 10
+    // marginTop: 2,
+    backgroundColor: "white",
+    paddingHorizontal: 5,
+    paddingTop: 2,
   },
   text: {
     fontSize: 30,

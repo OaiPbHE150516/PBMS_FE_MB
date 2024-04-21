@@ -7,7 +7,8 @@ import {
   Alert,
   FlatList,
   ScrollView,
-  RefreshControl
+  RefreshControl,
+  Image
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
@@ -37,6 +38,8 @@ const HomeScreen = () => {
 
   const [isLoading, setIsLoading] = useState(true);
 
+  // screen constants
+  const LOGO_URL = "../../assets/images/logo.png";
   const Stack = createStackNavigator();
 
   useEffect(() => {
@@ -50,7 +53,7 @@ const HomeScreen = () => {
     // wait 1s to show loading
     setTimeout(() => {
       setIsLoading(loading);
-    }, 100);
+    }, 200);
   }
 
   // const MyListLoader = () => <List />;
@@ -58,6 +61,8 @@ const HomeScreen = () => {
   const HomeInStack = ({ navigation }) => {
     return isLoading ? (
       <View style={styles.view_Center}>
+        {/* load logo image with loading image */}
+        <Image source={require(LOGO_URL)} style={styles.image_Logo_Loading} />
         <Text>{"Loading..."}</Text>
       </View>
     ) : (
@@ -109,19 +114,23 @@ const HomeScreen = () => {
         <Stack.Screen
           name={VAR.SCREEN.SPENDING_LIMIT_SCREEN}
           component={SpendingLimitScreen}
-          
         />
-
       </Stack.Navigator>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  image_Logo_Loading: {
+    width: "50%",
+    height: "50%",
+    resizeMode: "contain"
+  },
   view_Center: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    backgroundColor: "white"
   },
   viewStyle: {
     // flex: 1,

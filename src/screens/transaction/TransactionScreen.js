@@ -211,6 +211,7 @@ const TransactionScreen = () => {
     return (
       <View style={{
         flex: 1,
+        marginHorizontal: 5,
         // borderWidth: 5,
         // borderColor: "green"
         // backgroundColor: "red"
@@ -225,7 +226,8 @@ const TransactionScreen = () => {
     return (
       <View
         style={{
-          flex: 1
+          flex: 1,
+          marginHorizontal: 5,
         }}
       >
         <ReportTransactionComp
@@ -451,10 +453,11 @@ const styles = StyleSheet.create({
   viewL: {
     // minHeight: Dimensions.get("window").height - 200,
     // minHeight: "95%",
-    marginHorizontal: 5
+    // marginHorizontal: 5
     // marginBottom: 85,
     // flex: 1,
-    // backgroundColor: "red"
+    // backgroundColor: "red",
+    // paddingHorizontal: 5,
   },
   viewTotalBalance: {
     // width: "90%",

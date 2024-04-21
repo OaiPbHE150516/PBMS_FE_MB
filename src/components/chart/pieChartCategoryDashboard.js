@@ -35,6 +35,9 @@ import colorLibrary from "../../library/colorLibrary";
 import currencyLibrary from "../../library/currencyLIbrary";
 import { screenWidth } from "react-native-gifted-charts/src/utils";
 
+// components
+import NotiNoData from "../noti/notiNoData";
+
 const Tab = createMaterialTopTabNavigator();
 
 const PieChartCategoryDashboard = () => {
@@ -50,14 +53,16 @@ const PieChartCategoryDashboard = () => {
   const [dataExpenses, setDataExpenses] = useState({});
   const [dataIncomes, setDataInCenterIncomes] = useState({});
   const [dataTransfers, setDataTransfers] = useState({});
+  const [dataTags, setDataTags] = useState({});
 
-  // data constance
+  // data constanst
   const screenWidth = Dimensions.get("window").width;
   const TYPE_EXPENSE = 2;
   const TYPE_INCOME = 1;
   const TYPE_TRANSFER = 3;
   const TAB_WEEK = "week";
   const TAB_MONTH = "month";
+  const LOGO_URI = "../../../assets/images/logo.png";
 
   // state for PieChart
   const [selectedTab, setSelectedTab] = useState(TAB_WEEK);
@@ -93,6 +98,9 @@ const PieChartCategoryDashboard = () => {
       time
     );
     setDataTransfers(dataTransfers);
+
+    const dataTags = await fetchTotalAmountByTag(account?.accountID, time);
+    setDataTags(dataTags);
   }
 
   async function fetchTotalAmountByType(accountID, time) {
@@ -168,6 +176,36 @@ const PieChartCategoryDashboard = () => {
     }
   }
 
+  async function fetchTotalAmountByTag(accountID, time) {
+    try {
+      const response = await dashboardServices.getTotalAmountByTag(
+        accountID,
+        time
+      );
+      let count = colorLibrary.getRandomIndex();
+      let dataChart = response?.tagWithProductData?.map((item) => ({
+        value: item?.percentage,
+        valueStr: item?.percentageStr,
+        color: colorLibrary.getColorByIndex(count++),
+        label: item?.tag?.primaryTag,
+        childTags: item?.tag?.childTags,
+        tagWithTotalAmounts: item?.tagWithTotalAmounts,
+        totalAmountStr: item?.totalAmountStr
+      }));
+      const returnData = {
+        dataChart: dataChart,
+        data: response
+      };
+      return returnData;
+    } catch (error) {
+      console.error("Error fetchTotalAmountByTag Dashboard data:", error);
+      Alert.alert(
+        "Lỗi",
+        "Không thể lấy dữ liệu các tổng tiền theo nhãn tag từ server"
+      );
+    }
+  }
+
   const ALabelPieChartInfor = ({ item }) => {
     return (
       <View style={styles.view_APieChart_Infor}>
@@ -200,41 +238,44 @@ const PieChartCategoryDashboard = () => {
         ]}
       >
         <View style={styles.view_PieChart_Donut}>
-          <PieChart
-            data={data?.dataChart || []}
-            donut
-            isAnimated={true}
-            animationDuration={2000}
-            strokeColor="white"
-            strokeWidth={2}
-            textColor="black"
-            radius={screenWidth / 4}
-            innerRadius={screenWidth / 8}
-            textSize={20}
-            focusOnPress
-            sectionAutoFocus
-            extraRadiusForFocused={10}
-            showTextBackground
-            textBackgroundRadius={26}
-            onPress={(data) => {
-              handle(data);
-            }}
-            centerLabelComponent={() => {
-              return (
-                <View style={styles.view_InCenterPieChart}>
-                  <Text style={styles.text_InCenterPieChart_Number}>
-                    {thisDataInCenter?.number}
-                  </Text>
-                  <Text style={styles.text_InCenterPieChart_Label}>
-                    {thisDataInCenter?.text}
-                  </Text>
-                  <Text style={styles.text_InCenterPieChart_Amount}>
-                    {thisDataInCenter?.amountStr}
-                  </Text>
-                </View>
-              );
-            }}
-          />
+          {data?.dataChart && (
+            <PieChart
+              data={data?.dataChart || []}
+              donut
+              isAnimated={true}
+              animationDuration={2000}
+              strokeColor="white"
+              strokeWidth={2}
+              textColor="black"
+              radius={screenWidth / 4}
+              innerRadius={screenWidth / 8}
+              textSize={20}
+              focusOnPress
+              sectionAutoFocus
+              extraRadiusForFocused={10}
+              showTextBackground
+              textBackgroundRadius={26}
+              onPress={(data) => {
+                handle(data);
+              }}
+              centerLabelComponent={() => {
+                return (
+                  <View style={styles.view_InCenterPieChart}>
+                    <Text style={styles.text_InCenterPieChart_Number}>
+                      {thisDataInCenter?.number}
+                    </Text>
+                    <Text style={styles.text_InCenterPieChart_Label}>
+                      {thisDataInCenter?.text}
+                    </Text>
+                    <Text style={styles.text_InCenterPieChart_Amount}>
+                      {thisDataInCenter?.amountStr}
+                    </Text>
+                  </View>
+                );
+              }}
+            />
+          )}
+          {data?.dataChart?.length === 0 && <NotiNoData />}
         </View>
         <View style={styles.view_PieChart_Donut_Infor}>
           <View style={styles.view_TitleOfPieChart}>
@@ -345,48 +386,12 @@ const PieChartCategoryDashboard = () => {
         <Text style={styles.text_Header}>
           {"Tổng tiền thu chi các hạng mục"}
         </Text>
-        {/* <SegmentedButtons
-          style={{ width: "50%" }}
-          value={selectedTab}
-          onValueChange={setSelectedTab}
-          buttons={[
-            {
-              value: "week",
-              label: "Tuần",
-              // style: { backgroundColor: "white" },
-              checkedColor: "#0984e3",
-              // showSelectedCheck: true,
-              icon: "calendar-week"
-            },
-            {
-              value: "month",
-              label: "Tháng",
-              // style: { backgroundColor: "white" },
-              checkedColor: "#0984e3",
-              // showSelectedCheck: true,
-              icon: "calendar-month"
-            }
-          ]}
-        /> */}
-        {/* make a segment button by two Pressable */}
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "center",
-            flex: 1,
-            borderWidth: 0.5,
-            borderColor: "#b2bec3",
-            borderRadius: 5,
-            marginHorizontal: 5
-          }}
-        >
+        <View style={styles.view_TimeType}>
           <Pressable
             style={[
               styles.pressable_SegmentButton,
               {
                 backgroundColor: selectedTab === TAB_WEEK ? "#b2bec3" : "white"
-                // justifyContent:
-                // selectedTab === TAB_WEEK ? "center" : "flex-end"
               }
             ]}
             onPress={() => setSelectedTab(TAB_WEEK)}
@@ -459,6 +464,13 @@ const PieChartCategoryDashboard = () => {
         {dataIncomes && (
           <APieChart data={dataIncomes} title="Tổng thu" titleColor="green" />
         )}
+        {dataTags && (
+          <APieChart
+            data={dataTags}
+            title="Tổng tiền theo nhãn"
+            titleColor="blue"
+          />
+        )}
       </ScrollView>
 
       {/* <Text>ChartDashboard</Text>
@@ -483,6 +495,34 @@ const PieChartCategoryDashboard = () => {
 };
 
 const styles = StyleSheet.create({
+  view_TimeType: {
+    flexDirection: "row",
+    justifyContent: "center",
+    flex: 1,
+    borderWidth: 0.5,
+    borderColor: "#b2bec3",
+    borderRadius: 5,
+    marginHorizontal: 5
+  },
+  text_NoData: {
+    fontSize: 20,
+    fontFamily: "Inconsolata_400Regular"
+  },
+  view_NoData: {
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center",
+    flex: 1,
+    // borderWidth: 1,
+    width: "100%",
+    height: "100%"
+  },
+  image_Logo_NoData: {
+    flex: 1,
+    width: "75%",
+    height: "75%",
+    resizeMode: "contain"
+  },
   pressable_SegmentButton: {
     padding: 5,
     borderRadius: 5,

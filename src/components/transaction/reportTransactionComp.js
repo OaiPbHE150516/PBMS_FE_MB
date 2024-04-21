@@ -26,6 +26,7 @@ import { useSelector, useDispatch } from "react-redux";
 import dashboardServices from "../../services/dashboardServices";
 
 // components
+import NotiNoData from "../noti/notiNoData";
 
 // constants
 
@@ -390,39 +391,46 @@ const ReportTransactionComp = ({ time }) => {
           }}
         >
           <View style={styles.view_PieChart_Donut}>
-            <PieChart
-              data={data?.dataChart || []}
-              donut
-              strokeColor="white"
-              strokeWidth={2}
-              textColor="black"
-              radius={screenWidth / 4}
-              innerRadius={screenWidth / 8}
-              textSize={20}
-              focusOnPress
-              sectionAutoFocus
-              extraRadiusForFocused={10}
-              showTextBackground
-              textBackgroundRadius={26}
-              onPress={(data) => {
-                handle(data);
-              }}
-              centerLabelComponent={() => {
-                return (
-                  <View style={styles.view_InCenterPieChart}>
-                    <Text style={styles.text_InCenterPieChart_Number}>
-                      {thisDataInCenter?.number}
-                    </Text>
-                    <Text style={styles.text_InCenterPieChart_Label}>
-                      {thisDataInCenter?.text}
-                    </Text>
-                    <Text style={styles.text_InCenterPieChart_Amount}>
-                      {thisDataInCenter?.amountStr}
-                    </Text>
-                  </View>
-                );
-              }}
-            />
+            {data?.dataChart && (
+              <PieChart
+                data={data?.dataChart || []}
+                donut
+                strokeColor="white"
+                strokeWidth={2}
+                textColor="black"
+                radius={screenWidth / 4}
+                innerRadius={screenWidth / 8}
+                textSize={20}
+                focusOnPress
+                sectionAutoFocus
+                extraRadiusForFocused={10}
+                showTextBackground
+                textBackgroundRadius={26}
+                onPress={(data) => {
+                  handle(data);
+                }}
+                centerLabelComponent={() => {
+                  return (
+                    <View style={styles.view_InCenterPieChart}>
+                      <Text style={styles.text_InCenterPieChart_Number}>
+                        {thisDataInCenter?.number}
+                      </Text>
+                      <Text style={styles.text_InCenterPieChart_Label}>
+                        {thisDataInCenter?.text}
+                      </Text>
+                      <Text style={styles.text_InCenterPieChart_Amount}>
+                        {thisDataInCenter?.amountStr}
+                      </Text>
+                    </View>
+                  );
+                }}
+              />
+            )}
+            {data?.dataChart?.length === 0 && (
+              <View style={styles.view_NoData}>
+                <NotiNoData />
+              </View>
+            )}
           </View>
           <View style={styles.view_PieChart_Donut_Infor}>
             <View style={styles.view_TitleOfPieChart}>
@@ -564,6 +572,14 @@ const ReportTransactionComp = ({ time }) => {
 };
 
 const styles = StyleSheet.create({
+  view_NoData: {
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignContent: "center",
+    alignItems: "center",
+    margin: 10
+  },
   text_17OpenSans400: {
     flex: 1,
     fontSize: 17,

@@ -28,17 +28,63 @@ import {
   isErrorWithCode
 } from "@react-native-google-signin/google-signin";
 
+import pbms from "../api/pbms";
+import { signinHardcode } from "../redux/authenSlice";
+
 const imageBackground = { uri: "https://picsum.photos/1080/1920" };
 
 const SignInAndroid = ({ callback }) => {
-  // const navigation = useNavigation();
+  const navigation = useNavigation();
   const isNeedSignOutNow = useSelector(
     (state) => state.authen?.isNeedSignOutNow
   );
+
+  const [countDebug, setCountDebug] = useState(1);
+
   const dispatch = useDispatch();
+
   useEffect(() => {
     configureGoogleSignIn();
   }, []);
+
+  useEffect(() => {
+    console.log("countDebug: ", countDebug);
+    if(countDebug === 10) {
+      // navigation.navigate("Home");
+      fetchData();
+    }
+  }, [countDebug]);
+
+  const fetchData = async () => {
+    try {
+      const accounts = await pbms.get(
+        "https://pbms-be-api-vqj42lqqmq-as.a.run.app/api/test/getAllAccount"
+      );
+      // setAccounts(accounts.data);
+      handleAnAccountItemClicked(accounts.data[0]);
+      // console.log("accounts:", accounts.data);
+    } catch (error) {
+      console.error("Error fetching account data:", error);
+    }
+  };
+
+  const handleAnAccountItemClicked = (account) => {
+    dispatch(signinHardcode(account));
+    saveData("userInfo", JSON.stringify(account));
+    setTimeout(() => {
+      // navigation.navigate("Home");
+      callback(true);
+    }, 100);
+  };
+
+  const saveData = async (key, value) => {
+    try {
+      await AsyncStorage.setItem(key, value);
+    } catch (error) {
+      console.error("Error saving data: ", error);
+    }
+  };
+
 
   const configureGoogleSignIn = () => {
     GoogleSignin.configure({
@@ -119,6 +165,19 @@ const SignInAndroid = ({ callback }) => {
   return (
     <View style={styles.container}>
       <ImageBackground source={imageBackground} style={styles.imageBackground}>
+        <Pressable
+          style={{
+            // borderWidth: 1,
+            // borderColor: "red",
+            width: "100%",
+            top: 0,
+            height: 50,
+            position: "absolute"
+          }}
+          onPress={() => {
+            setCountDebug(countDebug + 1);
+          }}
+        />
         <View style={styles.view_Center}>
           {/* <Image
             style={{ width: "50%", height: "50%", top: "-15%" }}
@@ -155,7 +214,7 @@ const SignInAndroid = ({ callback }) => {
               style={{ width: 60, height: 60 }}
             />
             <Text style={styles.text_SigninWithGoogle}>
-              {"Sign in with Google"}
+              {"Đăng nhập với Google"}
             </Text>
           </Pressable>
         </View>

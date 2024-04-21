@@ -581,14 +581,14 @@ const styles = StyleSheet.create({
     alignContent: "center",
     alignItems: "center",
     borderRadius: 15,
-    shadowColor: "darkgray",
-    shadowOffset: {
-      width: 0,
-      height: 10
-    },
-    shadowOpacity: 0.4,
-    shadowRadius: 3.5,
-    elevation: 5
+    // shadowColor: "darkgray",
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 10
+    // },
+    // shadowOpacity: 0.4,
+    // shadowRadius: 3.5,
+    // elevation: 5
   },
   textAccountManager: {
     fontSize: 24,

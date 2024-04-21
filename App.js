@@ -174,7 +174,7 @@ export default function App() {
                 Platform.OS === "ios" ? (
                   <SignInIOS callback={callBackSignIn} />
                 ) : (
-                  <SignInAndroid callback={callBackSignIn} />
+                  <SignInAndroid callback={callBackSignIn}/>
                 )
               ) : (
                 // null

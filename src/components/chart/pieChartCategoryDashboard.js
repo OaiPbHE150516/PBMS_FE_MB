@@ -135,6 +135,13 @@ const PieChartCategoryDashboard = () => {
             dataChart: dataChart,
             data: res
           };
+        })
+        .catch((error) => {
+          console.log("Error fetchTotalAmountByType Dashboard data:", error);
+          Alert.alert(
+            "Lỗi",
+            "Không thể lấy dữ liệu các tổng tiền theo loại từ server"
+          );
         });
       // console.log("returnData fetchTotalAmountByType: ", returnData);
       return returnData;
@@ -275,6 +282,7 @@ const PieChartCategoryDashboard = () => {
               }}
             />
           )}
+          {/* <Text>{data?.dataChart?.length}</Text> */}
           {data?.dataChart?.length === 0 && <NotiNoData />}
         </View>
         <View style={styles.view_PieChart_Donut_Infor}>

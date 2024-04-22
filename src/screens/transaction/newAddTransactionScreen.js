@@ -53,6 +53,7 @@ import NewModalWalletComponent from "../../components/wallet/newModalWalletComp"
 import AnInputInvoiceScanning from "../../components/transaction/anInputInvoiceScanning";
 import AnInputProductInIS from "../../components/transaction/anInputProductInIS";
 import transactionServices from "../../services/transactionServices";
+import OnboardingModalComp from "../../components/noti/onboardingModalComp";
 
 const NewAddTransactionScreen = ({ route }) => {
   const account = useSelector((state) => state.authen.account);
@@ -83,6 +84,7 @@ const NewAddTransactionScreen = ({ route }) => {
   const [loadingText, setLoadingText] = useState(PROCESSING_TEXT);
   const [progressLoading, setProgressLoading] = useState(0);
   const [assetShowing, setAssetShowing] = useState(null);
+  const [isShowingOnboardingModal, setShowingOnboardingModal] = useState(false);
 
   // modal states
   const [iShowMenuModal, setShowMenuModal] = useState(false);
@@ -543,6 +545,10 @@ const NewAddTransactionScreen = ({ route }) => {
     setAddingTransaction(false);
   }
 
+  const handleCallbackOnboarding = () => {
+    setShowingOnboardingModal(false);
+  };
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -552,6 +558,19 @@ const NewAddTransactionScreen = ({ route }) => {
       <View style={styles.viewTopHeader}>
         <View style={styles.view_TextHeader}>
           <Text style={styles.textTopHeader}>{"Thêm giao dịch mới"}</Text>
+          <Pressable
+            onPress={() => {
+              setShowingOnboardingModal(true);
+            }}
+            style={({ pressed }) => [
+              {
+                opacity: pressed ? 0.25 : 1
+              },
+              styles.pressable_ModalOnboarding
+            ]}
+          >
+            <Icon name="circle-info" size={20} color="#74b9ff" />
+          </Pressable>
         </View>
         <Pressable
           onPress={() => {
@@ -564,7 +583,7 @@ const NewAddTransactionScreen = ({ route }) => {
             styles.pressable_Menu
           ]}
         >
-          <Icon name="ellipsis-vertical" size={30} color="black" />
+          <Icon name="bars" size={30} color="#636e72" />
         </Pressable>
       </View>
       <ScrollView style={styles.view_MainContent}>
@@ -1059,11 +1078,27 @@ const NewAddTransactionScreen = ({ route }) => {
           </View>
         </View>
       </Modal>
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={isShowingOnboardingModal}
+      >
+        <OnboardingModalComp callback={handleCallbackOnboarding} />
+      </Modal>
     </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
+  pressable_ModalOnboarding: {
+    // flex: 0.15,
+    marginHorizontal: 10
+    // alignContent: "flex-end",
+    // justifyContent: "flex-end",
+    // alignItems: "flex-end",
+    // alignSelf: "flex-end",
+    // borderWidth: 1
+  },
   textHeaderViewChildIS: {
     fontSize: 20,
     fontFamily: "Inconsolata_500Medium",
@@ -1384,11 +1419,12 @@ const styles = StyleSheet.create({
     alignContent: "center"
   },
   view_TextHeader: {
-    // flex: 2,
+    flex: 2,
     justifyContent: "center",
     alignItems: "center",
     alignSelf: "center",
-    position: "absolute"
+    position: "relative",
+    flexDirection: "row"
   },
   pressable_Menu: {
     width: "20%",
@@ -1404,12 +1440,12 @@ const styles = StyleSheet.create({
   },
   viewTopHeader: {
     width: "100%",
-    height: 50,
+    height: "auto",
     borderBottomColor: "darkgrey",
     borderBottomWidth: 1,
-    alignContent: "center",
-    alignItems: "center",
-    justifyContent: "center",
+    // alignContent: "center",
+    // alignItems: "center",
+    // justifyContent: "center",
     padding: 10,
     backgroundColor: "white",
     flexDirection: "row"

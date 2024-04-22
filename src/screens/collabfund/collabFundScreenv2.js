@@ -1413,6 +1413,7 @@ const styles = StyleSheet.create({
   },
   containerCollabFundList: {
     flex: 1,
+    backgroundColor: "white",
     // backgroundColor: "#fff",
     // alignItems: "center",
     // justifyContent: "center",
@@ -1426,8 +1427,8 @@ const styles = StyleSheet.create({
     // flex: 1,
     width: "100%",
     height: "100%",
-    maxHeight: "90%"
-    // backgroundColor: "#fff"
+    maxHeight: "90%",
+    backgroundColor: "white"
     // alignItems: "center",
     // justifyContent: "center",
     // borderWidth: 1,

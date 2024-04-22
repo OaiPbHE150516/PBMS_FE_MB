@@ -28,6 +28,7 @@ import { fetchAllData } from "../../redux/dataSlice";
 // services
 import dashboardServices from "../../services/dashboardServices";
 import walletServices from "../../services/walletServices";
+import transactionServices from "../../services/transactionServices";
 
 // library
 import datetimeLibrary from "../../library/datetimeLibrary";
@@ -54,15 +55,28 @@ const PieChartCategoryDashboard = () => {
   const [dataIncomes, setDataInCenterIncomes] = useState({});
   const [dataTransfers, setDataTransfers] = useState({});
   const [dataTags, setDataTags] = useState({});
+  const [dataTransaction, setDataTransaction] = useState({});
+  const [maxValueDataTransaction, setMaxValueDataTransaction] = useState(0);
+
+  // screen state
+  const [isLoadingDataTransaction, setIsLoadingDataTransaction] =
+    useState(true);
+  const [isLoadingDataExpenses, setIsLoadingDataExpenses] = useState(false);
+  const [isLoadingDataIncomes, setIsLoadingDataIncomes] = useState(false);
+  const [isLoadingDataTransfers, setIsLoadingDataTransfers] = useState(false);
+  const [isLoadingDataTags, setIsLoadingDataTags] = useState(false);
+  const [isReadyToDisplay, setIsReadyToDisplay] = useState(false);
 
   // data constanst
   const screenWidth = Dimensions.get("window").width;
+  const screenHeight = Dimensions.get("window").height;
   const TYPE_EXPENSE = 2;
   const TYPE_INCOME = 1;
   const TYPE_TRANSFER = 3;
   const TAB_WEEK = "week";
   const TAB_MONTH = "month";
   const LOGO_URI = "../../../assets/images/logo.png";
+  const GAP_OF_ROUND_UP = 500;
 
   // state for PieChart
   const [selectedTab, setSelectedTab] = useState(TAB_WEEK);
@@ -75,17 +89,21 @@ const PieChartCategoryDashboard = () => {
         time = datetimeLibrary.getTimeThisMonthByNumMonth(0)[2];
       }
       console.log("time: ", time);
+      setIsReadyToDisplay(false);
       handleToFetchData(time);
     }
   }, [shouldFetchData, selectedTab]);
 
   async function handleToFetchData(time) {
+    setDataExpenses({});
     const dataExpenses = await fetchTotalAmountByCategory(
       account?.accountID,
       time,
       TYPE_EXPENSE
     );
     setDataExpenses(dataExpenses);
+
+    setDataInCenterIncomes({});
     const dataIncomes = await fetchTotalAmountByCategory(
       account?.accountID,
       time,
@@ -93,14 +111,89 @@ const PieChartCategoryDashboard = () => {
     );
     setDataInCenterIncomes(dataIncomes);
 
+    setDataTransfers({});
     const dataTransfers = await fetchTotalAmountByType(
       account?.accountID,
       time
     );
     setDataTransfers(dataTransfers);
 
+    setDataTags({});
     const dataTags = await fetchTotalAmountByTag(account?.accountID, time);
     setDataTags(dataTags);
+
+    setDataTransaction({});
+    const dataTransaction = await fetchTransactionData(
+      account?.accountID,
+      time
+    );
+    let values = dataTransaction?.dataChart?.map((item) => item?.value);
+    let maxValueDataTransaction = Math.max(...values);
+    let roundUpMaxValue = currencyLibrary.roundUpToNearestGap(
+      maxValueDataTransaction,
+      GAP_OF_ROUND_UP
+    );
+    setMaxValueDataTransaction(roundUpMaxValue);
+    setDataTransaction(dataTransaction);
+
+    // setIsLoadingDataExpenses(false);
+    // setIsLoadingDataIncomes(false);
+    // setIsLoadingDataTransfers(false);
+    // setIsLoadingDataTags(false);
+    // setIsLoadingDataTransaction(false);
+    setIsReadyToDisplay(true);
+  }
+
+  async function fetchTransactionData(accountID, time) {
+    try {
+      let returnData = {};
+      await transactionServices
+        .getTransactionWeekByDay(accountID, time)
+        .then((res) => {
+          let dataChart = res?.transactionByDayW?.map((item) => [
+            {
+              value: item?.totalAmountIn / 1000,
+              label: datetimeLibrary.convertDateToDayMonth(
+                item?.dayDetail?.date
+              ),
+              spacing: 5,
+              labelWidth: 50,
+              totalAmount: item?.totalAmountIn,
+              totalAmountStr: item?.totalAmountInStr,
+              frontColor: "#00b894",
+              sideColor: "#55efc4",
+              topColor: "#00cec9"
+            },
+            {
+              value: item?.totalAmountOut / 1000,
+              totalAmount: item?.totalAmountOut,
+              totalAmountStr: item?.totalAmountOutStr,
+              frontColor: "#ff7675",
+              sideColor: "#fab1a0",
+              topColor: "#e17055"
+            }
+          ]);
+          dataChart = dataChart.reverse();
+          let dataChart2 = [];
+          dataChart.forEach((item) => {
+            item.forEach((subItem) => {
+              dataChart2.push(subItem);
+            });
+          });
+          returnData = {
+            dataChart: dataChart2,
+            data: res
+          };
+        })
+        .catch((error) => {
+          console.log("Error fetchTransactionData Dashboard data:", error);
+          Alert.alert("Lỗi", "Không thể lấy dữ liệu các giao dịch từ server");
+        });
+      return returnData;
+    } catch (error) {
+      console.log("Error fetchTransactionData Dashboard data:", error);
+      Alert.alert("Lỗi", "Không thể lấy dữ liệu các giao dịch từ server");
+    }
   }
 
   async function fetchTotalAmountByType(accountID, time) {
@@ -189,6 +282,7 @@ const PieChartCategoryDashboard = () => {
         accountID,
         time
       );
+      console.log("fetchTotalAmountByTag response: ", response);
       let count = colorLibrary.getRandomIndex();
       let dataChart = response?.tagWithProductData?.map((item) => ({
         value: item?.percentage,
@@ -383,6 +477,15 @@ const PieChartCategoryDashboard = () => {
     );
   };
 
+  const NotiLoadingData = ({ title }) => {
+    return (
+      <View style={styles.view_Center}>
+        <Text style={styles.text_20OInco400}>{title}</Text>
+        {/* <Image source={require(LOGO_URI)} style={styles.image_Logo_NoData} /> */}
+      </View>
+    );
+  };
+
   return (
     <View style={styles.view_Container}>
       <View
@@ -457,52 +560,158 @@ const PieChartCategoryDashboard = () => {
           </Pressable>
         </View>
       </View>
-      <View style={styles.view_ExpenseIncomeChart}>
-        {dataTransfers && <ABarChart data={dataTransfers} />}
-      </View>
-      <ScrollView
-        style={styles.scrollview_Container_PieChart}
-        horizontal={true}
-        pagingEnabled={true}
-        showsHorizontalScrollIndicator={false}
-      >
-        {dataExpenses && (
-          <APieChart data={dataExpenses} title="Tổng chi" titleColor="red" />
-        )}
-        {dataIncomes && (
-          <APieChart data={dataIncomes} title="Tổng thu" titleColor="green" />
-        )}
-        {dataTags && (
-          <APieChart
-            data={dataTags}
-            title="Tổng tiền theo nhãn"
-            titleColor="blue"
-          />
-        )}
-      </ScrollView>
+      {isReadyToDisplay ? (
+        <View>
+          <View style={styles.view_ExpenseIncomeChart}>
+            {isLoadingDataTransfers ? (
+              <NotiLoadingData
+                title={"Đang tải dữ liệu giao dịch thu chi..."}
+              />
+            ) : (
+              dataTransfers && <ABarChart data={dataTransfers} />
+            )}
+          </View>
+          <ScrollView
+            style={[
+              styles.scrollview_Container_PieChart,
+              {
+                height: screenHeight / 3
+              }
+            ]}
+            horizontal={true}
+            pagingEnabled={true}
+            showsHorizontalScrollIndicator={false}
+          >
+            {isLoadingDataExpenses ? (
+              <NotiLoadingData
+                title={"Đang tải dữ liệu giao dịch chi tiêu..."}
+              />
+            ) : (
+              dataExpenses && (
+                <APieChart
+                  data={dataExpenses}
+                  title="Tổng chi"
+                  titleColor="red"
+                />
+              )
+            )}
+            {isLoadingDataIncomes ? (
+              <NotiLoadingData title={""} />
+            ) : (
+              dataIncomes && (
+                <APieChart
+                  data={dataIncomes}
+                  title="Tổng thu"
+                  titleColor="green"
+                />
+              )
+            )}
+            {isLoadingDataTags ? (
+              <NotiLoadingData title={""} />
+            ) : (
+              dataTags && (
+                <APieChart
+                  data={dataTags}
+                  title="Tổng tiền theo nhãn"
+                  titleColor="blue"
+                />
+              )
+            )}
+          </ScrollView>
 
-      {/* <Text>ChartDashboard</Text>
-      <LineChart
-        areaChart
-        curved
-        animationDuration={2000}
-        isAnimated
-        data={balanceOfWalletData}
-        initialSpacing={2}
-        noOfSections={3}
-        rulesType="solid"
-        startFillColor="rgb(46, 217, 255)"
-        startOpacity={0.8}
-        endFillColor="rgb(203, 241, 250)"
-        endOpacity={0.3}
-        hideDataPoints={true}
-        scrollToEnd={true}
-      /> */}
+          {/* <Text>ChartDashboard</Text>
+        <LineChart
+          areaChart
+          curved
+          animationDuration={2000}
+          isAnimated
+          data={balanceOfWalletData}
+          initialSpacing={2}
+          noOfSections={3}
+          rulesType="solid"
+          startFillColor="rgb(46, 217, 255)"
+          startOpacity={0.8}
+          endFillColor="rgb(203, 241, 250)"
+          endOpacity={0.3}
+          hideDataPoints={true}
+          scrollToEnd={true}
+        /> */}
+
+          <View style={{}}>
+            <View style={styles.view_BarChartTransaction}>
+              {isLoadingDataTransaction ? (
+                <View style={styles.view_NoData}>
+                  <NotiNoData title={"Đang tải dữ liệu giao dịch..."} />
+                </View>
+              ) : (
+                <BarChart
+                  data={dataTransaction?.dataChart || []}
+                  height={250}
+                  barWidth={20}
+                  spacing={30}
+                  hideRules
+                  xAxisThickness={1}
+                  xAxisColor={"gray"}
+                  yAxisThickness={1}
+                  yAxisColor={"gray"}
+                  yAxisTextStyle={{
+                    color: "gray",
+                    fontSize: 16,
+                    fontFamily: "OpenSans_400Regular"
+                  }}
+                  noOfSections={3}
+                  isAnimated={true}
+                  scrollToEnd={true}
+                  scrollAnimation={true}
+                  scrollAnimationDuration={2000}
+                  stepValue={GAP_OF_ROUND_UP}
+                  // isThreeD
+                  maxValue={maxValueDataTransaction}
+                  onPress={(data) => {
+                    console.log("data: ", data);
+                  }}
+                />
+              )}
+            </View>
+          </View>
+        </View>
+      ) : (
+        <View
+          style={{
+            width: screenWidth,
+            height: screenHeight / 5,
+            justifyContent: "center",
+            alignContent: "center",
+            alignItems: "center"
+          }}
+        >
+          <NotiLoadingData title={"Đang tải dữ liệu..."} />
+        </View>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  text_20OInco400: {
+    fontSize: 20,
+    fontFamily: "Inconsolata_400Regular",
+    alignSelf: "center",
+    textAlign: "center",
+    position: "relative"
+  },
+  view_Center: {
+    justifyContent: "center",
+    alignContent: "center",
+    alignItems: "center"
+  },
+  view_BarChartTransaction: {
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center",
+    marginBottom: 5
+  },
   view_TimeType: {
     flexDirection: "row",
     justifyContent: "center",
@@ -588,7 +797,12 @@ const styles = StyleSheet.create({
   },
   view_ExpenseIncomeChart: {
     // borderWidth: 1,
-    // borderColor: "darkgray"
+    // borderColor: "darkgray",
+    height: 100,
+    width: "100%",
+    justifyContent: "center",
+    alignContent: "center",
+    alignItems: "center"
   },
   view_FlatlistItemInChart: {
     paddingHorizontal: 5

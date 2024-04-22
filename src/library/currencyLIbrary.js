@@ -27,6 +27,12 @@ const currencyLibrary = {
   convertToMoneyFormat: (number) => {
     return currencyLibrary.formatCurrency(number) + " " + currencyLibrary.getCurrencySymbol();
   },
+
+  // tìm số làm tròn gần nhất lớn hơn của số number, gap là 500, trả về chính nó nếu nó là số chia hết cho gap
+  // ví dụ: 380 -> 500, 1200 -> 2500, 2500 -> 2500
+  roundUpToNearestGap: (number, gap) => {
+    return Math.ceil(number / gap) * gap;
+  },
 };
 
 export default currencyLibrary;

@@ -24,6 +24,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 // services
 import dashboardServices from "../../services/dashboardServices";
+import transactionServices from "../../services/transactionServices";
 
 // components
 import NotiNoData from "../noti/notiNoData";
@@ -41,17 +42,29 @@ const ReportTransactionComp = ({ time }) => {
   const dispatch = useDispatch();
   const account = useSelector((state) => state.authen.account);
   const shouldFetchData = useSelector((state) => state.data.shouldFetchData);
+  const isFocused = useIsFocused();
 
   const [dataExpenses, setDataExpenses] = useState({});
   const [dataIncomes, setDataInCenterIncomes] = useState({});
   const [dataTransfers, setDataTransfers] = useState({});
   const [dataTags, setDataTags] = useState({});
+  const [dataTransaction, setDataTransaction] = useState({});
+  const [maxValueDataTransaction, setMaxValueDataTransaction] = useState(0);
+
+  // screen state
+  const [isLoadingDataTransaction, setIsLoadingDataTransaction] =
+    useState(true);
+  const [isLoadingDataExpenses, setIsLoadingDataExpenses] = useState(true);
+  const [isLoadingDataIncomes, setIsLoadingDataIncomes] = useState(true);
+  const [isLoadingDataTransfers, setIsLoadingDataTransfers] = useState(true);
+  const [isLoadingDataTags, setIsLoadingDataTags] = useState(true);
 
   // data constance
   const screenWidth = Dimensions.get("window").width;
   const TYPE_EXPENSE = 2;
   const TYPE_INCOME = 1;
   const TYPE_TRANSFER = 3;
+  const GAP_OF_ROUND_UP = 500;
 
   useEffect(() => {
     if (account?.accountID) {
@@ -60,28 +73,108 @@ const ReportTransactionComp = ({ time }) => {
   }, [account, shouldFetchData]);
 
   async function handleToFetchData() {
+    setIsLoadingDataExpenses(true);
+    setDataExpenses({});
     const dataExpenses = await fetchTotalAmountByCategory(
       account?.accountID,
       time,
       TYPE_EXPENSE
     );
     setDataExpenses(dataExpenses);
+    setIsLoadingDataExpenses(false);
 
+    setIsLoadingDataIncomes(true);
+    setDataInCenterIncomes({});
     const dataIncomes = await fetchTotalAmountByCategory(
       account?.accountID,
       time,
       TYPE_INCOME
     );
     setDataInCenterIncomes(dataIncomes);
+    setIsLoadingDataIncomes(false);
 
+    setIsLoadingDataTransfers(true);
+    setDataTransfers({});
     const dataTransfers = await fetchTotalAmountByType(
       account?.accountID,
       time
     );
     setDataTransfers(dataTransfers);
+    setIsLoadingDataTransfers(false);
 
+    setIsLoadingDataTags(true);
+    setDataTags({});
     const dataTags = await fetchTotalAmountByTag(account?.accountID, time);
     setDataTags(dataTags);
+    setIsLoadingDataTags(false);
+
+    setIsLoadingDataTransaction(true);
+    setDataTransaction({});
+    const dataTransaction = await fetchTransactionData(
+      account?.accountID,
+      time
+    );
+    let values = dataTransaction?.dataChart?.map((item) => item?.value);
+    let maxValueDataTransaction = Math.max(...values);
+    let roundUpMaxValue = currencyLibrary.roundUpToNearestGap(
+      maxValueDataTransaction,
+      GAP_OF_ROUND_UP
+    );
+    setMaxValueDataTransaction(roundUpMaxValue);
+    setDataTransaction(dataTransaction);
+    setIsLoadingDataTransaction(false);
+  }
+
+  async function fetchTransactionData(accountID, time) {
+    try {
+      let returnData = {};
+      await transactionServices
+        .getTransactionWeekByDay(accountID, time)
+        .then((res) => {
+          let dataChart = res?.transactionByDayW?.map((item) => [
+            {
+              value: item?.totalAmountIn / 1000,
+              label: datetimeLibrary.convertDateToDayMonth(
+                item?.dayDetail?.date
+              ),
+              spacing: 5,
+              labelWidth: 50,
+              totalAmount: item?.totalAmountIn,
+              totalAmountStr: item?.totalAmountInStr,
+              frontColor: "#00b894",
+              sideColor: "#55efc4",
+              topColor: "#00cec9"
+            },
+            {
+              value: item?.totalAmountOut / 1000,
+              totalAmount: item?.totalAmountOut,
+              totalAmountStr: item?.totalAmountOutStr,
+              frontColor: "#ff7675",
+              sideColor: "#fab1a0",
+              topColor: "#e17055"
+            }
+          ]);
+          dataChart = dataChart.reverse();
+          let dataChart2 = [];
+          dataChart.forEach((item) => {
+            item.forEach((subItem) => {
+              dataChart2.push(subItem);
+            });
+          });
+          returnData = {
+            dataChart: dataChart2,
+            data: res
+          };
+        })
+        .catch((error) => {
+          console.log("Error fetchTransactionData Dashboard data:", error);
+          Alert.alert("Lỗi", "Không thể lấy dữ liệu các giao dịch từ server");
+        });
+      return returnData;
+    } catch (error) {
+      console.log("Error fetchTransactionData Dashboard data:", error);
+      Alert.alert("Lỗi", "Không thể lấy dữ liệu các giao dịch từ server");
+    }
   }
 
   async function fetchTotalAmountByType(accountID, time) {
@@ -379,6 +472,7 @@ const ReportTransactionComp = ({ time }) => {
           styles.view_PieChart_Donut_parent,
           { width: screenWidth * 0.98, height: "100%" }
         ]}
+        scrollEnabled={false}
       >
         <View
           style={{
@@ -536,42 +630,129 @@ const ReportTransactionComp = ({ time }) => {
     );
   };
 
+  const NotiLoadingData = ({ title }) => {
+    return (
+      <View style={styles.view_Center}>
+        <Text style={styles.text_20OInco400}>{title}</Text>
+      </View>
+    );
+  };
+
   return (
-    <View style={styles.container}>
-      <View style={styles.view_Header}>
-        <Text style={styles.text_Header}>
-          {"Tổng tiền các hạng mục thời gian này: "}
-          {time}
-        </Text>
-      </View>
-      <View style={styles.view_ExpenseIncomeChart}>
-        {dataTransfers && <ABarChart data={dataTransfers} />}
-      </View>
-      <ScrollView
-        style={styles.scrollview_Container_PieChart}
-        horizontal={true}
-        pagingEnabled={true}
-        showsHorizontalScrollIndicator={true}
-      >
-        {dataExpenses && (
-          <APieChart data={dataExpenses} title="Tổng chi" titleColor="red" />
-        )}
-        {dataIncomes && (
-          <APieChart data={dataIncomes} title="Tổng thu" titleColor="green" />
-        )}
-        {dataTags && (
-          <APieChart
-            data={dataTags}
-            title="Tổng tiền theo nhãn"
-            titleColor="blue"
-          />
-        )}
+    isFocused && (
+      <ScrollView style={styles.container}>
+        <View style={styles.view_Header}>
+          <Text style={styles.text_Header}>
+            {"Tổng tiền các hạng mục thời gian này: "}
+            {time}
+          </Text>
+        </View>
+        <View style={styles.view_ExpenseIncomeChart}>
+          {isLoadingDataTransfers ? (
+            <NotiLoadingData title={"Đang tải dữ liệu giao dịch thu chi..."} />
+          ) : (
+            dataTransfers && <ABarChart data={dataTransfers} />
+          )}
+        </View>
+        <View style={{ height: 280 }}>
+          <View style={styles.view_BarChartTransaction}>
+            {isLoadingDataTransaction ? (
+              <View style={styles.view_NoData}>
+                <NotiNoData title={"Đang tải dữ liệu giao dịch..."} />
+              </View>
+            ) : (
+              <BarChart
+                data={dataTransaction?.dataChart || []}
+                height={250}
+                barWidth={20}
+                spacing={30}
+                hideRules
+                xAxisThickness={1}
+                xAxisColor={"gray"}
+                yAxisThickness={1}
+                yAxisColor={"gray"}
+                yAxisTextStyle={{
+                  color: "gray",
+                  fontSize: 16,
+                  fontFamily: "OpenSans_400Regular"
+                }}
+                noOfSections={3}
+                isAnimated={true}
+                scrollToEnd={true}
+                scrollAnimation={true}
+                scrollAnimationDuration={2000}
+                stepValue={GAP_OF_ROUND_UP}
+                // isThreeD
+                maxValue={maxValueDataTransaction}
+                onPress={(data) => {
+                  console.log("data: ", data);
+                }}
+              />
+            )}
+          </View>
+        </View>
+        <ScrollView
+          style={styles.scrollview_Container_PieChart}
+          horizontal={true}
+          pagingEnabled={true}
+          showsHorizontalScrollIndicator={true}
+        >
+          {isLoadingDataExpenses ? (
+            <NotiLoadingData title={"Đang tải dữ liệu giao dịch chi tiêu..."} />
+          ) : (
+            dataExpenses && (
+              <APieChart
+                data={dataExpenses}
+                title="Tổng chi"
+                titleColor="red"
+              />
+            )
+          )}
+          {isLoadingDataIncomes ? (
+            <NotiLoadingData title={"Đang tải dữ liệu giao dịch thu nhập..."} />
+          ) : (
+            dataIncomes && (
+              <APieChart
+                data={dataIncomes}
+                title="Tổng thu"
+                titleColor="green"
+              />
+            )
+          )}
+          {isLoadingDataTags ? (
+            <NotiLoadingData title={"Đang tải dữ liệu giao dịch theo tag..."} />
+          ) : (
+            dataTags && (
+              <APieChart
+                data={dataTags}
+                title="Tổng tiền theo nhãn"
+                titleColor="blue"
+              />
+            )
+          )}
+        </ScrollView>
       </ScrollView>
-    </View>
+    )
   );
 };
 
 const styles = StyleSheet.create({
+  text_20OInco400: {
+    fontSize: 20,
+    fontFamily: "Inconsolata_400Regular"
+  },
+  view_Center: {
+    justifyContent: "center",
+    alignContent: "center",
+    alignItems: "center"
+  },
+  view_BarChartTransaction: {
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center",
+    marginBottom: 5
+  },
   view_NoData: {
     width: "100%",
     height: "100%",

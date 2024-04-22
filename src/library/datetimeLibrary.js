@@ -332,6 +332,11 @@ const datetimeLibrary = {
     return format(currentDate, "yyyy-MM-dd") + "T" + format(currentDate, "HH:mm") + ":00.000Z";
   },
 
+  // convert dateonly to day / month, like '2024-04-18' to '18/04',
+  convertDateToDayMonth: function (dateStr) {
+    const dateArray = dateStr.split("-");
+    return dateArray[2] + "/" + dateArray[1];
+  },
 
 };
 

@@ -110,7 +110,8 @@ const TransCompTest = ({ route }) => {
           flexDirection: "row",
           alignContent: "center",
           alignItems: "center",
-          justifyContent: "space-between"
+          justifyContent: "space-between",
+          paddingHorizontal: 15,
         }}
       >
         <Text style={styles.textHeader}>

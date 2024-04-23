@@ -20,7 +20,7 @@ import {
   KeyboardAvoidingView
 } from "react-native";
 import DynamicallySelectedPicker from "react-native-dynamically-selected-picker";
-import { useNavigatio, useIsFocused } from "@react-navigation/native";
+import { useNavigation, useIsFocused } from "@react-navigation/native";
 
 import {
   startOfWeek,

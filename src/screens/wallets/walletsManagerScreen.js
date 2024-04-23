@@ -22,6 +22,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
 import { BlurView } from "expo-blur";
 import Icon from "react-native-vector-icons/FontAwesome6";
+import {
+  TextInput as PaperTextInput,
+  Chip as PaperChip
+} from "react-native-paper";
 
 // components
 
@@ -47,7 +51,7 @@ const WalletsManagerScreen = () => {
   const [totalBalance, setTotalBalance] = useState(null);
 
   const [isEnabled, setIsEnabled] = useState(false);
-  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
+  // const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isModalAddWalletVisible, setIsModalAddWalletVisible] = useState(false);
   const [isShouldDarkModalBackground, setIsShouldDarkModalBackground] =
@@ -58,6 +62,9 @@ const WalletsManagerScreen = () => {
     balance: "",
     currencyID: 2
   });
+
+  const [editWallet, setEditWallet] = useState({});
+  const [isShowModalEditWallet, setIsShowModalEditWallet] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -122,6 +129,32 @@ const WalletsManagerScreen = () => {
     });
   }
 
+  async function handleChangeActiveStateWallet() {
+    try {
+      const data = {
+        accountID: account?.accountID,
+        walletID: editWallet?.walletID,
+        activeStateID: editWallet?.activeState?.activeStateID === 1 ? 2 : 1
+      };
+      await walletServices
+        .changeActiveState(data)
+        .then((response) => {
+          console.log("handleChangeActiveStateWallet response: ", response);
+          onRefresh();
+        })
+        .catch((error) => {
+          console.log("Error handleChangeActiveStateWallet data:", error);
+          Alert.alert("Lỗi khi thay đổi trạng thái ví:", error);
+        })
+        .then(() => {
+          setIsShowModalEditWallet(!isShowModalEditWallet);
+        });
+    } catch (error) {
+      console.log("Error handleChangeActiveStateWallet data:", error);
+      Alert.alert("Lỗi khi thay đổi trạng thái ví:", error);
+    }
+  }
+
   const handleAddWalletModal = () => {
     // Alert if name is empty or duplicate with existing wallet
     if (newWallet?.name === "") {
@@ -153,18 +186,38 @@ const WalletsManagerScreen = () => {
 
   const AnItemWalet = ({ wallet }) => {
     return (
-      <View style={styles.viewAnItemWallet}>
+      <Pressable
+        style={({ pressed }) => [
+          {
+            backgroundColor: pressed ? "#dfe6e9" : "white",
+            borderColor:
+              wallet?.activeState?.activeStateID === 1 && wallet.balance > 0
+                ? "#00b894"
+                : wallet?.activeState?.activeStateID === 1 && wallet.balance < 0
+                  ? "#d63031"
+                  : "darkgray",
+            borderWidth: 2
+          },
+          styles.viewAnItemWallet
+        ]}
+        onPress={() => {
+          // console.log("AnItemWalet wallet: ", wallet);
+          console.log("AnItemWalet wallet: ", wallet);
+          setEditWallet(wallet);
+          setIsShowModalEditWallet(true);
+        }}
+      >
         <View style={styles.viewAnItemWalletInfor}>
           <Text style={styles.textNameWallet}>{wallet?.name}</Text>
           <Text style={styles.textBalanceWallet}>{wallet?.balanceStr}</Text>
         </View>
-        <View style={styles.viewAnItemWalletAction}>
+        {/* <View style={styles.viewAnItemWalletAction}>
           <Switch
             trackColor={{ false: "#767577", true: "#81b0ff" }}
             thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
             ios_backgroundColor="#3e3e3e"
-            onValueChange={toggleSwitch}
-            value={isEnabled}
+            onValueChange={toggleSwitchAWallet(wallet)}
+            value={wallet?.activeState?.activeStateID === 1 ? true : false}
             style={{ transform: [{ scaleX: 0.5 }, { scaleY: 0.5 }] }}
           />
           <View style={styles.viewAnItemWalletActionRight}>
@@ -175,8 +228,8 @@ const WalletsManagerScreen = () => {
               <Icon name="ellipsis" size={18} color="darkgray" />
             </Pressable>
           </View>
-        </View>
-      </View>
+        </View> */}
+      </Pressable>
     );
   };
 
@@ -186,6 +239,10 @@ const WalletsManagerScreen = () => {
       .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     setNewWallet({ ...newWallet, balance: formattedNumber });
   };
+
+  function handleCloseEditWallet() {
+    setIsShowModalEditWallet(!isShowModalEditWallet);
+  }
 
   return (
     <View style={styles.container}>
@@ -247,9 +304,7 @@ const WalletsManagerScreen = () => {
           style={[
             styles.viewAddWalletModal,
             {
-              backgroundColor: isShouldDarkModalBackground
-                ? "rgba(0,0,0,0.05)"
-                : null
+              backgroundColor: "rgba(0,0,0,0.05)"
             }
           ]}
         >
@@ -303,11 +358,95 @@ const WalletsManagerScreen = () => {
           </View>
         </BlurView>
       </Modal>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isShowModalEditWallet}
+      >
+        <View style={styles.view_ModalBackground}>
+          <Pressable
+            style={{ flex: 1, width: "100%" }}
+            onPress={() => {
+              handleCloseEditWallet();
+            }}
+          />
+          <View style={styles.view_EditWallet}>
+            <Text>{"Edit Wallet"}</Text>
+            <Text>{"Hoạt động"}</Text>
+            {/* 2 pressable, if editWallet is active, then can change to inactive */}
+            <View style={styles.view_EditWallet_Active}>
+              <Pressable
+                style={({ pressed }) => [
+                  {
+                    backgroundColor: pressed
+                      ? "#dfe6e9"
+                      : editWallet?.activeState?.activeStateID !== 1
+                        ? "#636e72"
+                        : "white"
+                  },
+                  styles.pressavle_EditWallet_Active
+                ]}
+                onPress={() => {
+                  handleChangeActiveStateWallet();
+                }}
+              />
+              <Pressable
+                style={({ pressed }) => [
+                  {
+                    backgroundColor: pressed
+                      ? "#dfe6e9"
+                      : editWallet?.activeState?.activeStateID === 1
+                        ? "#55efc4"
+                        : "white"
+                  },
+                  styles.pressavle_EditWallet_Active
+                ]}
+                onPress={() => {
+                  handleChangeActiveStateWallet();
+                }}
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  view_EditWallet_Active: {
+    borderWidth: 0.5,
+    borderColor: "darkgray",
+    borderRadius: 15,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center"
+  },
+  pressavle_EditWallet_Active: {
+    width: 60,
+    height: 30,
+    borderRadius: 15
+  },
+  view_EditWallet: {
+    backgroundColor: "white",
+    flex: 0.25,
+    width: "100%",
+    borderWidth: 1,
+    borderColor: "darkgray",
+    borderRadius: 10,
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center"
+  },
+  view_ModalBackground: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center",
+    backgroundColor: "rgba(0,0,0,0.25)"
+  },
   textLabelAddWallet: {
     fontSize: 20,
     fontFamily: "Inconsolata_400Regular",
@@ -428,18 +567,18 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     marginHorizontal: 10,
     marginVertical: 5,
-    borderRadius: 10,
-    borderBottomColor: "darkgray",
-    borderBottomWidth: 0.25,
+    borderRadius: 10
+    // borderBottomColor: "darkgray",
+    // borderBottomWidth: 0.5,
     // add shadow
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5
+    // shadowColor: "#000",
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 2
+    // },
+    // shadowOpacity: 0.25,
+    // shadowRadius: 3.84,
+    // elevation: 5
   },
   viewAllWallet: {
     flexDirection: "row",
@@ -451,17 +590,21 @@ const styles = StyleSheet.create({
   },
   viewAnItemWallet: {
     flexDirection: "column",
-    justifyContent: "space-between",
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center",
     borderBottomColor: "darkgray",
-    borderBottomWidth: 0.25,
+    borderBottomWidth: 0.5,
     paddingVertical: 2,
     paddingHorizontal: 5,
     width: "100%",
-    marginVertical: 5
+    height: 50,
+    marginVertical: 5,
+    borderRadius: 10
   },
   textNameWallet: {
-    fontSize: 20,
-    fontFamily: "Inconsolata_500Medium"
+    fontSize: 22,
+    fontFamily: "OpenSans_400Regular"
   },
   textBalanceWallet: {
     fontSize: 20,

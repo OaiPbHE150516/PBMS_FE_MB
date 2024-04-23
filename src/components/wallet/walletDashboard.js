@@ -86,7 +86,7 @@ const WalletDashboard = ({ navigation }) => {
             ]}
             onPress={() => {
               // callback();
-              navigation.push(VAR.SCREEN.REPORT.WALLET);
+              navigation.push("WalletsManagerScreen");
             }}
           >
             {/* <Text style={styles.text_ViewAll}>{"Xem báo cáo "}</Text> */}

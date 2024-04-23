@@ -42,6 +42,9 @@ const NewModalWalletComponent = ({ selected, callback }) => {
           return b.balance - a.balance;
         });
 
+        // filter wallet have active state is not 1
+        response = response.filter((item) => item.activeState?.activeStateID === 1);
+
         setWallets(response);
         // console.log("wallets: ", response);
       })

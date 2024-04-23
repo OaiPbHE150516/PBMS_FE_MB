@@ -282,6 +282,7 @@ const NewAddTransactionScreen = ({ route }) => {
       const formData = new FormData();
       formData.append("file", fileLibrary.getFileData(asset));
       formData.append("accountID", account?.accountID);
+      console.log("uploadToScanInvoice formData: ", formData);
       await axios({
         method: "post",
         url: urlapi,

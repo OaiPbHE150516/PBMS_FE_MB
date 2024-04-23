@@ -59,7 +59,7 @@ const TransactionDashboard = ({ navigation }) => {
           ]}
           onPress={() => {
             // callback();
-            navigation.push(VAR.SCREEN.REPORT.TRANSACTION);
+            // navigation.push("NewAddTransaction");
           }}
         >
           {/* <Text style={styles.text_ViewAll}>{"Xem báo cáo "}</Text> */}

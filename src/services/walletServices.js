@@ -55,6 +55,17 @@ const walletServices = {
       console.log("Error createWallet data:", error.message);
     }
   },
-  // get balance history log of wallet by accountID and time range
+
+  // change active state of a wallet
+  changeActiveState: async (data) => {
+    try {
+      const response = await axios.put(API.WALLET.CHANGE_ACTIVE_STATE, data, {
+        headers
+      });
+      return response.data;
+    } catch (error) {
+      console.log("Error changeActiveState data:", error);
+    }
+  },
 };
 export default walletServices;

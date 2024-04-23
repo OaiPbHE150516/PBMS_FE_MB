@@ -506,8 +506,8 @@ const styles = StyleSheet.create({
     zIndex: 10,
     flex: 1,
     borderRadius: 10,
-    borderWidth: 0.5,
-    borderColor: "red",
+    // borderWidth: 0.5,
+    // borderColor: "red",
     paddingBottom: 20
   }
 });

@@ -252,6 +252,35 @@ const collabFundServices = {
     } catch (error) {
       console.log("Error rejectToCollabFund data:", error);
     }
+  },
+
+  // get total amount of collab fund by id
+  getTotalAmount: async (data) => {
+    try {
+      // console.log("data: ", data);
+      const response = await axios.get(
+        API.COLLABFUND.GET_TOTAL_AMOUNT + data?.collabFundID,
+        {
+          headers
+        }
+      );
+      // console.log("response: ", response.data);
+      return response.data;
+    } catch (error) {
+      console.log("Error getTotalAmount data:", error);
+    }
+  },
+
+  // invite member to collab fund
+  inviteParticipants: async (data) => {
+    try {
+      const response = await axios.post(API.COLLABFUND.INVITE_MEMBER_V2, data?.data, {
+        headers
+      });
+      return response.data;
+    } catch (error) {
+      console.log("Error inviteParticipant data:", error);
+    }
   }
 };
 

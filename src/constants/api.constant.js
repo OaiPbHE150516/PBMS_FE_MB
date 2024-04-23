@@ -21,12 +21,14 @@ export const API = {
     GET_ALL_COLLABFUND_PARTICIPANTS: `${Base_URL}/api/collabfund/get/member/typebytype/`,
     GET_DIVIDI_MONEY_INFOR: `${Base_URL}/api/collabfund/get/divide-money-info/`,
     GET_DIVIDE_MONEY_HISTORY: `${Base_URL}/api/collabfund/get/history/divide-money/`,
+    GET_TOTAL_AMOUNT: `${Base_URL}/api/collabfund/get/totalAmount/`,
 
     CREATE_ACTIVITY_NO_TRANSACTION: `${Base_URL}/api/collabfund/create/activity/notrans/form`,
     CREATE_ACTIVITY: `${Base_URL}/api/collabfund/create/activity/withtrans/form`,
     POST_DIVIDE_MONEY: `${Base_URL}/api/collabfund/divide-money`,
     CREATE_CF: `${Base_URL}/api/collabfund/create`,
     UPLOAD_IMAGE_COVER: `${Base_URL}/api/file/upload/collabfund/imagecover`,
+    INVITE_MEMBER_V2: `${Base_URL}/api/collabfund/invite/v2`,
 
     ACCEPT_CF_INVITATION: `${Base_URL}/api/collabfund/accept`,
     REJECT_CF_INVITATION: `${Base_URL}/api/collabfund/decline`,
@@ -46,7 +48,8 @@ export const API = {
     GET_ALL_WALLET: `${Base_URL}/api/wallet/get/account/`,
     GET_EACH_WALLET_BALANCE: `${Base_URL}/api/wallet/get/total-amount-each-wallet/`,
     GET_BALANCE_HISTORY_LOG: `${Base_URL}/api/balanceHisLogController/get/each/`,
-    CREATE_WALLET: `${Base_URL}/api/wallet/create`
+    CREATE_WALLET: `${Base_URL}/api/wallet/create`,
+    CHANGE_ACTIVE_STATE: `${Base_URL}/api/wallet/change/active-state`
   },
   TRANSACTION: {
     GET_TRANSACTION: `${Base_URL}/api/transaction/get/`,

@@ -11,7 +11,7 @@ import {
   Image
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useIsFocused } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import { VAR } from "../constants/var.constant";
@@ -28,6 +28,7 @@ import WalletsManagerScreen from "./wallets/walletsManagerScreen";
 import WalletReportScreen from "./reports/walletReportScreen";
 import TransactionReportScreen from "./reports/transactionReportScreen";
 import SpendingLimitScreen from "./spendinglimit/spendingLimitScreen";
+// import TransactionScreen from "./transaction/transactionScreen";
 
 import MyAccount from "../../src/screens/MyAccount";
 
@@ -115,6 +116,14 @@ const HomeScreen = () => {
           name={VAR.SCREEN.SPENDING_LIMIT_SCREEN}
           component={SpendingLimitScreen}
         />
+        <Stack.Screen
+          name={"WalletsManagerScreen"}
+          component={WalletsManagerScreen}
+        />
+        {/* <Stack.Screen
+          name="Transaction"
+          component={TransactionScreen}
+        /> */}
       </Stack.Navigator>
     </View>
   );

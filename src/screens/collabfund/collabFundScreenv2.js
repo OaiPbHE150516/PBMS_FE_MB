@@ -22,7 +22,7 @@ import {
   RefreshControl
 } from "react-native";
 // node_modules library
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useIsFocused } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome6";
 import { BlurView } from "expo-blur";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -47,6 +47,7 @@ import collabFundServices from "../../services/collabFundServices";
 
 // components
 import CollabFundDetail from "./collabFundDetail";
+import NotiNoData from "../../components/noti/notiNoData";
 
 const Stack = createStackNavigator();
 
@@ -56,6 +57,8 @@ const CollabFundScreen = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
+
+  const isFocused = useIsFocused();
 
   const [isModelMenuVisible, setIsModelMenuVisible] = useState(false);
   const [isModalGuildlineCFVisible, setIsModalGuildlineCFVisible] =
@@ -102,23 +105,69 @@ const CollabFundScreen = () => {
 
   async function fetchCollabFundsData() {
     try {
-      await collabFundServices
-        .getAllCollabFund(account?.accountID)
-        .then((response) => {
-          setTempCollabFundList(response);
-        })
-        .catch((error) => {
+      const response = await collabFundServices.getAllCollabFund(account?.accountID);
+      const promises = response.map(async (element) => {
+        const data = {
+          collabFundID: element.collabFundID
+        };
+        try {
+          const totalAmountResponse = await collabFundServices.getTotalAmount(data);
+          element.totalAmount = totalAmountResponse?.totalAmount;
+          element.totalAmountStr = totalAmountResponse?.totalAmountStr;
+        } catch (error) {
           handleError(error);
-        })
-        .finally(() => {
-          setTimeout(() => {
-            setIsRefreshing(false);
-          }, 2000);
-        });
+        }
+        return element;
+      });
+      const updatedResponse = await Promise.all(promises);
+      // console.log("List collab fund: ", updatedResponse);
+      setTempCollabFundList(updatedResponse);
     } catch (error) {
       handleError(error);
+    } finally {
+      // setTimeout(() => {
+        setIsRefreshing(false);
+      // }, 2000);
     }
   }
+
+
+  // async function getTotalAmount(collabFundID) {
+  //   try {
+  //     const data = {
+  //       collabFundID: collabFundID
+  //     };
+  //     const response = await collabFundServices.getTotalAmount(data);
+  //     return response;
+  //   } catch (error) {
+  //     console.log("Error getTotalAmount data:", error);
+  //   }
+  // }
+
+  // async function handleMapTotalAmountToCollabFundList(listCollabFunds) {
+  //   try {
+  //     listCollabFunds.forEach(async (element) => {
+  //       // console.log("Element: ", element);
+  //       // let totalAmountData = getTotalAmount(element?.collabFundID);
+  //       // element.totalAmount = totalAmountData?.totalAmount;
+  //       // element.totalAmountStr = totalAmountData?.totalAmountStr;
+  //       // if (element.collabFundID === 89) {
+  //         const data = {
+  //           collabFundID: element.collabFundID
+  //         };
+  //         await collabFundServices.getTotalAmount(data).then((response) => {
+  //           element.totalAmount = response?.totalAmount;
+  //           element.totalAmountStr = response?.totalAmountStr;
+  //         });
+  //         console.log("Element: ", element);
+  //       // }
+  //     });
+  //     console.log("List collab fund: ", listCollabFunds);
+  //     return listCollabFunds;
+  //   } catch (error) {
+  //     console.log("Error handleMapTotalAmountToCollabFundList data:", error);
+  //   }
+  // }
 
   const onRefresh = () => {
     setIsRefreshing(true);
@@ -126,10 +175,13 @@ const CollabFundScreen = () => {
   };
 
   useEffect(() => {
-    if (account) {
-      fetchCollabFundsData();
+    if (isFocused) {
+      console.log("CollabFundScreen isFocused: ", isFocused);
+      if (account) {
+        fetchCollabFundsData();
+      }
     }
-  }, [account]);
+  }, [isFocused]);
 
   function handleCollabFundItemOnPress(collabFund) {
     navigation.navigate("CollabFundDetail", {
@@ -357,13 +409,13 @@ const CollabFundScreen = () => {
             }
           ]);
         });
-        handleResetNewCF();
-        setIsAddingNewCF(false);
+      handleResetNewCF();
+      setIsAddingNewCF(false);
     } catch (error) {}
     // 2. create new CF with imageURL
   }
 
-  function handleResetNewCF(){
+  function handleResetNewCF() {
     setNewCF({});
     setImageCover(null);
     setCurrentSearchText("");

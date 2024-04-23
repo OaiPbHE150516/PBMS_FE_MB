@@ -122,6 +122,7 @@ const PieChartCategoryDashboard = () => {
     const dataTags = await fetchTotalAmountByTag(account?.accountID, time);
     setDataTags(dataTags);
 
+    setIsLoadingDataTransaction(true);
     setDataTransaction({});
     const dataTransaction = await fetchTransactionData(
       account?.accountID,
@@ -135,6 +136,7 @@ const PieChartCategoryDashboard = () => {
     );
     setMaxValueDataTransaction(roundUpMaxValue);
     setDataTransaction(dataTransaction);
+    setIsLoadingDataTransaction(false);
 
     // setIsLoadingDataExpenses(false);
     // setIsLoadingDataIncomes(false);

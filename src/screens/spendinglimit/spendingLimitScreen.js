@@ -284,30 +284,32 @@ const SpendingLimitScreen = ({ route, navigation }) => {
               </Text>
             </View>
           )}
-          <View
-            style={[
-              styles.view_CurrentAmount,
-              {
-                left: item.percentProgressStr
-              }
-            ]}
-          >
-            <Text
+          {item.percentProgress <= 60 && (
+            <View
               style={[
-                styles.text_currentAmountStr,
+                styles.view_CurrentAmount,
                 {
-                  color:
-                    item.percentProgress < 50
-                      ? "green" // green
-                      : item.percentProgress < 80
-                        ? "#fdcb6e" // yellow
-                        : "#d63031" // red
+                  left: item.percentProgressStr
                 }
               ]}
             >
-              {item.currentAmountStr}
-            </Text>
-          </View>
+              <Text
+                style={[
+                  styles.text_currentAmountStr,
+                  {
+                    color:
+                      item.percentProgress < 50
+                        ? "green" // green
+                        : item.percentProgress < 60
+                          ? "#fdcb6e" // yellow
+                          : "#d63031" // red
+                  }
+                ]}
+              >
+                {item.currentAmountStr}
+              </Text>
+            </View>
+          )}
           <View style={styles.view_TargetAmount}>
             <Text style={styles.text_targetAmount}>{item.targetAmountStr}</Text>
           </View>
@@ -735,7 +737,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Inconsolata_400Regular",
     marginHorizontal: 5,
-    marginTop: 2,
+    marginTop: 2
   },
   pressable_AddBudget: {
     width: "35%",

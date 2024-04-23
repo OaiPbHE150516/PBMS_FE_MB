@@ -34,7 +34,7 @@ const BudgetDashboard = ({ navigation }) => {
         setEachBudget(response?.slice(0, 2));
       });
     } catch (error) {
-      console.error("Error fetchBudgetData data:", error);
+      console.log("Error fetchBudgetData data:", error);
     }
   }
 

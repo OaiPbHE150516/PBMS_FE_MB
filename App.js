@@ -100,7 +100,7 @@ export default function App() {
       //   setIsSignin(true);
       // }
     } catch (error) {
-      console.error("Error checking user signed in:", error);
+      console.log("Error checking user signed in:", error);
     }
   }
 
@@ -121,7 +121,7 @@ export default function App() {
       // await GoogleSignin.revokeAccess();
       // await GoogleSignin.signOut();
     } catch (error) {
-      console.error("Error signing out: ", error);
+      console.log("Error signing out: ", error);
       Alert.alert("Error signing out: ");
     }
   };

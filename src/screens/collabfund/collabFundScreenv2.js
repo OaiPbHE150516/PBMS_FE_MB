@@ -87,7 +87,7 @@ const CollabFundScreen = () => {
   const dispatch = useDispatch();
 
   function handleError(error) {
-    console.error("Error CollabFundScreen data:", error);
+    console.log("Error CollabFundScreen data:", error);
     Alert.alert(
       "Lối khi lấy dữ liệu quỹ hợp tác từ server",
       "Vui lòng thử lại sau",
@@ -349,7 +349,7 @@ const CollabFundScreen = () => {
           });
         })
         .catch((error) => {
-          console.error("Error upload image cover data:", error);
+          console.log("Error upload image cover data:", error);
           Alert.alert("Lỗi khi tải ảnh bìa", "Vui lòng thử lại sau", [
             {
               text: "OK",
@@ -520,7 +520,7 @@ const CollabFundScreen = () => {
         );
       setSearchResult(filteredData);
     } catch (error) {
-      console.error("Error searchAccountByKeyword data:", error);
+      console.log("Error searchAccountByKeyword data:", error);
       const errorMessage =
         typeof error === "string"
           ? error

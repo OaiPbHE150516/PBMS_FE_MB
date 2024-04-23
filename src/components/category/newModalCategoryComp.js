@@ -47,7 +47,7 @@ const NewModalCategoryComponent = ({ selected, callback }) => {
         console.log("categories: ", response);
       })
       .catch((error) => {
-        console.error("Error fetching category data:", error);
+        console.log("Error fetching category data:", error);
         Alert.alert("Lỗi khi lấy dữ liệu hạng mục: ", error);
       });
   }

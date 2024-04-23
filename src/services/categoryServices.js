@@ -13,7 +13,7 @@ const categoryServices = {
       const response = await axios.get(urlapi, { headers });
       return response.data;
     } catch (error) {
-      console.error("Error getCategories data:", error);
+      console.log("Error getCategories data:", error);
     }
   },
   createCategory: async (category) => {
@@ -34,7 +34,7 @@ const categoryServices = {
       );
       return response.data;
     } catch (error) {
-      console.error("Error createCategory data:", error);
+      console.log("Error createCategory data:", error);
     }
   },
 
@@ -49,7 +49,7 @@ const categoryServices = {
       );
       return response.data;
     } catch (error) {
-      console.error("Error deleteCategory data:", error);
+      console.log("Error deleteCategory data:", error);
     }
   },
 
@@ -74,7 +74,7 @@ const categoryServices = {
       );
       return response.data;
     } catch (error) {
-      console.error("Error updateCategory data:", error);
+      console.log("Error updateCategory data:", error);
     }
   }
 };

@@ -84,7 +84,7 @@ const SpendingLimitScreen = ({ route, navigation }) => {
         setListSpendingLimit(response);
       })
       .catch((error) => {
-        console.error("Error fetchAllSpendingLimit data:", error);
+        console.log("Error fetchAllSpendingLimit data:", error);
         Alert.alert("Lỗi", "Không thể lấy dữ liệu danh sách hạn mức chi");
       });
   }
@@ -200,7 +200,7 @@ const SpendingLimitScreen = ({ route, navigation }) => {
     console.log("newBudget: ", newBudget);
     addBudget(newBudget)
       .catch((error) => {
-        console.error("Error addBudget data:", error);
+        console.log("Error addBudget data:", error);
         Alert.alert("Lỗi", "Không thể thêm hạn mức chi");
       })
       .finally(() => {
@@ -218,7 +218,7 @@ const SpendingLimitScreen = ({ route, navigation }) => {
         fetchAllSpendingLimit();
       }
     } catch (error) {
-      console.error("Error addBudget data:", error);
+      console.log("Error addBudget data:", error);
       Alert.alert("Lỗi", "Không thể thêm hạn mức chi");
     }
   }

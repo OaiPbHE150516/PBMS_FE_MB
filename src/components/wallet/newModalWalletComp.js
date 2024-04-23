@@ -46,7 +46,7 @@ const NewModalWalletComponent = ({ selected, callback }) => {
         // console.log("wallets: ", response);
       })
       .catch((error) => {
-        console.error("Error fetching wallet data:", error);
+        console.log("Error fetching wallet data:", error);
         Alert.alert("Lỗi khi lấy dữ liệu ví: ", error);
       });
   }

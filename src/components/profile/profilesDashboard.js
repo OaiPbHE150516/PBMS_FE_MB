@@ -21,7 +21,7 @@ const ProfileDashboard = () => {
         setTotalBalance(response);
       });
     } catch (error) {
-      console.error("Error fetchTotalBalance data:", error);
+      console.log("Error fetchTotalBalance data:", error);
     }
   }
 

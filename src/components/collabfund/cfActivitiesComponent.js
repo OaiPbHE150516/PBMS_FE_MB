@@ -108,11 +108,11 @@ const CfActivitiesComponent = ({ route }) => {
         })
         .catch((error) => {
           Alert.alert("Lỗi", "Không thể gửi hoạt động, vui lòng thử lại!");
-          console.error("Error handleOnSendChat data:", error);
+          console.log("Error handleOnSendChat data:", error);
         });
       // console.log("response: ", response);
     } catch (error) {
-      console.error("Error handleOnSendChat data:", error);
+      console.log("Error handleOnSendChat data:", error);
     }
   }
 
@@ -169,7 +169,7 @@ const CfActivitiesComponent = ({ route }) => {
     try {
       // console.log("handleAddTransaction");
     } catch (error) {
-      console.error("Error handleAddTransaction data:", error);
+      console.log("Error handleAddTransaction data:", error);
     }
   }
 
@@ -187,11 +187,11 @@ const CfActivitiesComponent = ({ route }) => {
           setNowCollabFundActivities(response);
         })
         .catch((error) => {
-          console.error("Error fetching collab fund activities:", error);
+          console.log("Error fetching collab fund activities:", error);
           Alert.alert("Lỗi", "Không thể lấy dữ liệu, vui lòng thử lại!");
         });
     } catch (error) {
-      console.error("Error fetching collab fund activities:", error);
+      console.log("Error fetching collab fund activities:", error);
     }
   };
 

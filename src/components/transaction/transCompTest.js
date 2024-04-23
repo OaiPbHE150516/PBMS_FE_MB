@@ -48,7 +48,7 @@ const TransCompTest = ({ route }) => {
       setTransactions(response.data);
       console.log("response.data: ", response.data?.transactionByDayW?.length);
     } catch (error) {
-      console.error("Error fetchTransactionData data:", error);
+      console.log("Error fetchTransactionData data:", error);
     }
   };
 
@@ -65,7 +65,7 @@ const TransCompTest = ({ route }) => {
           setIsModalDetailVisible(true);
         });
     } catch (error) {
-      console.error("Error fetchTransactionDetailData data:", error);
+      console.log("Error fetchTransactionDetailData data:", error);
     }
   };
 

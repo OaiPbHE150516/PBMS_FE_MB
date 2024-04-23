@@ -213,7 +213,7 @@ const ReportTransactionComp = ({ time }) => {
       // console.log("returnData fetchTotalAmountByType: ", returnData);
       return returnData;
     } catch (error) {
-      console.error("Error fetchTotalAmountByType Dashboard data:", error);
+      console.log("Error fetchTotalAmountByType Dashboard data:", error);
       Alert.alert(
         "Lỗi",
         "Không thể lấy dữ liệu các tổng tiền theo loại từ server"
@@ -242,7 +242,7 @@ const ReportTransactionComp = ({ time }) => {
       };
       return returnData;
     } catch (error) {
-      console.error("Error fetchTotalAmountByCategory Dashboard data:", error);
+      console.log("Error fetchTotalAmountByCategory Dashboard data:", error);
       Alert.alert(
         "Lỗi",
         "Không thể lấy dữ liệu các tổng tiền theo hạng mục từ server"
@@ -272,7 +272,7 @@ const ReportTransactionComp = ({ time }) => {
       };
       return returnData;
     } catch (error) {
-      console.error("Error fetchTotalAmountByTag Dashboard data:", error);
+      console.log("Error fetchTotalAmountByTag Dashboard data:", error);
       Alert.alert(
         "Lỗi",
         "Không thể lấy dữ liệu các tổng tiền theo nhãn tag từ server"

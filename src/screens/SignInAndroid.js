@@ -64,7 +64,7 @@ const SignInAndroid = ({ callback }) => {
       handleAnAccountItemClicked(accounts.data[0]);
       // console.log("accounts:", accounts.data);
     } catch (error) {
-      console.error("Error fetching account data:", error);
+      console.log("Error fetching account data:", error);
     }
   };
 
@@ -81,7 +81,7 @@ const SignInAndroid = ({ callback }) => {
     try {
       await AsyncStorage.setItem(key, value);
     } catch (error) {
-      console.error("Error saving data: ", error);
+      console.log("Error saving data: ", error);
     }
   };
 

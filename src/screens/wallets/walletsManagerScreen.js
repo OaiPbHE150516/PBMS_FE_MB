@@ -79,7 +79,7 @@ const WalletsManagerScreen = () => {
           setCurrentWallets(response);
         })
         .catch((error) => {
-          console.error("Error fetching wallet data:", error);
+          console.log("Error fetching wallet data:", error);
           Alert.alert("Lỗi khi lấy dữ liệu ví:", error);
         });
 
@@ -90,11 +90,11 @@ const WalletsManagerScreen = () => {
           setTotalBalance(response);
         })
         .catch((error) => {
-          console.error("Error fetching total balance:", error);
+          console.log("Error fetching total balance:", error);
           Alert.alert("Lỗi khi lấy tổng số dư:", error);
         });
     } catch (error) {
-      console.error("Error fetching wallet data:", error);
+      console.log("Error fetching wallet data:", error);
       Alert.alert("Lỗi khi lấy dữ liệu ví:", error);
     }
   }

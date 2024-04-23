@@ -50,7 +50,7 @@ const fileServices = {
       const response = await axios.post(urlapi, formData, { config });
       return response.data;
     } catch (error) {
-      console.error("Error upToScanInvoice data:", error);
+      console.log("Error upToScanInvoice data:", error);
     }
   },
 
@@ -99,11 +99,11 @@ const fileServices = {
           }
         })
         .catch((error) => {
-          console.error("uploadToScanInvoice data:", error);
+          console.log("uploadToScanInvoice data:", error);
         });
       return dataReturn;
     } catch (error) {
-      console.error("Error upToScanInvoice data:", error);
+      console.log("Error upToScanInvoice data:", error);
     }
   },
 
@@ -154,11 +154,11 @@ const fileServices = {
           }
         })
         .catch((error) => {
-          console.error("uploadToScanInvoice data:", error);
+          console.log("uploadToScanInvoice data:", error);
         });
       return dataReturn;
     } catch (error) {
-      console.error("Error upToScanInvoice data:", error);
+      console.log("Error upToScanInvoice data:", error);
     }
   },
 
@@ -186,7 +186,7 @@ const fileServices = {
       const response = await axios.post(urlapi, formData, { header });
       return response.data;
     } catch (error) {
-      console.error("Error uploadToInvoiceTransaction data:", error);
+      console.log("Error uploadToInvoiceTransaction data:", error);
     }
   },
 
@@ -216,7 +216,7 @@ const fileServices = {
       const response = await axios.post(urlapi, formData, { header });
       return response.data;
     } catch (error) {
-      console.error("uploadToInvoiceTransactionFileName data:", error);
+      console.log("uploadToInvoiceTransactionFileName data:", error);
     }
   },
   uploadToInvoiceTransactionFileNameV2: async ({
@@ -260,10 +260,10 @@ const fileServices = {
           }
         })
         .catch((error) => {
-          console.error("uploadToInvoiceTransactionFileName data:", error);
+          console.log("uploadToInvoiceTransactionFileName data:", error);
         });
     } catch (error) {
-      console.error("uploadToInvoiceTransactionFileName data:", error);
+      console.log("uploadToInvoiceTransactionFileName data:", error);
     }
   }
 };

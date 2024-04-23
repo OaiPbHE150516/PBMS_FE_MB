@@ -63,7 +63,7 @@ const ChartDashboard = () => {
   //       // setWalletsLogDataValue(walletsLogDataValue);
   //     })
   //     .catch((error) => {
-  //       console.error("Error fetchWalletLogData Dashboard data:", error);
+  //       console.log("Error fetchWalletLogData Dashboard data:", error);
   //       Alert.alert("Lỗi", "Không thể lấy dữ liệu các ví từ server");
   //     });
   // }
@@ -83,7 +83,7 @@ const ChartDashboard = () => {
   //         setBalanceOfWalletData(balanceWalletLog);
   //       });
   //   } catch (error) {
-  //     console.error("Error fetchBalanceAllByDayAWallet Dashboard data:", error);
+  //     console.log("Error fetchBalanceAllByDayAWallet Dashboard data:", error);
   //     Alert.alert("Lỗi", "Không thể lấy dữ liệu các ví từ server");
   //   }
   // }
@@ -115,7 +115,7 @@ const ChartDashboard = () => {
   //       setTotalAmountByCategoryDataValue(totalAmountByCategoryDataValue);
   //     })
   //     .catch((error) => {
-  //       console.error(
+  //       console.log(
   //         "Error fetchTotalAmountByCategory Dashboard data:",
   //         error
   //       );

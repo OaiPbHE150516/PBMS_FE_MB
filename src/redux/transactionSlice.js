@@ -100,7 +100,7 @@ const transactionSlice = createSlice({
       })
       .addCase(getTransactionWeekByDay.rejected, (state, action) => {
         state.transactionWeekByDay = null;
-        console.error("getTransactionWeekByDay.rejected");
+        console.log("getTransactionWeekByDay.rejected");
       })
       .addCase(getTransactionWeekByDay.pending, (state, action) => {
         state.transactionWeekByDay = null;
@@ -111,7 +111,7 @@ const transactionSlice = createSlice({
       })
       .addCase(setTransactionWeekByDayOnDisplay.rejected, (state, action) => {
         state.transactionWeekByDayOnDisplay = null;
-        console.error("setTransactionWeekByDayOnDisplay.rejected");
+        console.log("setTransactionWeekByDayOnDisplay.rejected");
       })
       .addCase(setTransactionWeekByDayOnDisplay.pending, (state, action) => {
         state.transactionWeekByDayOnDisplay = null;
@@ -122,7 +122,7 @@ const transactionSlice = createSlice({
       })
       .addCase(setAddTransactionTime.rejected, (state, action) => {
         state.addTransactionTime = null;
-        console.error("setAddTransactionTime.rejected");
+        console.log("setAddTransactionTime.rejected");
       })
       // Set Add Transaction Wallet
       .addCase(setAddTransactionWallet.fulfilled, (state, action) => {
@@ -130,14 +130,14 @@ const transactionSlice = createSlice({
       })
       .addCase(setAddTransactionWallet.rejected, (state, action) => {
         state.addTransactionWallet = null;
-        console.error("setAddTransactionWallet.rejected");
+        console.log("setAddTransactionWallet.rejected");
       })
       // Add Transaction No Invoice
       .addCase(addTransactionNoInvoice.fulfilled, (state, action) => {
         console.log("addTransactionNoInvoice.fulfilled: ", action.payload);
       })
       .addCase(addTransactionNoInvoice.rejected, (state, action) => {
-        console.error("addTransactionNoInvoice.rejected");
+        console.log("addTransactionNoInvoice.rejected");
       })
       // Set Transaction Component Is Loading
       .addCase(setTransCompIsLoading.fulfilled, (state, action) => {
@@ -145,7 +145,7 @@ const transactionSlice = createSlice({
       })
       .addCase(setTransCompIsLoading.rejected, (state, action) => {
         state.transCompIsLoading = false;
-        console.error("setTransCompIsLoading.rejected");
+        console.log("setTransCompIsLoading.rejected");
       })
       // Add Transaction With Invoice
       .addCase(addTransactionWithInvoice.fulfilled, (state, action) => {
@@ -154,7 +154,7 @@ const transactionSlice = createSlice({
       })
       .addCase(addTransactionWithInvoice.rejected, (state, action) => {
         state.addTransactionWithInvoice = null;
-        console.error("addTransactionWithInvoice.rejected");
+        console.log("addTransactionWithInvoice.rejected");
       });
   }
 });

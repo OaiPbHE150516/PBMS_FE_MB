@@ -55,7 +55,7 @@ const BalanceDashboard = () => {
         setBalanceAllByDayDataValue(balanceAllByDayDataValue);
       })
       .catch((error) => {
-        console.error("Error fetchBalanceAllByDay Dashboard data:", error);
+        console.log("Error fetchBalanceAllByDay Dashboard data:", error);
         Alert.alert("Lỗi", "Không thể lấy dữ liệu số dư theo ngày");
       });
   }
@@ -80,7 +80,7 @@ const BalanceDashboard = () => {
         setBalanceAllByDayAWalletDataValue(balanceAllByDayAWalletDataValue);
       })
       .catch((error) => {
-        console.error(
+        console.log(
           "Error fetchBalanceAllByDayAWallet Dashboard data:",
           error
         );
@@ -97,7 +97,7 @@ const BalanceDashboard = () => {
         // dispatch(fetchAllData(response));
       })
       .catch((error) => {
-        console.error("Error fetchAllWallet Dashboard data:", error);
+        console.log("Error fetchAllWallet Dashboard data:", error);
         Alert.alert("Lỗi", "Không thể lấy dữ liệu ví");
       });
   }

@@ -32,7 +32,7 @@ const SignInIOS = ({ callback }) => {
       setAccounts(accounts.data);
       // console.log("accounts:", accounts.data);
     } catch (error) {
-      console.error("Error fetching account data:", error);
+      console.log("Error fetching account data:", error);
     }
   };
 
@@ -49,7 +49,7 @@ const SignInIOS = ({ callback }) => {
     try {
       await AsyncStorage.setItem(key, value);
     } catch (error) {
-      console.error("Error saving data: ", error);
+      console.log("Error saving data: ", error);
     }
   };
 

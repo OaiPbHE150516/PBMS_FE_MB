@@ -39,7 +39,7 @@ const TabCategoryInModalComponent = ({ props, callback }) => {
       // const response = await pbms.get(API.CATEGORY.GET_CATEGORY_BY_USER + account.accountID);
       // setCategories(response.data);
     } catch (error) {
-      console.error("Error fetching category data:", error);
+      console.log("Error fetching category data:", error);
     }
   };
 

@@ -35,11 +35,11 @@ const TransactionDashboard = ({ navigation }) => {
           setTransactions(response);
         })
         .catch((error) => {
-          console.error("Error fetchTransactionsData Dashboard data:", error);
+          console.log("Error fetchTransactionsData Dashboard data:", error);
           Alert.alert("Lỗi", "Không thể lấy dữ liệu giao dịch gần đây");
         });
     } catch (error) {
-      console.error("Error fetchTransactionsData data:", error);
+      console.log("Error fetchTransactionsData data:", error);
       Alert.alert("Lỗi", "Không thể lấy dữ liệu giao dịch gần đây");
     }
   }

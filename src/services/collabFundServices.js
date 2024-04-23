@@ -16,7 +16,7 @@ const collabFundServices = {
       );
       return response.data;
     } catch (error) {
-      console.error("Error getAllCollabFund data:", error);
+      console.log("Error getAllCollabFund data:", error);
     }
   },
   getCollabFundActivities: async (data) => {
@@ -32,7 +32,7 @@ const collabFundServices = {
       );
       return response.data;
     } catch (error) {
-      console.error("Error getCollabFundActivities data:", error);
+      console.log("Error getCollabFundActivities data:", error);
     }
   },
   // get participant list of collab fund by collab fund id and account id
@@ -49,7 +49,7 @@ const collabFundServices = {
       );
       return response.data;
     } catch (error) {
-      console.error("Error getCollabFundParticipants data:", error);
+      console.log("Error getCollabFundParticipants data:", error);
     }
   },
   // get collab fund divide money history by collab fund id and account id
@@ -66,7 +66,7 @@ const collabFundServices = {
       );
       return response.data;
     } catch (error) {
-      console.error("Error getCollabFundDivideMoneyHistory data:", error);
+      console.log("Error getCollabFundDivideMoneyHistory data:", error);
     }
   },
 
@@ -103,7 +103,7 @@ const collabFundServices = {
       );
       return response.data;
     } catch (error) {
-      console.error("Error createActivityNoTransaction data:", error);
+      console.log("Error createActivityNoTransaction data:", error);
     }
   },
 
@@ -119,7 +119,7 @@ const collabFundServices = {
   //     });
   //     return response.data;
   //   } catch (error) {
-  //     console.error("Error posting data createActivity:", error);
+  //     console.log("Error posting data createActivity:", error);
   //   }
   // },
 
@@ -138,7 +138,7 @@ const collabFundServices = {
       });
       return response.data;
     } catch (error) {
-      console.error("Error posting data createActivity:", error);
+      console.log("Error posting data createActivity:", error);
     }
   },
 
@@ -158,7 +158,7 @@ const collabFundServices = {
       );
       return response.data;
     } catch (error) {
-      console.error("Error postDivideMoney data:", error);
+      console.log("Error postDivideMoney data:", error);
     }
   },
 
@@ -170,7 +170,7 @@ const collabFundServices = {
       });
       return response.data;
     } catch (error) {
-      console.error("Error searchAccountByKeyword data:", error);
+      console.log("Error searchAccountByKeyword data:", error);
     }
   },
 
@@ -182,7 +182,7 @@ const collabFundServices = {
       });
       return response.data;
     } catch (error) {
-      console.error("Error createCollabFund data:", error);
+      console.log("Error createCollabFund data:", error);
     }
   },
 
@@ -213,11 +213,11 @@ const collabFundServices = {
           // console.log("fileURL", fileURL);
         })
         .catch((error) => {
-          console.error("Error uploadImageCover data:", error);
+          console.log("Error uploadImageCover data:", error);
         });
       return fileURL;
     } catch (error) {
-      console.error("Error uploadImageCover data:", error);
+      console.log("Error uploadImageCover data:", error);
     }
   },
 
@@ -234,7 +234,7 @@ const collabFundServices = {
       );
       return response.data;
     } catch (error) {
-      console.error("Error acceptToCollabFund data:", error);
+      console.log("Error acceptToCollabFund data:", error);
     }
   },
 
@@ -250,7 +250,7 @@ const collabFundServices = {
       );
       return response.data;
     } catch (error) {
-      console.error("Error rejectToCollabFund data:", error);
+      console.log("Error rejectToCollabFund data:", error);
     }
   }
 };

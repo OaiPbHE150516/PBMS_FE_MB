@@ -23,11 +23,11 @@ const ModalCategoryComponent = ({ onDataFromChild, selectedCategory }) => {
           setNowCategories(response);
         })
         .catch((error) => {
-          console.error("Error fetching category data:", error);
+          console.log("Error fetching category data:", error);
           Alert.alert("Lỗi khi lấy dữ liệu hạng mục: ", error);
         });
     } catch (error) {
-      console.error("Error fetching category data:", error);
+      console.log("Error fetching category data:", error);
       Alert.alert("Lỗi khi lấy dữ liệu hạng mục: ", error);
     }
   }

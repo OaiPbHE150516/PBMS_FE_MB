@@ -13,7 +13,7 @@ const authenServices = {
       console.log("response signin: ", response.data);
       return response.data;
     } catch (error) {
-      console.error("Error authenServices:", error);
+      console.log("Error authenServices:", error);
     }
   }
 };

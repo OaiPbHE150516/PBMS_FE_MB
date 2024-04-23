@@ -42,7 +42,7 @@ const FlatListActivities = ({ collabFund }) => {
       console.log("data: ");
       setNowCollabFundActivities(data);
     } catch (error) {
-      console.error("Error fetching collab fund activities:", error);
+      console.log("Error fetching collab fund activities:", error);
     }
   };
 

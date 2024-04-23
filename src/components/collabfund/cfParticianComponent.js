@@ -48,7 +48,7 @@ const CfPaticianComponent = ({ route }) => {
       const response = await collabFundServices.getCollabFundParticipants(data);
       setNowParticipants(response);
     } catch (error) {
-      console.error("Error fetchCollabFundParticipants data:", error);
+      console.log("Error fetchCollabFundParticipants data:", error);
     }
   }
 

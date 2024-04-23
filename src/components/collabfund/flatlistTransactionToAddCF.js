@@ -53,7 +53,7 @@ const FlatListTransactionToAddCF = ({ callback }) => {
           setIsFetchingData(false);
         });
     } catch (error) {
-      console.error(
+      console.log(
         "Error fetchLastNumberDayExpensesTransaction data:",
         error
       );

@@ -41,7 +41,7 @@ const WalletDashboard = ({ navigation }) => {
           setEachWallet(response.slice(0, 2));
         });
     } catch (error) {
-      console.error("Error fetchWalletData data:", error);
+      console.log("Error fetchWalletData data:", error);
     }
   }
 

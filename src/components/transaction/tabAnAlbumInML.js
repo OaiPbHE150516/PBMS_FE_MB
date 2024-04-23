@@ -50,7 +50,7 @@ const TabAnAlbumInML = ({ album, handleOnAlbumInML }) => {
           //   });
           setCoverAssets(assets);
         } catch (error) {
-          console.error("Error fetching cover assets:", error);
+          console.log("Error fetching cover assets:", error);
         }
       } else {
         try {
@@ -60,7 +60,7 @@ const TabAnAlbumInML = ({ album, handleOnAlbumInML }) => {
           });
           setCoverAssets(assets);
         } catch (error) {
-          console.error("Error fetching cover assets:", error);
+          console.log("Error fetching cover assets:", error);
         }
       }
     }

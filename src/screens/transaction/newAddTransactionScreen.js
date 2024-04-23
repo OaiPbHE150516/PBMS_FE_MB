@@ -178,7 +178,7 @@ const NewAddTransactionScreen = ({ route }) => {
             }
           })
           .catch((error) => {
-            console.error("addTransactionWithInvoice error: ", error);
+            console.log("addTransactionWithInvoice error: ", error);
             // Alert.alert("Lỗi", "Thêm giao dịch thất bại");
             showSnackbar("Thêm giao dịch thất bại", SNACKBAR_COLOR_FAIL);
           });
@@ -206,7 +206,7 @@ const NewAddTransactionScreen = ({ route }) => {
           }
         })
         .catch((error) => {
-          console.error("addTransactionNoInvoice error: ", error);
+          console.log("addTransactionNoInvoice error: ", error);
           // Alert.alert("Lỗi", "Thêm giao dịch thất bại");
           showSnackbar("Thêm giao dịch thất bại", SNACKBAR_COLOR_FAIL);
         });

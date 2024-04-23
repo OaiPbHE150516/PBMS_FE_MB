@@ -56,7 +56,7 @@ const DevideMoneyInfor = ({ collabFund }) => {
         setIsPressableDivideMoney(true);
       });
     } catch (error) {
-      console.error("Error fetchDivideMoneyInfor data:", error);
+      console.log("Error fetchDivideMoneyInfor data:", error);
       Alert.alert("Lỗi", "Lấy dữ liệu chia tiền không thành công", [
         { text: "OK" }
       ]);
@@ -100,11 +100,11 @@ const DevideMoneyInfor = ({ collabFund }) => {
           Alert.alert("Thành công", "Chia tiền thành công", [{ text: "OK" }]);
         })
         .catch((error) => {
-          console.error("Error postDivideMoney data:", error);
+          console.log("Error postDivideMoney data:", error);
           Alert.alert("Lỗi", "Chia tiền không thành công", [{ text: "OK" }]);
         });
     } catch (error) {
-      console.error("Error postDivideMoney data:", error);
+      console.log("Error postDivideMoney data:", error);
       Alert.alert("Lỗi", "Chia tiền không thành công", [{ text: "OK" }]);
     }
   }

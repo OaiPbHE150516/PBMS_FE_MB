@@ -47,7 +47,7 @@ const categorySlice = createSlice({
       })
       .addCase(getCategories.rejected, (state, action) => {
         state.categories = null;
-        console.error("getCategories.rejected");
+        console.log("getCategories.rejected");
       })
       .addCase(getCategories.pending, (state, action) => {
         state.categories = null;
@@ -57,7 +57,7 @@ const categorySlice = createSlice({
       })
       .addCase(setCategoryToAddTransaction.rejected, (state, action) => {
         state.categoryToAddTransaction = null;
-        console.error("setCategoryToAddTransaction.rejected");
+        console.log("setCategoryToAddTransaction.rejected");
       })
       .addCase(setCategoryToAddTransaction.pending, (state, action) => {
         state.categoryToAddTransaction = null;
@@ -67,7 +67,7 @@ const categorySlice = createSlice({
       })
       .addCase(setModalCategoryVisible.rejected, (state, action) => {
         state.modalCategoryVisible = false;
-        console.error("setModalCategoryVisible.rejected");
+        console.log("setModalCategoryVisible.rejected");
       });
 
     builder
@@ -76,7 +76,7 @@ const categorySlice = createSlice({
       })
       .addCase(createCategory.rejected, (state, action) => {
         state.createCategory = null;
-        console.error("createCategory.rejected");
+        console.log("createCategory.rejected");
       })
       .addCase(createCategory.pending, (state, action) => {
         state.createCategory = null;

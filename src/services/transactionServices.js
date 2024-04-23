@@ -14,7 +14,7 @@ const transactionServices = {
       const response = await axios.get(urlapi, { headers });
       return response.data;
     } catch (error) {
-      console.error("Error getTransactionWeekByDay data:", error);
+      console.log("Error getTransactionWeekByDay data:", error);
     }
   },
   getLastNumberExpensesTransaction: async (accountid, numberOfLastDay) => {
@@ -27,7 +27,7 @@ const transactionServices = {
       const response = await axios.get(urlapi, { headers });
       return response.data;
     } catch (error) {
-      console.error("Error getLastNumberExpensesTransaction data:", error);
+      console.log("Error getLastNumberExpensesTransaction data:", error);
     }
   },
 
@@ -46,7 +46,7 @@ const transactionServices = {
       );
       return response.data;
     } catch (error) {
-      console.error("Error getTransactionByTimeRange data:", error);
+      console.log("Error getTransactionByTimeRange data:", error);
     }
   },
 
@@ -67,7 +67,7 @@ const transactionServices = {
       // console.log("response: ", response.data);
       return response.data;
     } catch (error) {
-      console.error("Error getTransactionDetail data:", error);
+      console.log("Error getTransactionDetail data:", error);
     }
   },
 
@@ -85,7 +85,7 @@ const transactionServices = {
       );
       return response.data;
     } catch (error) {
-      console.error("Error getRecentlyTransaction data:", error);
+      console.log("Error getRecentlyTransaction data:", error);
     }
   },
 
@@ -100,7 +100,7 @@ const transactionServices = {
       );
       return response.data;
     } catch (error) {
-      console.error("Error addTransactionNoInvoice data:", error);
+      console.log("Error addTransactionNoInvoice data:", error);
     }
   },
 
@@ -117,7 +117,7 @@ const transactionServices = {
       console.log("response: ", response.data);
       return response.data;
     } catch (error) {
-      console.error("Error addTransactionWithInvoice:", error);
+      console.log("Error addTransactionWithInvoice:", error);
     }
   }
 };

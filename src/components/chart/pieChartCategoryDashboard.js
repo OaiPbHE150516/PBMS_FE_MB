@@ -175,11 +175,11 @@ const PieChartCategoryDashboard = () => {
               topColor: "#e17055"
             }
           ]);
-          dataChart = dataChart.reverse();
+          dataChart = dataChart?.reverse();
           let dataChart2 = [];
-          dataChart.forEach((item) => {
-            item.forEach((subItem) => {
-              dataChart2.push(subItem);
+          dataChart?.forEach((item) => {
+            item?.forEach((subItem) => {
+              dataChart2?.push(subItem);
             });
           });
           returnData = {
@@ -241,7 +241,7 @@ const PieChartCategoryDashboard = () => {
       // console.log("returnData fetchTotalAmountByType: ", returnData);
       return returnData;
     } catch (error) {
-      console.error("Error fetchTotalAmountByType Dashboard data:", error);
+      console.log("Error fetchTotalAmountByType Dashboard data:", error);
       Alert.alert(
         "Lỗi",
         "Không thể lấy dữ liệu các tổng tiền theo loại từ server"
@@ -270,7 +270,7 @@ const PieChartCategoryDashboard = () => {
       };
       return returnData;
     } catch (error) {
-      console.error("Error fetchTotalAmountByCategory Dashboard data:", error);
+      console.log("Error fetchTotalAmountByCategory Dashboard data:", error);
       Alert.alert(
         "Lỗi",
         "Không thể lấy dữ liệu các tổng tiền theo hạng mục từ server"
@@ -301,7 +301,7 @@ const PieChartCategoryDashboard = () => {
       };
       return returnData;
     } catch (error) {
-      console.error("Error fetchTotalAmountByTag Dashboard data:", error);
+      console.log("Error fetchTotalAmountByTag Dashboard data:", error);
       Alert.alert(
         "Lỗi",
         "Không thể lấy dữ liệu các tổng tiền theo nhãn tag từ server"

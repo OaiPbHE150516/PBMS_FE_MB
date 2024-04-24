@@ -106,7 +106,7 @@ const SignInIOS = ({ callback }) => {
           fontFamily: "OpenSans_500Medium"
         }}
       >
-        {"Fast Signin Screen ONLY FOR DEBUGGING"}
+        {/* {"Fast Signin Screen ONLY FOR DEBUGGING"} */}
       </Text>
       <View style={styles.viewFlatList}>
         <FlatList

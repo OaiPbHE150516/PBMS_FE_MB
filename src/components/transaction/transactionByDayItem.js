@@ -30,7 +30,11 @@ const TransactionByDayItem = ({ props, callback }) => {
         style={({ pressed }) => [
           styles.viewStyle,
           {
-            backgroundColor: pressed ? "#dfe6e9" : null
+            backgroundColor: pressed ? "#dfe6e9" : "transparent",
+            borderRightWidth: props.imageURL ? 1.5 : 0.5,
+            borderBottomWidth: props.imageURL ? 1 : 0.5,
+            borderRightColor: "#b2bec3",
+            borderBottomColor: "#b2bec3",
           }
         ]}
         onPress={onPressATransaction}
@@ -50,10 +54,23 @@ const TransactionByDayItem = ({ props, callback }) => {
           <Text style={styles.textWalletName}>{props.wallet.name}</Text>
         </View>
         <View style={styles.viewNote}>
-          <Text numberOfLines={1} ellipsizeMode="tail" style={styles.textNote}>
-            {/* {props.transactionID}/ */}
-            {props.note}
-          </Text>
+          {/* {props.note !== "" ? ( */}
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={styles.textNote}
+            >
+              {/* {props.transactionID}/ */}
+              {props.note}
+            </Text>
+          {/* ) : (
+            props.imageURL && (
+              <Image
+                style={{ width: 50, height: 45, resizeMode: "contain", borderRadius: 5, }}
+                source={{ uri: props.imageURL }}
+              />
+            )
+          )} */}
         </View>
         <View style={styles.viewBalance}>
           <Text
@@ -74,6 +91,13 @@ const TransactionByDayItem = ({ props, callback }) => {
 };
 
 const styles = StyleSheet.create({
+  viewImage: {
+    width: "18%",
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 2,
+    padding: 2
+  },
   viewCate: {
     width: "25%",
     justifyContent: "space-around",
@@ -88,8 +112,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignContent: "space-between",
     // backgroundColor: "white",
-    borderBottomColor: "lightgrey",
-    borderBottomWidth: 1,
     borderRadius: 10,
     height: 50,
     marginVertical: 2
@@ -97,7 +119,7 @@ const styles = StyleSheet.create({
   viewTime: {
     // borderRightColor: "red",
     borderRightWidth: 1.5,
-    flexDirection: "row",
+    flexDirection: "row"
     // width: "18%",
   },
   textTime: {

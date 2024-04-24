@@ -72,40 +72,32 @@ const DevideMoneyInfor = ({ collabFund }) => {
 
   async function postDivideMoney() {
     try {
-      const jsonHeader = {
-        "Content-Type": "application/json"
-      };
       const data = {
         data: {
           collabFundID: collabFund?.collabFundID,
           accountID: account?.accountID
         }
       };
-      // const response = await axios.post(
-      //   API.COLLABFUND.POST_DIVIDE_MONEY,
-      //   data,
-      //   {
-      //     jsonHeader
-      //   }
-      // );
-      // console.log("response postDivideMoney:", response.data);
 
       await collabFundServices
         .postDivideMoney(data)
         .then((response) => {
           console.log("response postDivideMoney:", response);
-        })
-        .finally(() => {
-          setIsPressableDivideMoney(false);
-          Alert.alert("Thành công", "Chia tiền thành công", [{ text: "OK" }]);
+          if (response) {
+            setIsPressableDivideMoney(false);
+            Alert.alert("Thành công", "Chia tiền thành công", [{ text: "OK" }]);
+          } else {
+            console.log("Error postDivideMoney data:", error);
+            Alert.alert("Lỗi", "Chi tiêu chung ko có tiền để chia", [{ text: "OK" }]);
+          }
         })
         .catch((error) => {
           console.log("Error postDivideMoney data:", error);
-          Alert.alert("Lỗi", "Chia tiền không thành công", [{ text: "OK" }]);
+          Alert.alert("Lỗi", "Chi tiêu chung ko có tiền để chia", [{ text: "OK" }]);
         });
     } catch (error) {
       console.log("Error postDivideMoney data:", error);
-      Alert.alert("Lỗi", "Chia tiền không thành công", [{ text: "OK" }]);
+      Alert.alert("Lỗi", "Chi tiêu chung ko có tiền để chia", [{ text: "OK" }]);
     }
   }
 
@@ -281,7 +273,10 @@ const DevideMoneyInfor = ({ collabFund }) => {
       </ScrollView>
       <View style={styles.viewModalMoreDetailAction}>
         <Pressable
-          style={styles.pressableDivideMoneyAction}
+          style={({ pressed }) => [
+            styles.pressableDivideMoneyAction,
+            { opacity: pressed ? 0.5 : 1 }
+          ]}
           onPress={() => {
             handlePressableDivideMoney();
           }}

@@ -7,7 +7,8 @@ import {
   Alert,
   Image,
   FlatList,
-  Pressable
+  Pressable,
+  Modal
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome6";
 
@@ -19,10 +20,15 @@ import { useSelector, useDispatch } from "react-redux";
 // services
 import transactionServices from "../../services/transactionServices";
 
+// components
+import ModalTransactionDetail from "./modalTransactionDetail";
+
 const TransactionDashboard = ({ navigation }) => {
   const account = useSelector((state) => state.authen?.account);
   const shouldFetchData = useSelector((state) => state.data.shouldFetchData);
   const [transactions, setTransactions] = useState([]);
+  const [isModalDetailVisible, setIsModalDetailVisible] = useState(false);
+  const [transactionDetail, setTransactionDetail] = useState(null);
 
   async function fetchTransactionsData(accountID) {
     try {
@@ -43,6 +49,32 @@ const TransactionDashboard = ({ navigation }) => {
       Alert.alert("Lỗi", "Không thể lấy dữ liệu giao dịch gần đây");
     }
   }
+
+  const fetchTransactionDetailData = async ({ transactionID }) => {
+    try {
+      console.log("fetchTransactionDetailData transactionID: ", transactionID);
+      await transactionServices
+        .getTransactionDetail({
+          transactionID: transactionID,
+          accountID: account?.accountID
+        })
+        .then((response) => {
+          setTransactionDetail(response);
+          setIsModalDetailVisible(true);
+        });
+    } catch (error) {
+      console.log("Error fetchTransactionDetailData data:", error);
+    }
+  };
+
+  const onCallback = (data) => {
+    fetchTransactionDetailData({ transactionID: data.transactionID });
+  };
+
+  const onCallbackModalDetail = (data) => {
+    console.log("onCallbackModalDetail: ", data);
+    setIsModalDetailVisible(data);
+  };
 
   useEffect(() => {
     fetchTransactionsData(account?.accountID);
@@ -74,7 +106,17 @@ const TransactionDashboard = ({ navigation }) => {
           keyExtractor={(item) => item.transactionID}
           renderItem={({ item }) => {
             return (
-              <View style={styles.transactionItem}>
+              <Pressable
+                style={({ pressed }) => [
+                  {
+                    opacity: pressed ? 0.5 : 1
+                  },
+                  styles.transactionItem
+                ]}
+                onPress={() => {
+                  onCallback({ transactionID: item.transactionID });
+                }}
+              >
                 <View style={styles.viewtimeminus}>
                   <Text style={styles.textCategory}>
                     {item.category.nameVN}
@@ -106,16 +148,67 @@ const TransactionDashboard = ({ navigation }) => {
                       : "+ " + item.totalAmountStr}
                   </Text>
                 </View>
-              </View>
+              </Pressable>
             );
           }}
         />
       </View>
+      <Modal
+        visible={isModalDetailVisible}
+        animationType="fade"
+        transparent={true}
+        // onShow={() => {
+        //   setBackgroundColorModal("rgba(0, 0, 0, 0.1)");
+        // }}
+      >
+        <View
+          style={[
+            styles.view_BackgroudModal,
+            {
+              backgroundColor: "rgba(0, 0, 0, 0.5)"
+            }
+          ]}
+        >
+          <Pressable
+            style={styles.pressable_closeModalDetail}
+            onPress={() => {
+              // setBackgroundColorModal("rgba(0, 0, 0, 0)");
+              setIsModalDetailVisible(false);
+            }}
+          />
+          <View>
+            <View
+              style={{
+                width: "25%",
+                height: 3,
+                backgroundColor: "darkgray",
+                borderRadius: 10,
+                alignContent: "center",
+                alignSelf: "center",
+                bottom: -5,
+                zIndex: 10
+              }}
+            ></View>
+            <ModalTransactionDetail
+              props={transactionDetail}
+              callback={onCallbackModalDetail}
+            />
+          </View>
+        </View>
+      </Modal>
     </View>
   ) : null;
 };
 
 const styles = StyleSheet.create({
+  view_BackgroudModal: {
+    width: "100%",
+    height: "100%",
+    flexDirection: "column"
+  },
+  pressable_closeModalDetail: {
+    flex: 1
+  },
   text_ViewAll: {
     color: "#0984e3",
     fontSize: 15,

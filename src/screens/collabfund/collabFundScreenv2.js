@@ -343,6 +343,7 @@ const CollabFundScreen = () => {
   }
 
   async function handlePressNewCF() {
+    console.log("New CF pressed");
     setIsAddingNewCF(true);
     if (!isModalNewCFVisible) {
       setIsModalNewCFVisible(true);
@@ -1031,7 +1032,7 @@ const CollabFundScreen = () => {
                         },
                         styles.pressable_ModalMenuContent_NewCF
                       ]}
-                      disabled={isAddingNewCF}
+                      // disabled={isAddingNewCF}
                     >
                       <Text style={styles.text_NewCF}>{"Hủy"}</Text>
                     </Pressable>
@@ -1047,7 +1048,7 @@ const CollabFundScreen = () => {
                       },
                       styles.pressable_ModalMenuContent_NewCF
                     ]}
-                    disabled={isAddingNewCF}
+                    // disabled={isAddingNewCF}
                   >
                     <Text style={styles.text_NewCF}>
                       {"Tạo chi tiêu chung"}
@@ -1080,8 +1081,8 @@ const CollabFundScreen = () => {
                 height: heightScreen * 0.95,
                 width: widthScreen,
                 paddingHorizontal: 4,
-                borderWidth: 1,
-                borderColor: "green"
+                // borderWidth: 1,
+                // borderColor: "green"
               }
             ]}
           >

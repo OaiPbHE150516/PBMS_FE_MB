@@ -94,14 +94,17 @@ const TransCompTest = ({ route }) => {
   // );
 
   useEffect(() => {
-    if (account !== null) {
-      setIsLoading(true);
-      fetchTransactionData({ accountID: account.accountID, time: data.time });
-      if (transactions) {
-        setIsLoading(false);
+    if (isFocused) {
+      console.log("TransCompTest isFocused: ", isFocused);
+      if (account !== null) {
+        setIsLoading(true);
+        fetchTransactionData({ accountID: account.accountID, time: data.time });
+        if (transactions) {
+          setIsLoading(false);
+        }
       }
     }
-  }, [shouldFetchData, route]);
+  }, [shouldFetchData, route, isFocused]);
 
   return isLoading ? null : (
     <View style={styles.parentView}>
@@ -111,7 +114,7 @@ const TransCompTest = ({ route }) => {
           alignContent: "center",
           alignItems: "center",
           justifyContent: "space-between",
-          paddingHorizontal: 15,
+          paddingHorizontal: 15
         }}
       >
         <Text style={styles.textHeader}>
@@ -243,7 +246,7 @@ const TransCompTest = ({ route }) => {
           style={[
             styles.view_BackgroudModal,
             {
-              backgroundColor: "rgba(0, 0, 0, 0.1)"
+              backgroundColor: "rgba(0, 0, 0, 0.5)"
             }
           ]}
         >
@@ -283,7 +286,7 @@ const TransCompTest = ({ route }) => {
           style={[
             styles.view_BackgroudModal,
             {
-              backgroundColor: "rgba(0, 0, 0, 0.25)"
+              backgroundColor: "rgba(0, 0, 0, 0.5)"
             }
           ]}
         >
@@ -295,7 +298,7 @@ const TransCompTest = ({ route }) => {
           />
           <View
             style={{
-              backgroundColor: "white",
+              // backgroundColor: "white",
               height: "80%"
             }}
           >
@@ -409,7 +412,7 @@ const styles = StyleSheet.create({
     // marginTop: 2,
     backgroundColor: "white",
     paddingHorizontal: 5,
-    paddingTop: 2,
+    paddingTop: 2
   },
   text: {
     fontSize: 30,

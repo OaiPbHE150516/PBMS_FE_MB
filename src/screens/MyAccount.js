@@ -167,28 +167,28 @@ const dataGridFeature = [
     id: 3,
     name: "Báo cáo",
     icon: "chart-simple",
-    color: "lightskyblue",
+    color: "#dfe6e9",
     // screen: "ReportScreen"
   },
   {
     id: 4,
     name: "Nhắc nhở",
     icon: "note-sticky",
-    color: "goldenrod",
+    color: "#dfe6e9",
     // screen: "NotificationsScreen"
   },
   {
     id: 5,
     name: "Dự kiến",
     icon: "business-time",
-    color: "mediumslateblue",
+    color: "#dfe6e9",
     // screen: "SettingsScreen"
   },
   {
     id: 6,
     name: "Mua sắm",
     icon: "cart-shopping",
-    color: "lightcoral",
+    color: "#dfe6e9",
     // screen: "ShoppingScreen"
   },
   {

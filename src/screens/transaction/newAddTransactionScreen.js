@@ -101,6 +101,7 @@ const NewAddTransactionScreen = ({ route }) => {
   const [addTransactionNote, setAddTransactionNote] = useState("");
   const [invoiceResult, setInvoiceResult] = useState(null);
   const [isAddingTransaction, setAddingTransaction] = useState(false);
+  const [isSaveWithInvoiceImage, setSaveWithInvoiceImage] = useState(true);
 
   // services functions
   async function addTransaction() {
@@ -120,69 +121,85 @@ const NewAddTransactionScreen = ({ route }) => {
       const filename =
         account?.accountID + "_" + datetimeLibrary.getCurrentTimeStr();
 
-      await uploadInvoiceToAPI({
-        asset: assetShowing,
-        filenamecustom: filename,
-        accountID: account?.accountID
-      }).then(async (response) => {
-        console.log("fileURL: ", response);
-        const totalOfInvoice = convertStringToNumber(
-          invoiceResult?.totalAmount
-        );
-        const transactionWithInvoice = {
-          accountID: account?.accountID,
-          walletID: walletAdd?.walletID,
-          categoryID: categoryAdd?.categoryID,
-          totalAmount: amountTransaction,
-          transactionDate: timeStr,
-          note: addTransactionNote,
-          fromPerson: invoiceResult.supplierName ?? "",
-          toPerson: invoiceResult.receiverName ?? "",
-          imageURL: response,
-          invoice: {
-            supplierAddress: invoiceResult.supplierAddress ?? "",
-            supplierEmail: invoiceResult.supplierEmail ?? "",
-            supplierName: invoiceResult.supplierName ?? "",
-            supplierPhone: invoiceResult.supplierPhone ?? "",
-            idOfInvoice: invoiceResult.idOfInvoice ?? "",
-            invoiceDate: invoiceResult.invoiceDate ?? "",
-            netAmount: invoiceResult.netAmount ?? 0,
-            totalAmount: totalOfInvoice,
-            taxAmount: invoiceResult.taxAmount ?? 0,
-            invoiceImageURL: response,
-            note: invoiceResult.note ?? "",
-            products: [
-              ...invoiceResult.productInInvoices.map((it) => {
-                return {
-                  productName: it.productName ?? "",
-                  quanity: it.quanity ?? 0,
-                  unitPrice: it.unitPrice ?? 0,
-                  totalAmount: it.totalAmount ?? 0,
-                  note: it.note ? it.note : "",
-                  tag: it.tag ?? ""
-                };
-              })
-            ]
-          }
-        };
-        console.log("transactionWithInvoice: ", transactionWithInvoice);
-        console.log("invoice: ", transactionWithInvoice.invoice);
-        await transactionServices
-          .addTransactionWithInvoice(transactionWithInvoice)
-          .then((response) => {
-            console.log("addTransactionWithInvoice response: ", response);
-            if (response) {
-              // Alert.alert("Thành công", "Thêm giao dịch thành công");
-              handleResetAddTransaction();
-              showSnackbar("Thêm giao dịch thành công", SNACKBAR_COLOR_SUCCESS);
-            }
+      let fileInvoiceURL = "";
+      if (isSaveWithInvoiceImage) {
+        await uploadInvoiceToAPI({
+          asset: assetShowing,
+          filenamecustom: filename,
+          accountID: account?.accountID
+        })
+          .then(async (response) => {
+            console.log("fileURL: ", response);
+            fileInvoiceURL = response;
           })
           .catch((error) => {
-            console.log("addTransactionWithInvoice error: ", error);
-            // Alert.alert("Lỗi", "Thêm giao dịch thất bại");
-            showSnackbar("Thêm giao dịch thất bại", SNACKBAR_COLOR_FAIL);
+            console.log("uploadInvoiceToAPI data:", error);
+            // Alert.alert("Lỗi", "Upload hóa đơn thất bại");
+            showSnackbar("Upload hóa đơn thất bại", SNACKBAR_COLOR_FAIL);
           });
-      });
+      }
+      const totalOfInvoice = convertStringToNumber(invoiceResult?.totalAmount);
+      const transactionWithInvoice = {
+        accountID: account?.accountID,
+        walletID: walletAdd?.walletID,
+        categoryID: categoryAdd?.categoryID,
+        totalAmount: amountTransaction,
+        transactionDate: timeStr,
+        note: addTransactionNote,
+        fromPerson: invoiceResult.supplierName ?? "",
+        toPerson: invoiceResult.receiverName ?? "",
+        imageURL: fileInvoiceURL,
+        invoice: {
+          supplierAddress: invoiceResult.supplierAddress ?? "",
+          supplierEmail: invoiceResult.supplierEmail ?? "",
+          supplierName: invoiceResult.supplierName ?? "",
+          supplierPhone: invoiceResult.supplierPhone ?? "",
+          idOfInvoice: invoiceResult.idOfInvoice ?? "",
+          invoiceDate: invoiceResult.invoiceDate ?? "",
+          netAmount: invoiceResult.netAmount ?? 0,
+          totalAmount: totalOfInvoice,
+          taxAmount: invoiceResult.taxAmount ?? 0,
+          invoiceImageURL: fileInvoiceURL,
+          note: invoiceResult.note ?? "",
+          products: [
+            ...invoiceResult.productInInvoices.map((it) => {
+              return {
+                productName: it.productName ?? "",
+                quanity: it.quanity ?? 0,
+                unitPrice: it.unitPrice ?? 0,
+                totalAmount: it.totalAmount ?? 0,
+                note: it.note ? it.note : "",
+                tag: it.tag ?? ""
+              };
+            })
+          ]
+        }
+      };
+
+      // await uploadInvoiceToAPI({
+      //   asset: assetShowing,
+      //   filenamecustom: filename,
+      //   accountID: account?.accountID
+      // }).then(async (response) => {
+      console.log("fileInvoiceURL: ", fileInvoiceURL);
+
+      console.log("transactionWithInvoice: ", transactionWithInvoice);
+      console.log("invoice: ", transactionWithInvoice.invoice);
+
+      await transactionServices
+        .addTransactionWithInvoice(transactionWithInvoice)
+        .then((response) => {
+          console.log("addTransactionWithInvoice response: ", response);
+          if (response) {
+            handleResetAddTransaction();
+            showSnackbar("Thêm giao dịch thành công", SNACKBAR_COLOR_SUCCESS);
+          }
+        })
+        .catch((error) => {
+          console.log("addTransactionWithInvoice error: ", error);
+          showSnackbar("Thêm giao dịch thất bại", SNACKBAR_COLOR_FAIL);
+        });
+      // });
     } else {
       const data = {
         accountID: account?.accountID,
@@ -898,15 +915,69 @@ const NewAddTransactionScreen = ({ route }) => {
           </View>
         )}
         <View style={[styles.viewAssetShowing, {}]}>
+          {/* <Pressable
+            style={{
+              width: 50,
+              height: 50,
+              borderRadius: 25,
+              backgroundColor: "red"
+            }}
+            onPress={() => {
+              console.log("Pressable");
+            }}
+          /> */}
           {assetShowing && (
-            <Image
-              source={{ uri: assetShowing.uri }}
-              style={{ width: "100%", height: "100%", resizeMode: "contain" }}
-            />
+            <View style={styles.view_AskSaveInvoiceImage}>
+              <Text style={styles.textSegmentButton}>
+                {isSaveWithInvoiceImage
+                  ? "Lưu lại ảnh hóa đơn này"
+                  : "Không lưu ảnh hóa đơn này"}
+              </Text>
+              <View style={styles.view_SegmentButton}>
+                <Pressable
+                  onPress={() => {
+                    setSaveWithInvoiceImage(false);
+                  }}
+                  style={({ pressed }) => [
+                    {
+                      backgroundColor: !isSaveWithInvoiceImage
+                        ? "#b2bec3"
+                        : pressed
+                          ? "#dfe6e9"
+                          : "transparent"
+                    },
+                    styles.pressable_SegmentButton
+                  ]}
+                />
+                <Pressable
+                  onPress={() => {
+                    setSaveWithInvoiceImage(true);
+                  }}
+                  style={({ pressed }) => [
+                    {
+                      backgroundColor: isSaveWithInvoiceImage
+                        ? "#74b9ff"
+                        : pressed
+                          ? "#dfe6e9"
+                          : "transparent"
+                    },
+                    styles.pressable_SegmentButton
+                  ]}
+                />
+              </View>
+            </View>
+          )}
+          {assetShowing && (
+            <View>
+              <Image
+                source={{ uri: assetShowing.uri }}
+                style={{ width: "100%", height: "100%", resizeMode: "contain" }}
+              />
+            </View>
           )}
         </View>
         {/* add footer to scrollview */}
-        <View style={{ height: 200 }} />
+        <View style={{ height: 300 }} />
       </ScrollView>
       <BlurView intensity={20} style={styles.viewPressableAction}>
         <Pressable
@@ -1091,6 +1162,41 @@ const NewAddTransactionScreen = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
+  view_AskSaveInvoiceImage: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center",
+    zIndex: 99
+  },
+  textSegmentButton: {
+    fontSize: 16,
+    fontFamily: "Inconsolata_400Regular",
+    fontStyle: "italic",
+    marginHorizontal: 10
+    // color: "darkgrey"
+  },
+  view_SegmentButton: {
+    borderWidth: 1,
+    borderColor: "darkgray",
+    borderRadius: 5,
+    width: 80,
+    height: 30,
+    flexDirection: "row",
+    alignItems: "center",
+    alignContent: "center",
+    padding: 1,
+    marginHorizontal: 10,
+    marginVertical: 5
+  },
+  pressable_SegmentButton: {
+    width: "49%",
+    height: "99%",
+    // borderWidth: 1,
+    // borderColor: "darkgray",
+    borderRadius: 5,
+    zIndex: 99
+  },
   pressable_ModalOnboarding: {
     // flex: 0.15,
     marginHorizontal: 10
@@ -1141,6 +1247,7 @@ const styles = StyleSheet.create({
     // borderColor: "red",
     // borderWidth: 1,
     flex: 1
+    // paddingVertical: 15,
   },
   text_ProgressLoading: {
     textAlign: "center",

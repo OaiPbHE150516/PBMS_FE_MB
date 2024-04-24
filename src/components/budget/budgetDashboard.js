@@ -50,8 +50,8 @@ const BudgetDashboard = ({ navigation }) => {
         <View style={styles.view_Header}>
           <Text style={styles.text_Header}>
             {eachBudget.length > 0
-              ? "Ngân sách hiện tại"
-              : "Không có ngân sách nào"}
+              ? "Hạn mức chi hiện tại"
+              : "Không có hạn mức chi nào"}
           </Text>
           <Pressable
             style={({ pressed }) => [

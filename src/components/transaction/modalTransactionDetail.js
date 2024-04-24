@@ -323,7 +323,10 @@ const styles = StyleSheet.create({
     // alignItems: "center",
     alignContent: "center",
     backgroundColor: "white",
-    height: "80%"
+    height: "80%",
+    borderWidth: 0.5,
+    borderColor: "darkgray",
+    borderRadius: 20,
   },
   textStyle: {
     fontSize: 20,

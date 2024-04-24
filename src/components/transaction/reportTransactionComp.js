@@ -184,6 +184,16 @@ const ReportTransactionComp = ({ time }) => {
         .getTotalAmountByType(accountID, time)
         .then((res) => {
           // console.log("res: ", res);
+          // remove categoryWithTransactionData item that not categoryType?.categoryTypeID === TYPE_INCOME or TYPE_EXPENSE
+          res?.categoryWithTransactionData?.forEach((item, index) => {
+            if (
+              item?.categoryType?.categoryTypeID !== TYPE_INCOME &&
+              item?.categoryType?.categoryTypeID !== TYPE_EXPENSE
+            ) {
+              res?.categoryWithTransactionData?.splice(index, 1);
+            }
+          });
+
           let count = 1;
           let dataChart = res?.categoryWithTransactionData?.map((item) => ({
             value: item?.percentage,
@@ -793,9 +803,11 @@ const styles = StyleSheet.create({
     // justifyContent: "center",
     alignContent: "center",
     width: "100%",
-    height: "100%"
-    // borderWidth: 5,
-    // borderColor: "green"
+    height: "100%",
+    // borderWidth: 1,
+    // borderColor: "darkgray",
+    borderRadius: 10,
+    // marginVertical: 10,
   },
   view_ABarChart_Infor: {
     flex: 1,
@@ -909,13 +921,13 @@ const styles = StyleSheet.create({
   },
   text_Header: {
     fontSize: 16,
-    fontFamily: "OpenSans_400Regular",
+    fontFamily: "OpenSans_500Medium",
     textAlign: "center"
   },
   view_Header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 5
+    padding: 5,
   },
   view_PieChart_Dot: {
     height: 10,
@@ -952,21 +964,6 @@ const styles = StyleSheet.create({
     alignContent: "flex-end"
     // paddingHorizontal: 5
   },
-  view_Container: {
-    flex: 1,
-    // alignItems: "flex-end",
-    // justifyContent: "flex-end",
-    // alignContent: "flex-end",
-    // alignItems: "flex-end",
-    backgroundColor: "white",
-    // justifyContent: "center",
-    flex: 1,
-    marginVertical: 5,
-
-    // borderWidth: 0.5,
-    // borderColor: "darkgray",
-    borderRadius: 5
-  }
 });
 
 export default ReportTransactionComp;

@@ -41,6 +41,10 @@ const CfHistoryComponent = ({ route }) => {
         })
         .then((response) => {
           // console.log("fetchCollabFundHistory response: ", response);
+          // sort response by createTime
+          response?.sort((a, b) => {
+            return new Date(b.createTime) - new Date(a.createTime);
+          });
           setHistory(response);
           setIsRefreshing(false);
         })

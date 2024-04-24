@@ -28,7 +28,7 @@ const OnboardingModalComp = ({ navigation, data, callback }) => {
       />
       <View style={styles.view_MainContent}>
         <View style={styles.view_MainContent_Title}>
-          <Text style={styles.text_MainContent_Title}>Hello World</Text>
+          <Text style={styles.text_MainContent_Title}>{"Hướng dẫn tính năng"}</Text>
         </View>
       </View>
       <Pressable

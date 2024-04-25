@@ -76,7 +76,19 @@ const categoryServices = {
     } catch (error) {
       console.log("Error updateCategory data:", error);
     }
-  }
+  },
+
+  // get all category
+  getAllCategories: async (accountid) => {
+    try {
+      const urlapi = API.CATEGORY.GET_ALL_CATEGORY + accountid;
+      // console.log("urlapi: ", urlapi);
+      const response = await axios.get(urlapi, { headers });
+      return response.data;
+    } catch (error) {
+      console.log("Error getCategories data:", error);
+    }
+  },
 };
 
 export default categoryServices;

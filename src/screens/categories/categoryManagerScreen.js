@@ -52,6 +52,7 @@ const CategoryManagerScreen = () => {
   });
   const [editCate, setEditCate] = useState({});
   const [nowCategories, setNowCategories] = useState([]);
+  const [allCategoryToCheck, setAllCategoryToCheck] = useState([]);
 
   // screen state
   const [isModalAddCateVisible, setIsModalAddCateVisible] = useState(false);
@@ -73,9 +74,23 @@ const CategoryManagerScreen = () => {
     }
   }
 
+  async function fetchAllCaegoriesToCheck() {
+    try {
+      await categoryServices
+        .getAllCategories(account?.accountID)
+        .then((res) => {
+          // console.log("res: ", res);
+          setAllCategoryToCheck(res);
+        });
+    } catch (error) {
+      console.log("fetchAllCaegories error: ", error);
+    }
+  }
+
   useEffect(() => {
     if (account !== null) {
       fetchDataCategories();
+      fetchAllCaegoriesToCheck();
       handleFocusScreen(focusScreen);
     }
   }, [account, shouldFetchData]);
@@ -105,8 +120,15 @@ const CategoryManagerScreen = () => {
     fetchDataCategories();
   }
 
-  function handleCreateCategory() {
+  async function handleCreateCategory() {
     console.log("newCate: ", newCate);
+    // check if newCate?.name have same name in allCategoryToCheck, Alert to user
+    if (
+      allCategoryToCheck?.some((category) => category?.nameVN === newCate?.name)
+    ) {
+      Alert.alert("Thông báo", "Tên hạng mục đã tồn tại");
+      return;
+    }
     if (
       newCate?.name === "" ||
       newCate?.parentID === null ||
@@ -118,15 +140,19 @@ const CategoryManagerScreen = () => {
       );
       return;
     }
-    dispatch(createCategory(newCate));
-    Alert.alert("Thông báo", "Thêm hạng mục thành công");
-    setNewCate({
-      ...newCate,
-      name: "",
-      parentID: cateParentList[0]?.categoryID
+    await categoryServices.createCategory(newCate).then((res) => {
+      if (res) {
+        // dispatch(createCategory(newCate));
+        Alert.alert("Thông báo", "Thêm hạng mục thành công");
+        setNewCate({
+          ...newCate,
+          name: "",
+          parentID: cateParentList[0]?.categoryID
+        });
+        setIsModalAddCateVisible(!isModalAddCateVisible);
+        handleReloadCategories();
+      }
     });
-    setIsModalAddCateVisible(!isModalAddCateVisible);
-    handleReloadCategories();
   }
 
   async function handleFocusScreen(index) {
@@ -200,6 +226,12 @@ const CategoryManagerScreen = () => {
 
   async function handleUpdateCategory() {
     console.log("editCate: ", editCate);
+    if (
+      allCategoryToCheck?.some((category) => category?.nameVN === newCate?.name)
+    ) {
+      Alert.alert("Thông báo", "Tên hạng mục đã tồn tại");
+      return;
+    }
     if (
       editCate?.nameVN === "" ||
       editCate?.nameVN.length > MAX_LENGTH_CATE_NAME

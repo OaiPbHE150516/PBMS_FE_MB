@@ -64,6 +64,7 @@ export const API = {
   },
   CATEGORY: {
     GET_CATEGORIES: `${Base_URL}/api/category/get/typebytype/`,
+    GET_ALL_CATEGORY: `${Base_URL}/api/category/get/`,
     CREATE_CATEGORY: `${Base_URL}/api/category/create`,
     DELETE_CATEGORY: `${Base_URL}/api/category/delete/`,
     UPDATE_CATEGORY: `${Base_URL}/api/category/update/`

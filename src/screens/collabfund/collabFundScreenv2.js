@@ -105,13 +105,16 @@ const CollabFundScreen = () => {
 
   async function fetchCollabFundsData() {
     try {
-      const response = await collabFundServices.getAllCollabFund(account?.accountID);
+      const response = await collabFundServices.getAllCollabFund(
+        account?.accountID
+      );
       const promises = response.map(async (element) => {
         const data = {
           collabFundID: element.collabFundID
         };
         try {
-          const totalAmountResponse = await collabFundServices.getTotalAmount(data);
+          const totalAmountResponse =
+            await collabFundServices.getTotalAmount(data);
           element.totalAmount = totalAmountResponse?.totalAmount;
           element.totalAmountStr = totalAmountResponse?.totalAmountStr;
         } catch (error) {
@@ -126,11 +129,10 @@ const CollabFundScreen = () => {
       handleError(error);
     } finally {
       // setTimeout(() => {
-        setIsRefreshing(false);
+      setIsRefreshing(false);
       // }, 2000);
     }
   }
-
 
   // async function getTotalAmount(collabFundID) {
   //   try {
@@ -340,6 +342,16 @@ const CollabFundScreen = () => {
 
   function handleMenuPress() {
     setIsModelMenuVisible(true);
+  }
+
+  function handleResetCreateNewCF() {
+    setIsModalNewCFVisible(false);
+    setNewCF("");
+    setAccountsSelected([]);
+    setCurrentSearchText("");
+    setSearchResult([]);
+    setIsShowSearchResult(false);
+    setImageCover(null);
   }
 
   async function handlePressNewCF() {
@@ -723,7 +735,7 @@ const CollabFundScreen = () => {
             onPress={Keyboard.dismiss}
             accessible={false}
           >
-            <View
+            <ScrollView
               style={[
                 styles.view_ModalMenuContent,
                 {
@@ -817,11 +829,6 @@ const CollabFundScreen = () => {
                       </Pressable>
                     </View>
                     {accountsSelected.length > 0 && (
-                      // <ScrollView
-                      //   style={{
-                      //     borderWidth: 1
-                      //   }}
-                      // >
                       <View
                         style={{
                           flexDirection: "column",
@@ -873,7 +880,6 @@ const CollabFundScreen = () => {
                           })}
                         </View>
                       </View>
-                      // </ScrollView>
                     )}
                     {isShowSearchResult && (
                       <View style={styles.view_SearchResult}>
@@ -884,7 +890,10 @@ const CollabFundScreen = () => {
                         </Text>
                         {searchResult[0]?.accountName && (
                           <FlatList
-                            scrollEnabled={true}
+                            style={{
+                              height: "auto"
+                            }}
+                            scrollEnabled={false}
                             data={searchResult}
                             keyExtractor={(item) => item?.accountID}
                             renderItem={({ item }) => {
@@ -1024,7 +1033,7 @@ const CollabFundScreen = () => {
                     // pressable to cancel create new CF
                     <Pressable
                       onPress={() => {
-                        setIsModalNewCFVisible(false);
+                        handleResetCreateNewCF();
                       }}
                       style={({ pressed }) => [
                         {
@@ -1056,7 +1065,7 @@ const CollabFundScreen = () => {
                   </Pressable>
                 </View>
               )}
-            </View>
+            </ScrollView>
           </TouchableWithoutFeedback>
         </View>
       </Modal>
@@ -1080,7 +1089,7 @@ const CollabFundScreen = () => {
               {
                 height: heightScreen * 0.95,
                 width: widthScreen,
-                paddingHorizontal: 4,
+                paddingHorizontal: 4
                 // borderWidth: 1,
                 // borderColor: "green"
               }
@@ -1225,7 +1234,7 @@ const styles = StyleSheet.create({
   },
   view_SearchResult: {
     width: "100%",
-    height: "50%",
+    height: "auto",
     borderWidth: 0.5,
     borderColor: "#636e72",
     borderRadius: 5,
@@ -1329,8 +1338,8 @@ const styles = StyleSheet.create({
     // maxHeight: "90%",
     flexDirection: "column",
     backgroundColor: "white",
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
+    // justifyContent: "flex-start",
+    // alignItems: "flex-start",
     alignContent: "flex-start",
     borderRadius: 30,
     borderWidth: 0.25,

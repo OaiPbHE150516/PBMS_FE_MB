@@ -64,7 +64,7 @@ const categoryServices = {
         nameEN: data?.cate?.nameVN,
         parentCategoryID: data?.cate?.parentCategoryID
       };
-      console.log("newCategory: ", newCategory);
+      console.log("updateCategory: ", newCategory);
       const response = await axios.put(
         API.CATEGORY.UPDATE_CATEGORY,
         newCategory,

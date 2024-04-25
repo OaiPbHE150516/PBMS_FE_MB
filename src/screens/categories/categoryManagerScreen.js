@@ -126,6 +126,14 @@ const CategoryManagerScreen = () => {
     if (
       allCategoryToCheck?.some((category) => category?.nameVN === newCate?.name)
     ) {
+      if (
+        allCategoryToCheck?.some(
+          (category) => category?.nameEN === newCate?.name
+        )
+      ) {
+        Alert.alert("Thông báo", "Tên hạng mục đã tồn tại");
+        return;
+      }
       Alert.alert("Thông báo", "Tên hạng mục đã tồn tại");
       return;
     }
@@ -226,9 +234,18 @@ const CategoryManagerScreen = () => {
 
   async function handleUpdateCategory() {
     console.log("editCate: ", editCate);
+    // console.log("allCategoryToCheck: ", allCategoryToCheck);
     if (
-      allCategoryToCheck?.some((category) => category?.nameVN === newCate?.name)
+      allCategoryToCheck?.some((category) => category?.nameVN === editCate?.nameVN)
     ) {
+      if (
+        allCategoryToCheck?.some(
+          (category) => category?.nameEN === editCate?.nameVN
+        )
+      ) {
+        Alert.alert("Thông báo", "Tên hạng mục đã tồn tại");
+        return;
+      }
       Alert.alert("Thông báo", "Tên hạng mục đã tồn tại");
       return;
     }
@@ -245,13 +262,21 @@ const CategoryManagerScreen = () => {
       return;
     }
     try {
-      await categoryServices.updateCategory({
-        cate: editCate,
-        accountID: account?.accountID
-      });
-      Alert.alert("Thông báo", "Cập nhật hạng mục thành công");
-      setIsShowModalEditCate(!isShowModalEditCate);
-      handleReloadCategories();
+      await categoryServices
+        .updateCategory({
+          cate: editCate,
+          accountID: account?.accountID
+        })
+        .catch((error) => {
+          console.log("handleUpdateCategory error: ", error);
+          Alert.alert("Thông báo", "Lỗi khi cập nhật hạng mục");
+          return;
+        })
+        .finally(() => {
+          Alert.alert("Thông báo", "Cập nhật hạng mục thành công");
+          setIsShowModalEditCate(!isShowModalEditCate);
+          handleReloadCategories();
+        });
     } catch (error) {
       console.log("handleUpdateCategory error: ", error);
       Alert.alert("Thông báo", "Lỗi khi cập nhật hạng mục");

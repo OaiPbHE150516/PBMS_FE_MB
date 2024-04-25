@@ -237,7 +237,11 @@ const CollabFundScreen = () => {
   const AnCollabFundItem = ({ collabFund }) => {
     return (
       <ImageBackground
-        source={{ uri: collabFund?.imageURL }}
+        source={{
+          uri: collabFund?.imageURL
+            ? collabFund?.imageURL
+            : "https://picsum.photos/200/200"
+        }}
         style={styles.imageBackgroundAnCollabFundItem}
         imageStyle={{ borderRadius: 10, resizeMode: "cover" }}
       >

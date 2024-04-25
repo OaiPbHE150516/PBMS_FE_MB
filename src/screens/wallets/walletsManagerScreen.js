@@ -44,7 +44,7 @@ const WalletsManagerScreen = () => {
   const account = useSelector((state) => state.authen?.account);
   const navigation = useNavigation();
 
-  const wallets = useSelector((state) => state.wallet?.wallets);
+  // const wallets = useSelector((state) => state.wallet?.wallets);
   // const totalBalance = useSelector((state) => state.wallet?.totalBalance);
 
   const [currentWallets, setCurrentWallets] = useState([]);
@@ -71,10 +71,10 @@ const WalletsManagerScreen = () => {
   const onRefresh = () => {
     setIsRefreshing(true);
     fetchWalletData();
-    setCurrentWallets(wallets);
+    // setCurrentWallets(wallets);
     setTimeout(() => {
       setIsRefreshing(false);
-    }, 1000);
+    }, 2000);
   };
 
   async function fetchWalletData() {
@@ -161,7 +161,7 @@ const WalletsManagerScreen = () => {
       Alert.alert("Tên ví không được để trống");
       return;
     }
-    if (wallets.some((wallet) => wallet?.name === newWallet?.name)) {
+    if (currentWallets?.some((wallet) => wallet?.name === newWallet?.name)) {
       Alert.alert("Tên ví đã tồn tại");
       return;
     }
@@ -267,7 +267,7 @@ const WalletsManagerScreen = () => {
       </View>
       <View style={[styles.viewAllWallet, styles.shadowCard]}>
         <FlatList
-          data={currentWallets || wallets}
+          data={currentWallets || []}
           keyExtractor={(item) => item.walletID}
           renderItem={({ item }) => <AnItemWalet wallet={item} />}
           refreshControl={
